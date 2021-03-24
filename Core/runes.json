@@ -1,0 +1,558 @@
+﻿{
+    "defRecipes": {
+        "amount": 5,
+        "craftingStation": "",
+        "minStationLevel": 1,
+        "enabled": true,
+        "repairStation": ""
+    },
+    "runes": [
+        // ===== GENERIC ============================================
+        {
+            "name": "Recall",
+            "type": "Spell",
+            "archetype": "Generic",
+            "description": "Returns you back to your resting place.",
+            "implemented": true,
+            "recipe": {
+                "name": "Recipe_Generic_Recall",
+                "item": "Generic_Recall",
+                "amount": 1,
+                "resources": [
+                    {
+                        "item": "GreydwarfEye",
+                        "amount": 10
+                    }
+                ]
+            },
+            "sfx": {
+                "name": "sfx_OpenPortal"
+            },
+            "fxcustom": "recall"
+        },
+        /*
+        {
+            "name": "Netherport",
+            "type": "Spell",
+            "archetype": "Generic",
+            "description": "Teleports the caster to a random location in Valheim.",
+            "implemented": false
+        },
+        {
+            "name": "Gatherer's Wish",
+            "type": "Spell",
+            "archetype": "Generic",
+            "description": "Loot every item in a big area around the caster.",
+            "implemented": false
+        },
+        {
+            "name": "Blacksmith's Wish",
+            "type": "Spell",
+            "archetype": "Generic",
+            "description": "Repair all equipament in the caster's inventory.",
+            "implemented":  false
+        },
+        {
+            "name": "Builder's Wish",
+            "type": "Spell",
+            "archetype": "Buff",
+            "description": "Lifts any station requeriment to build or repair constructions.",
+            "implemented": false
+        },
+        {
+            "name": "Fragile Stones",
+            "type": "Spell",
+            "archetype": "Buff",
+            "description": "Stones will shatter with a single attack.",
+            "implemented": false
+        },
+        {
+            "name": "Frail Trees",
+            "type": "Spell",
+            "archetype": "Buff",
+            "description": "Trees will fall with a single attack.",
+            "implemented": false
+        },
+        */
+        // ===== WARRIOR ============================================
+        {
+            "name": "Bladestorm",
+            "type": "Spell",
+            "archetype": "Warrior",
+            "description": "You spin your weapon around with great speed slashing all enemies fool enough to get close to you.",
+            "implemented": true,
+            "recipe": {
+                "name": "Recipe_Warrior_Bladestorm",
+                "item": "Warrior_Bladestorm",
+                "resources": [
+                    {
+                        "item": "Flint",
+                        "amount": 4
+                    }
+                ]
+            },
+            "vfx": {
+                "name": "vfx_sledge_hit",
+                "list": [ "waves", "splosh" ]
+            },
+            "sfx": {
+                "name": "sfx_metal_blocked"
+            },
+            "effect": {
+                "doDamage": { "m_slash": 100 },
+                "pushback": true,
+                "target": "foes"
+            }
+        },
+        {
+            "name": "Inspiring Shout",
+            "type": "Spell",
+            "archetype": "Warrior",
+            "description": "You remind your company about a tale of great warriors from the past, lifting their spirits.",
+            "implemented": true,
+            "recipe": {
+                "name": "Recipe_Warrior_InspiringShout",
+                "item": "Warrior_InspiringShout",
+                "resources": [
+                    {
+                        "item": "BoneFragments",
+                        "amount": 3
+                    }
+                ]
+            },
+            "vfx": {
+                "name": "vfx_Potion_stamina_medium"
+            },
+            "sfx": {
+                "name": "sfx_Potion_stamina_Start"
+            },
+            "effect": {
+                "doHealST": { "m_spirit": 100 },
+                "target": "allies"
+            }
+        },
+        {
+            "name": "Stone Rune",
+            "type": "Buff",
+            "archetype": "Warrior",
+            "description": "You call upon the powers of the stone, hardering your skin against physical damage.",
+            "implemented": true,
+            "recipe": {
+                "name": "Recipe_Warrior_Stone",
+                "item": "Warrior_Stone",
+                "resources": [
+                    {
+                        "item": "Crystal",
+                        "amount": 1
+                    }
+                ]
+            },
+            "effect": {
+                "doResist": {
+                    "m_pierce": 100,
+                    "m_slash": 100,
+                    "m_blunt": 100
+                },
+                "target": "self",
+                "duration": 60
+            }
+        },
+        {
+            "name": "Blood Rune",
+            "type": "Buff",
+            "archetype": "Warrior",
+            "description": "You atune yourself to the blood of your foes, stealing a portion of their suffering when you attack them.",
+            "implemented": true,
+            "recipe": {
+                "name": "Recipe_Warrior_Blood",
+                "item": "Warrior_Blood",
+                "resources": [
+                    {
+                        "item": "Bloodbag",
+                        "amount": 2
+                    }
+                ]
+            },
+            "effect": {
+                "healthBack": 100,
+                "target": "self",
+                "duration": 300
+            }
+        },
+        // ===== ROGUE ==============================================
+
+        {
+            "name": "Poisonous Shiv",
+            "type": "Spell",
+            "archetype": "Rogue",
+            "description": "You throw innumerous daggers in every direction, all them coated with deadly poison.",
+            "implemented": true,
+            "recipe": {
+                "name": "Recipe_Rogue_PoisonousShiv",
+                "item": "Rogue_PoisonousShiv",
+                "resources": [
+                    {
+                        "item": "MushroomYellow",
+                        "amount": 3
+                    }
+                ]
+            },
+            "vfx": {
+                "name": "vfx_ProjectileHit"
+            },
+            "sfx": {
+                "name": "sfx_barnacle_destroyed"
+            },
+            "effect": {
+                "doDamage": { "m_pierce": 100 },
+                "poison": true,
+                "target": "foes",
+                "duration": 60
+            }
+        },
+        {
+            "name": "Expose Weakness",
+            "type": "Spell",
+            "archetype": "Rogue",
+            "description": "With sharp eyes almost like an eagle, you can detect the weak points of all foes around you.",
+            "implemented": true,
+            "recipe": {
+                "name": "Recipe_Rogue_ExposeWeakness",
+                "item": "Rogue_ExposeWeakness",
+                "resources": [
+                    {
+                        "item": "Ooze",
+                        "amount": 2
+                    }
+                ]
+            },
+            "vfx": {
+                "name": "vfx_damaged_cart"
+
+            },
+            "sfx": {
+                "name": "sfx_serpent_attack_trigger"
+            },
+            "effect": {
+                "expose": 100,
+                "target": "foes",
+                "duration": 60
+            }
+        },
+        {
+            "name": "Swift Rune",
+            "type": "Buff",
+            "archetype": "Rogue",
+            "description": "You call upon the power of the wind, blessing your party with lightfoot movement.",
+            "implemented": true,
+            "recipe": {
+                "name": "Recipe_Rogue_Swift",
+                "item": "Rogue_Swift",
+                "resources": [
+                    {
+                        "item": "NeckTail",
+                        "amount": 4
+                    }
+                ]
+            },
+            "effect": {
+                "movementBonus": 100,
+                "ignoreFallDamage": true,
+                "target": "allies",
+                "duration": 300
+            }
+        },
+        {
+            "name": "Night Rune",
+            "type": "Buff",
+            "archetype": "Rogue",
+            "description": "The night embraces you, blurring your silhouette in the eyes of enemies.",
+            "implemented": true,
+            "recipe": {
+                "name": "Recipe_Rogue_Night",
+                "item": "Rogue_Night",
+                "resources": [
+                    {
+                        "item": "WolfFang",
+                        "amount": 1
+                    }
+                ]
+            },
+            "effect": {
+                "stealthiness": 100,
+                "target": "self",
+                "duration": 60
+            }
+        },
+        // ===== CLERIC =============================================
+        {
+            "name": "Healing Circle",
+            "type": "Spell",
+            "archetype": "Cleric",
+            "description": "You chant forgetten words, calling spirits to mend the injuries of your party.",
+            "implemented": true,
+            "recipe": {
+                "name": "Recipe_Cleric_HealingCircle",
+                "item": "Cleric_HealingCircle",
+                "resources": [
+                    {
+                        "item": "Dandelion",
+                        "amount": 8
+                    }
+                ]
+            },
+            "vfx": {
+                "name": "vfx_WishbonePing"
+            },
+            "sfx": {
+                "name": "sfx_greydwarf_shaman_heal"
+            },
+            "effect": {
+                "doHealHP": {
+                    "m_spirit": 50
+                },
+                "target": "allies"
+            }
+        },
+        {
+            "name": "Shield Slam",
+            "type": "Spell",
+            "archetype": "Cleric",
+            "description": "You slam your shield in the ground. The impact reverbs, incapicating your foes.",
+            "implemented": true,
+            "recipe": {
+                "name": "Recipe_Cleric_ShieldJustice",
+                "item": "Cleric_ShieldJustice",
+                "resources": [
+                    {
+                        "item": "WolfPelt",
+                        "amount": 1
+                    }
+                ]
+            },
+            "vfx": {
+                "name": "vfx_perfectblock"
+            },
+            "sfx": {
+                "name": "sfx_perfectblock"
+            },
+            "effect": {
+                "doDamage": {
+                    "m_blunt": 100,
+                    "m_spirit": 100
+                },
+                "stagger": true,
+                "target": "foes"
+            }
+        },
+        {
+            "name": "Light Rune",
+            "type": "Buff",
+            "archetype": "Cleric",
+            "description": "You call upon the power of the sun's light, its warmth flowing through everyone in your party.",
+            "implemented": true,
+            "recipe": {
+                "name": "Recipe_Cleric_Light",
+                "item": "Cleric_Light",
+                "resources": [
+                    {
+                        "item": "Entrails",
+                        "amount": 2
+                    }
+                ]
+            },
+            "effect": {
+                "healthRegen": 10,
+                "target": "allies",
+                "duration": 300
+            }
+        },
+        {
+            "name": "Vigor Rune",
+            "type": "Buff",
+            "archetype": "Cleric",
+            "description": "In a trance of sorts, your party becomes incredibly energetic.",
+            "implemented": true,
+            "recipe": {
+                "name": "Recipe_Cleric_Vigor",
+                "item": "Cleric_Vigor",
+                "resources": [
+                    {
+                        "item": "Blueberries",
+                        "amount": 3
+                    }
+                ]
+            },
+            "effect": {
+                "staminaRegen": 10,
+                "target": "allies",
+                "duration": 300
+            }
+        },
+        // ==========================================================
+        // ===== WIZARD =============================================
+        // ==========================================================
+        {
+            "name": "Ice Shard",
+            "type": "Spell",
+            "archetype": "Wizard",
+            "description": "A cold breeze passes through and solidifies at the whim of your thoughts, ready to be cast upon your enemies.",
+            "implemented": true,
+            "recipe": {
+                "name": "Recipe_Wizard_Iceshard",
+                "item": "Wizard_Iceshard",
+                "amount": 3,
+                "resources": [
+                    {
+                        "item": "FreezeGland",
+                        "amount": 1
+                    }
+                ]
+            },
+            "sfx": {
+                "name": "sfx_dragon_coldball_launch"
+            },
+            "effect": {
+                "doDamage": {
+                    "m_frost": 100
+                },
+                "slow": true,
+                "duration": 10,
+                "target": "projectile"
+            },
+            "projectile": {
+                "name": "hatchling_cold_projectile",
+                "speed": 30,
+                "duration": 5,
+                "explode": true
+            }
+        },
+        {
+            "name": "Fireball",
+            "type": "Spell",
+            "archetype": "Wizard",
+            "description": "You think of a spark and a flame appears in front of you. It'll fly forward and consume your foes with fire.",
+            "implemented": true,
+            "recipe": {
+                "name": "Recipe_Wizard_Fireball",
+                "item": "Wizard_Fireball",
+                "amount": 3,
+                "resources": [
+                    {
+                        "item": "Resin",
+                        "amount": 6
+                    }
+                ]
+            },
+            "sfx": {
+                "name": "sfx_GoblinShaman_fireball_launch"
+            },
+            "effect": {
+                "doDamage": {
+                    "m_fire": 100
+                },
+                "burn": true,
+                "duration": 10,
+                "target": "projectile"
+            },
+            "projectile": {
+                "name": "Imp_fireball_projectile",
+                "speed": 30,
+                "duration": 5,
+                "explode": true
+            }
+        },
+        {
+            "name": "Ward Rune",
+            "type": "Buff",
+            "archetype": "Wizard",
+            "description": "Your focus allow you to cast a barrier of sorts around yourself, protecting you from elemental harm.",
+            "implemented": true,
+            "recipe": {
+                "name": "Recipe_Wizard_Ward",
+                "item": "Wizard_Ward",
+                "resources": [
+                    {
+                        "item": "ElderBark",
+                        "amount": 3
+                    }   
+                ]
+            },
+            "effect": {
+                "doResist": {
+                    "m_fire": 100,
+                    "m_frost": 100,
+                    "m_lightning": 100,
+                    "m_poison": 100,
+                    "m_spirit": 100
+                },
+                "target": "self",
+                "duration": 60
+            }
+        },
+        {
+            "name": "Mind Rune",
+            "type": "Buff",
+            "archetype": "Wizard",
+            "description": "You clear the mind of your party, allowing them to tap more easily on their elemental powers.",
+            "implemented": true,
+            "recipe": {
+                "name": "Recipe_Wizard_Mind",
+                "item": "Wizard_Mind",
+                "resources": [
+                    {
+                        "item": "Thistle",
+                        "amount": 3
+                    }
+                ]
+            },
+            "effect": {
+                "doPower": {
+                    "m_fire": 100,
+                    "m_frost": 100,
+                    "m_lightning": 100,
+                    "m_poison": 100,
+                    "m_spirit": 100
+                },
+                "target": "allies",
+                "duration": 60
+            }
+        }
+        // ==========================================================
+        // ===== BERSERKER ==========================================
+        // ==========================================================
+        /* 
+         - Implode (spell: pull all enemies around the caster and damage them)
+         - Lockdown (spell: root all enemies around the caster)
+         - Fury Rune (buff: increase the caster attack power while reducing its armor)  
+         - Blade Rune (buff: increase the party's physical attack damage)
+        */
+        // ==========================================================
+        // ===== DRUID ==============================================
+        // ==========================================================
+        /* 
+         - Summon Wolf (spell: summons a wolf that fight alongside the caster)
+         - Tranquility (spell: remove any weather effect (fog, storms, etc) and any party's debuff)
+         - Thorn Rune (buff: deals damage to any enemy that attacks the caster)
+         - Fur Rune (buff: increase the party's armor)
+        */
+        // ==========================================================
+        // ===== SHAMAN =============================================
+        // ==========================================================
+        /* 
+         - Earthquake (spell: deals damage to enemies around the caster and slow them)
+         - Lightning Bolt (spell/projectile: deals lightning damage and reduces the target attackspeed)
+         - Strider Rune (buff: enables the party to walk over water)
+         - Torch Rune (buff: deals damage every second to enemies around the caster)
+        */
+        // ==========================================================
+        // ===== NECROMANCER ========================================
+        // ==========================================================
+        /* 
+         - Raise (spell: ressurects a nearby dead enemy to fight alongside the caster)
+         - Syphon Life (spell/projectile: deals damage to the target and heals the caster)
+         - Death Rune (buff: heals the party's when a enemy dies nearby)
+         - Decay Rune (buff: any target attacked by the party gets its armor reduced)
+        */
+    ]
+}

@@ -1,0 +1,60 @@
+﻿{
+    "classes": [
+        {
+            "id": 99901,
+            "name": "Warrior Class",
+            "icon": "WarriorIcon",
+            "description": "A tought fighter specialized in close range combat",
+            "implemented":  true
+        },
+        {
+            "id": 99902,
+            "name": "Cleric Class",
+            "icon": "ClericIcon",
+            "description": "A healer that can also and buff party members",
+            "implemented": true
+        },
+        {
+            "id": 99903,
+            "name": "Rogue Class",
+            "icon": "RogueIcon",
+            "description": "A stealth figther with high mobility",
+            "implemented": true
+        },
+        {
+            "id": 99904,
+            "name": "Wizard Class",
+            "icon": "WizardIcon",
+            "description": "A caster that bring the fire and ice upon his enemies",
+            "implemented": true
+        },
+        {
+            "id": 99905,
+            "name": "Berserker Class",
+            "icon": "",
+            "description": "A reckless fighther that trades anything for power",
+            "implemented": false
+        },
+        {
+            "id": 99906,
+            "name": "Druid Class",
+            "icon": "",
+            "description": "A misterious caster that commands the nature",
+            "implemented": false
+        },
+        {
+            "id": 99907,
+            "name": "Shaman Class",
+            "icon": "",
+            "description": "An elemental warrior with thunder in his veins",
+            "implemented": false
+        },
+        {
+            "id": 99908,
+            "name": "Necromancer Class",
+            "icon": "",
+            "description": "A dreadful caster enrolled with forbidden rituals",
+            "implemented": false
+        }
+    ]
+}
