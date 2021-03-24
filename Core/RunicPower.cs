@@ -8,7 +8,6 @@ using RunicPower.Patches;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using UnityEngine;
 
 namespace RunicPower {
@@ -27,6 +26,7 @@ namespace RunicPower {
 			LoadRunes();
 			LoadClasses();
 			CreateEffects();
+			SpellsBar.RegisterKeybinds(Config);
 		}
 
 		private void LoadRunes() { 
@@ -139,6 +139,14 @@ namespace RunicPower {
 				rune.itemDrop.m_itemData.m_shared.m_weight = 0.1f;
 
 				PrefabCreator.AddNewRuneRecipe(rune);
+			}
+		}
+
+
+		private void Update() {
+			var player = Player.m_localPlayer;
+			if (player != null && player.TakeInput()) {
+				SpellsBar.CheckInputs();
 			}
 		}
 	}

@@ -11,6 +11,7 @@ using UnityEngine;
 namespace RunicPower.Patches { 
 	public class ExtendedPlayerData {
 		public DamageTypeValues powerModifiers = new DamageTypeValues();
+		public Inventory spellsBarInventory = new Inventory(nameof(spellsBarInventory), null, SpellsBar.slotCount, 1);
 	}
 
 	[HarmonyPatch(typeof(Player), "Awake")]
@@ -34,5 +35,16 @@ namespace RunicPower.Patches {
 			// and return it
 			return ext;
 		}
-    }
+
+		public static Inventory GetSpellsBarInventory(this Player __instance) {
+			var ext = __instance.GetExtendedData();
+			return ext?.spellsBarInventory;
+		}
+
+		public static ItemDrop.ItemData GetSpellsBarItem(this Player __instance, int index) {
+			if (index < 0 || index > SpellsBar.slotCount) return null;
+			var spellsBarInventory = __instance.GetSpellsBarInventory();
+			return spellsBarInventory?.GetItemAt(index, 0);
+		}
+	}
 }

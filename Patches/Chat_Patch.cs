@@ -1,5 +1,6 @@
 ﻿using Common;
 using HarmonyLib;
+using RuneStones.Patches;
 using RunicPower.Core;
 using RunicPower.Patches;
 using System.Collections.Generic;
@@ -105,6 +106,22 @@ namespace RunicPower {
 		static void Postfix(Chat __instance) {
 			string text = __instance.m_input.text;
 
+			if (text.StartsWith("x=") || text.StartsWith("y=")) {
+				var gridRT = InventoryGui_Patch.goRect;
+				
+				var oldposition = gridRT.localPosition;
+				var newposition = gridRT.localPosition;
+
+				var parts = text.Split('=');
+				int value = int.Parse(parts[1]);
+				if (parts[0] == "x") newposition = new Vector2(value, oldposition.y);
+				if (parts[0] == "y") newposition = new Vector2(oldposition.x, value);
+
+				Debug.Log("Changing gridRT position from " + oldposition+ " to " + newposition);
+				gridRT.localPosition = newposition;
+			}
+
+			
 			if (text.Contains("vfx") || text.Contains("sfx")) {
 				Debug.Log("=========================================");
 				Debug.Log(text);
