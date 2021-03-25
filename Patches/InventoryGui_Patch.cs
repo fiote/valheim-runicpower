@@ -20,8 +20,6 @@ namespace RuneStones.Patches {
                 BuildSpellsBarGrid(__instance);
             }
             private static void BuildSpellsBarGrid(InventoryGui inventoryGui) {
-                // 1785, -143
-                // 1280, -35
                 BuildInventoryGrid(ref SpellsBarGrid, SpellsBar.barName, new Vector2(1000, 103), new Vector2((74 * SpellsBar.slotCount) + 10, 90), inventoryGui);
             }
 

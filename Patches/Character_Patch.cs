@@ -30,29 +30,12 @@ namespace RunicPower {
 		}
 	}
 
-	[HarmonyPatch(typeof(Character), "UpdateStagger")]
-	public static class Character_UpdateStagger_Patch {
-		static void Prefix(Character __instance, float dt) {
-			__instance.UpdateRunicStagger(dt);
-		}
-	}
-
 	[HarmonyPatch(typeof(Character), "ApplyDamage")]
 	public static class Character_ApplyDamage_Patch {
 		static void Prefix(Character __instance, ref HitData hit, bool showDamageText, bool triggerEffects, HitData.DamageModifier mod = HitData.DamageModifier.Normal) {
-			Debug.Log("==============================================================");
-			Debug.Log("target "+__instance.name + " got damage-applied");
-
 			var runes = __instance.m_seman?.GetRunes();
-			if (runes == null || runes.Count == 0) {
-				Debug.Log("target"+ __instance + " got no runes");
-				return;
-			}
-
-			foreach (var rune in runes) {
-				Debug.Log("trying modify applied damage (expose? " + rune.GetExpose() + ") (resist: " + rune.effect?.doResist.ToString() + ")");
-				rune.ModifyAppliedDamage(ref hit);
-			}
+			if (runes == null || runes.Count == 0) return;
+			foreach (var rune in runes) rune.ModifyAppliedDamage(ref hit);
 		}
 	}
 
@@ -68,42 +51,11 @@ namespace RunicPower {
 			return ext;
 		}
 
-		public static void UpdateRunicStagger(this Character __instance, float dt) {
-			var ext = __instance.GetExtendedData();
-			var stagger = ext.runicStagger;
-			if (stagger.active) {
-				stagger.time += dt;
-				if (stagger.time > stagger.replay) {
-					__instance.SetRunicStagger(false);
-					__instance.m_zanim.SetTrigger("stagger");
-				}
-			}
-		}
-
 		public static float GetStealthRange(this Character __instance) {
 			var runes = __instance.m_seman.GetRunes();
 			var range = 0f;
 			foreach (var rune in runes) if (rune.effect?.stealthiness != 0) range += rune.GetStealhiness();
 			return range;
-		}
-
-		public static bool IsMagicallyStaggered(this Character c) {
-			return c.GetExtendedData().runicStagger.active;
-		}
-
-		public static void SetRunicStagger(this Character __instance, bool active, Vector3 direction) {
-			var ext = __instance.GetExtendedData();
-			ext.runicStagger.active = active;
-			if (active) {
-				ext.runicStagger.start = 0;
-				ext.runicStagger.time = 0;
-			}
-			ext.runicStagger.direction = direction;
-		}
-
-		public static void SetRunicStagger(this Character __instance, bool active) {
-			var ext = __instance.GetExtendedData();
-			ext.runicStagger.active = active;
 		}
 
 		public static void UpdateGroundContact_Custom(this Character __instance) {

@@ -27,16 +27,11 @@ namespace RunicPower.Patches {
 
         public static void SetRuneByKey(string key, Rune rune) {
             if (key == null) return;
-            // getting the current extendedData
             var ext = mapping.ContainsKey(key) ? mapping[key] : null;
-            // if it does not exist
             if (ext == null) {
-                // create a new one
                 mapping[key] = ext = new ExtendedItemDropData();
-                // and store a 'clone' version if needed
                 if (!key.Contains("(Clone)")) mapping[key + "(Clone)"] = ext;
             }
-            // then we set the rune
             ext.rune = rune;
         }
 

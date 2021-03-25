@@ -27,75 +27,17 @@ namespace RunicPower.Patches {
 			Debug.Log("ExtendedPlayerData SAVING...");
 			var pkg = new ZPackage();
 			spellsBarInventory.Save(pkg);
-
-			Debug.Log("currentVersion: "+spellsBarInventory.currentVersion);
-			Debug.Log("m_inventory.Count: "+spellsBarInventory.m_inventory.Count);
-			foreach (ItemDrop.ItemData item in spellsBarInventory.m_inventory) {
-				if (item.m_dropPrefab == null) {
-					Debug.Log("Item missing prefab " + item.m_shared.m_name);
-					Debug.Log("");
-				} else {
-					Debug.Log("Prefab name "+item.m_dropPrefab.name);
-				}
-				Debug.Log("m_stack: " + item.m_stack);
-				Debug.Log("m_durability: " + item.m_durability);
-				Debug.Log("m_gridPos: " + item.m_gridPos);
-				Debug.Log("m_equiped: " + item.m_equiped);
-				Debug.Log("m_quality: " + item.m_quality);
-				Debug.Log("m_variant: " + item.m_variant);
-				Debug.Log("m_crafterID: " + item.m_crafterID);
-				Debug.Log("m_crafterName: " + item.m_crafterName);
-			}
-
 			SaveValue(_player, nameof(spellsBarInventory), pkg.GetBase64());
 			Debug.Log("ExtendedPlayerData SAVED!");
 		}
 
 		public void Load() {
 			Debug.Log("ExtendedPlayerData LOADING...");
-
 			LoadValue(_player, "ExtendedPlayerData", out var init);
-
 			if (LoadValue(_player, nameof(spellsBarInventory), out var quickSlotData)) {
 				var pkg = new ZPackage(quickSlotData);
-				_isLoading = true;
-
-				int num = pkg.ReadInt();
-				int num2 = pkg.ReadInt();
-				spellsBarInventory.m_inventory.Clear();
-				for (int i = 0; i < num2; i++) {
-					string text = pkg.ReadString();
-					int stack = pkg.ReadInt();
-					float durability = pkg.ReadSingle();
-					Vector2i pos = pkg.ReadVector2i();
-					bool equiped = pkg.ReadBool();
-					int quality = 1;
-					if (num >= 101) {
-						quality = pkg.ReadInt();
-					}
-					int variant = 0;
-					if (num >= 102) {
-						variant = pkg.ReadInt();
-					}
-					long crafterID = 0L;
-					string crafterName = "";
-					if (num >= 103) {
-						crafterID = pkg.ReadLong();
-						crafterName = pkg.ReadString();
-					}
-					if (text != "") {
-						Debug.Log("text=" + text + ", stack=" + stack + ", durability=" + durability + ", pos=" + pos + ", equiped=" + equiped + ", quality=" + quality + ", variant=" + variant + ", crafterID=" + crafterID + ", crafterName=" + crafterName);
-					}
-				}
-
-				pkg = new ZPackage(quickSlotData);
+				_isLoading = true;				
 				spellsBarInventory.Load(pkg);
-				// _player.m_inventory.MoveAll(spellsBarInventory);
-
-				pkg = new ZPackage(quickSlotData);
-				spellsBarInventory.Save(pkg);
-				SaveValue(_player, nameof(spellsBarInventory), pkg.GetBase64());
-
 				_isLoading = false;
 			}
 			Debug.Log("ExtendedPlayerData LOADED!");
