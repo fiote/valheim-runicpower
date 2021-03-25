@@ -86,15 +86,17 @@ namespace RuneStones.Patches {
                     if (rune != null) {
                         inventoryGui.OnSelectedItem(inventoryGrid, item, pos, mod);
                     } else {
-                        Debug.Log("you cant put a non-rune item on this slot");
+                        Player.m_localPlayer.Message(MessageHud.MessageType.Center, "You can't put a non-rune item on this slot.");
 					}
                 };
             }
 
             private static Action<InventoryGrid, ItemDrop.ItemData, Vector2i> OnRightClicked(InventoryGui inventoryGui) {
                 return (InventoryGrid inventoryGrid, ItemDrop.ItemData item, Vector2i pos) => {
-                    if (item == null || Player.m_localPlayer == null) return;
-                    Player.m_localPlayer.UseItem(Player.m_localPlayer.m_inventory, item, true);
+                    var player = Player.m_localPlayer;
+                    if (item == null || player == null) return;
+                    // if (player.ConsumeItem(player.m_inventory, item)) 
+                        player.UseItem(player.m_inventory, item, true);                        
                 };
             }
 
