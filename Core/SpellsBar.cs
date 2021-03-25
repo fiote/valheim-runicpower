@@ -22,16 +22,19 @@ namespace RunicPower.Core {
 
 	public class SpellsBar {
 
-		public static int slotCount = 10;
-        public static string barName = "SpellsBarGrid";
+		public const int slotCount = 10;
+        public static string spellsBarGridName = "SpellsBarGrid";
+        public static string spellsBarHotkeysName = "SpellsBarHotkeys";
         public static readonly Dictionary<int, SpellShortcut> shortcuts = new Dictionary<int, SpellShortcut>();
+
+        public static InventoryGrid spellsBarGrid;
+        public static InventoryGrid spellsBarHotkeys;
 
         public static void RegisterKeybinds(ConfigFile config) {
             for (var i = 0; i < slotCount; i++) {
                 var knumber = "Alpha" + (i == slotCount - 1 ? 0 : i + 1);
                 var key = (KeyCode)System.Enum.Parse(typeof(KeyCode), knumber.ToString());
-                Debug.Log("knumber " + knumber + " key  " + key);
-                shortcuts[i] = new SpellShortcut(KeyCode.LeftControl, key);
+                shortcuts[i] = new SpellShortcut(KeyCode.LeftShift, key);
             }
 
             for (var i = 0; i < slotCount; i++) {
@@ -76,23 +79,11 @@ namespace RunicPower.Core {
                 var item = player.GetSpellsBarItem(index);
                 if (item != null) player.UseItem(null, item, false);
             }
+        }
 
-            /*
-                var item = player.GetQuickSlotItem(index);
-                if (item != null) {
-                    player.UseItem(null, item, false);
-                }
-            */
+        public static void CreateGameObject() {
 
-                /**
-                if (keyCode != null && Input.GetKeyDown(keyCode)) {
-                    var item = player.GetQuickSlotItem(index);
-                    if (item != null) {
-                        player.UseItem(null, item, false);
-                    }
-                }
-                */
-            }
+		}
 
     }
 }

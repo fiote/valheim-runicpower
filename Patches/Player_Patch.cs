@@ -12,6 +12,7 @@ namespace RunicPower.Patches {
 	public class ExtendedPlayerData {
 		public DamageTypeValues powerModifiers = new DamageTypeValues();
 		public Inventory spellsBarInventory = new Inventory(nameof(spellsBarInventory), null, SpellsBar.slotCount, 1);
+		public Inventory spellsBarHotKeys = new Inventory(nameof(spellsBarHotKeys), null, SpellsBar.slotCount, 1);
 
 		private Player _player;
 		private bool _isLoading;
@@ -83,6 +84,14 @@ namespace RunicPower.Patches {
 		}
 	}
 
+	[HarmonyPatch(typeof(Player), "Awake")]
+	public static class Player_Awake_Patch {
+		public static void Postfix(Player __instance) {
+			Debug.Log("Player_Awake_Patch");
+			__instance.UpdateSpellBars();
+		}
+	}
+
 	public static class PlayerExtensions {
 
 		public static Dictionary<string, ExtendedPlayerData> mapping = new Dictionary<string, ExtendedPlayerData>();
@@ -99,6 +108,17 @@ namespace RunicPower.Patches {
 			var ext = __instance.GetExtendedData();
 			return ext?.spellsBarInventory;
 		}
+		public static bool UpdateSpellBars(this Player __instance) {
+			if (__instance == null) return false;
+			var inv = __instance.GetSpellsBarInventory();
+			var invGui = InventoryGui.instance;
+			if (inv != null && invGui != null) {
+				SpellsBar.spellsBarGrid.UpdateInventory(inv, __instance, invGui?.m_dragItem);
+				SpellsBar.spellsBarHotkeys.UpdateInventory(inv, __instance, invGui?.m_dragItem);
+				return true;
+			}
+			return false;
+		}
 
 		public static ItemDrop.ItemData GetSpellsBarItem(this Player __instance, int index) {
 			if (index < 0 || index > SpellsBar.slotCount) return null;
@@ -106,7 +126,7 @@ namespace RunicPower.Patches {
 			return spellsBarInventory?.GetItemAt(index, 0);
 		}
 
-		public static List<Inventory> GetAllInventories2(this Player __instance) {
+		public static List<Inventory> GetAllInventories(this Player __instance) {
 			var result = new List<Inventory>();
 			result.Add(__instance.m_inventory);
 			var spellsBarInventory = __instance.GetSpellsBarInventory();

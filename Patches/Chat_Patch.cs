@@ -107,7 +107,7 @@ namespace RunicPower {
 			string text = __instance.m_input.text;
 
 			if (text.StartsWith("x=") || text.StartsWith("y=")) {
-				var gridRT = InventoryGui_Patch.goRect;
+				var gridRT = HotkeyBar_Patch.goRect;
 				
 				var oldposition = gridRT.localPosition;
 				var newposition = gridRT.localPosition;
@@ -117,7 +117,7 @@ namespace RunicPower {
 				if (parts[0] == "x") newposition = new Vector2(value, oldposition.y);
 				if (parts[0] == "y") newposition = new Vector2(oldposition.x, value);
 
-				Debug.Log("Changing gridRT position from " + oldposition+ " to " + newposition);
+				Debug.Log("Changing rect position from " + oldposition+ " to " + newposition);
 				gridRT.localPosition = newposition;
 			}
 
