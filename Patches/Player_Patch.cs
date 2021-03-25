@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace RunicPower.Patches { 
+namespace RunicPower.Patches {
 	public class ExtendedPlayerData {
 		public DamageTypeValues powerModifiers = new DamageTypeValues();
 		public Inventory spellsBarInventory = new Inventory(nameof(spellsBarInventory), null, SpellsBar.slotCount, 1);
@@ -36,7 +36,7 @@ namespace RunicPower.Patches {
 			LoadValue(_player, "ExtendedPlayerData", out var init);
 			if (LoadValue(_player, nameof(spellsBarInventory), out var quickSlotData)) {
 				var pkg = new ZPackage(quickSlotData);
-				_isLoading = true;				
+				_isLoading = true;
 				spellsBarInventory.Load(pkg);
 				_isLoading = false;
 			}
@@ -67,21 +67,14 @@ namespace RunicPower.Patches {
 		}
 	}
 
-	[HarmonyPatch(typeof(Player), "Awake")]
-	public static class Player_Awake_Patch {
-		public static void Postfix(Player __instance) {
-		}
-	}
-
 	[HarmonyPatch(typeof(Player), "Load")]
 	public static class Player_Load_Patch {
 		public static void Postfix(Player __instance) {
 			Debug.Log("Player_Load_Postfix");
 			__instance.GetExtendedData().Load();
-			__instance.EquipIventoryItems();
 		}
 	}
- 
+
 	[HarmonyPatch(typeof(Player), "Save")]
 	public static class Player_Save_Patch {
 		public static void Prefix(Player __instance) {
@@ -96,9 +89,7 @@ namespace RunicPower.Patches {
 		public static ExtendedPlayerData GetExtendedData(this Player __instance) {
 			var key = __instance.GetInstanceID().ToString();
 			if (key == null) return null;
-			// getting the current extendedData
 			var ext = mapping.ContainsKey(key) ? mapping[key] : null;
-			// if it does not exist, create one
 			if (ext == null) mapping[key] = ext = new ExtendedPlayerData(__instance);
 			// and return it
 			return ext;
@@ -115,7 +106,7 @@ namespace RunicPower.Patches {
 			return spellsBarInventory?.GetItemAt(index, 0);
 		}
 
-		public static List<Inventory> GetAllInventories(this Player __instance) {
+		public static List<Inventory> GetAllInventories2(this Player __instance) {
 			var result = new List<Inventory>();
 			result.Add(__instance.m_inventory);
 			var spellsBarInventory = __instance.GetSpellsBarInventory();

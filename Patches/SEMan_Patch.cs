@@ -29,28 +29,10 @@ namespace RunicPower.Patches {
     public static class Character_OnDamaged_Patch {
         static void Prefix(SEMan __instance, ref HitData hit, Character attacker) {
             if (hit == null) return;
-
-            var total = Mathf.RoundToInt(hit.GetTotalDamage());
-            var ph = Mathf.RoundToInt(hit.GetTotalPhysicalDamage());
-            var el = Mathf.RoundToInt(hit.GetTotalElementalDamage());
-
-            Debug.Log("SEMan("+__instance.m_nview?.name+") got damaged ["+ total + "] ("+ph+" + "+el+") by "+attacker?.name);
-
             if (attacker == null) return;
-
             var runes = attacker?.m_seman?.GetRunes();
-
-            if (runes == null) {
-                Debug.Log("attacker "+attacker.name+" got no runes");
-                return;
-            }
-
-            foreach (var rune in runes) {
-                Debug.Log("trying apply health steal (healthback? " + rune.GetHealthSteal() + ")");
-                rune.ApplyHealthSteal(hit, attacker);
-			}
-            
-            Debug.Log("==============================================================");
+            if (runes == null) return;
+            foreach (var rune in runes) rune.ApplyHealthSteal(hit, attacker);
         }
     }
 

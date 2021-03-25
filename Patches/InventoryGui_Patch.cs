@@ -65,7 +65,7 @@ namespace RuneStones.Patches {
 
                 grid.m_onSelected += OnSelected(inventoryGui);
                 grid.m_onRightClick += OnRightClicked(inventoryGui);
-                
+
                 grid.m_uiGroup = grid.gameObject.AddComponent<UIGroupHandler>();
                 grid.m_uiGroup.m_groupPriority = 1;
                 grid.m_uiGroup.m_active = true;
@@ -78,7 +78,6 @@ namespace RuneStones.Patches {
 
             private static Action<InventoryGrid, ItemDrop.ItemData, Vector2i, InventoryGrid.Modifier> OnSelected(InventoryGui inventoryGui) {
                 return (InventoryGrid inventoryGrid, ItemDrop.ItemData item, Vector2i pos, InventoryGrid.Modifier mod) => {
-                    Debug.Log($"OnSelected: inventoryGrid={inventoryGrid}, item={item?.m_shared.m_name}, pos={pos}, mod={mod}");
                     var current = (item != null) ? item : inventoryGui.m_dragItem;
                     var rune = current?.GetRune();
                     if (rune != null) {
@@ -93,8 +92,8 @@ namespace RuneStones.Patches {
                 return (InventoryGrid inventoryGrid, ItemDrop.ItemData item, Vector2i pos) => {
                     var player = Player.m_localPlayer;
                     if (item == null || player == null) return;
-                    // if (player.ConsumeItem(player.m_inventory, item)) 
-                        player.UseItem(player.m_inventory, item, true);                        
+                    // if (player.ConsumeItem(player.m_inventory, item))
+                        player.UseItem(player.m_inventory, item, true);
                 };
             }
 
@@ -106,6 +105,5 @@ namespace RuneStones.Patches {
                 }
             }
         }
-
     }
 }

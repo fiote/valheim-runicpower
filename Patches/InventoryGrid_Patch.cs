@@ -14,7 +14,7 @@ namespace RuneStones.Patches {
         [HarmonyPatch(typeof(InventoryGrid), "GetElement", typeof(int), typeof(int), typeof(int))]
         public static class InventoryGrid_GetElement_Patch {
             private static bool Prefix(InventoryGrid __instance, ref InventoryGrid.Element __result, int x, int y, int width) {
-                // if this isnt the spellsbar, return 
+                // if this isnt the spellsbar, return
                 if (__instance.name != SpellsBar.barName) return true;
 
                 var index = y * width + x;
@@ -31,7 +31,7 @@ namespace RuneStones.Patches {
         [HarmonyPatch(typeof(InventoryGrid), "UpdateGui", typeof(Player), typeof(ItemDrop.ItemData))]
         public static class InventoryGrid_UpdateGui_Patch {
             private static void Postfix(InventoryGrid __instance) {
-                // if this isnt the spellsbar, return 
+                // if this isnt the spellsbar, return
                 if (__instance.name != SpellsBar.barName) return;
 
                 for (var i = 0; i < SpellsBar.slotCount; ++i) {
@@ -41,7 +41,7 @@ namespace RuneStones.Patches {
                     bindingText.horizontalOverflow = HorizontalWrapMode.Overflow;
                     bindingText.text = SpellsBar.GetBindingLabel(i);
                     bindingText.fontSize = 15;
-                } 
+                }
             }
         }
 
