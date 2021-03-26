@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
+using RuneStones.Patches;
 using RunicPower.Patches;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace RunicPower.Core {
 
@@ -75,15 +78,93 @@ namespace RunicPower.Core {
             var keyOk = Input.GetKeyDown(shortcut.key);
 
             if (modOk && keyOk) {
-                Debug.Log("USE SPELL #" + index);
                 var item = player.GetSpellsBarItem(index);
                 if (item != null) player.UseItem(null, item, false);
             }
         }
 
-        public static void CreateGameObject() {
+        public static void CreateGameObject(ref InventoryGrid grid, InventoryGui inventoryGui, GameObject parent, string name, Vector2 position, bool isInventory = false, Vector2 size = new Vector2()) {
+            // go
+            var go = new GameObject(name, typeof(RectTransform));
+            go.transform.SetParent(parent.transform, false);
 
-		}
+            // rect
+            var goRect = go.transform as RectTransform;
+            goRect.anchoredPosition = position;
+
+            // hightlight
+            var highlight = new GameObject("SelectedFrame", typeof(RectTransform));
+
+            if (isInventory) {
+                highlight.transform.SetParent(go.transform, false);
+                // highlight.AddComponent<Image>().color = Color.yellow;
+                var highlightRT = highlight.transform as RectTransform;
+                highlightRT.anchoredPosition = new Vector2(0, 0);
+                highlightRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x + 2);
+                highlightRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y + 2);
+                highlightRT.localScale = new Vector3(1, 1, 1);
+            }
+
+            // background
+            if (isInventory) {
+                var bkg = inventoryGui.m_player.Find("Bkg").gameObject;
+                var background = Object.Instantiate(bkg, go.transform);
+                background.name = name + "Bkg";
+                var backgroundRT = background.transform as RectTransform;
+                backgroundRT.anchoredPosition = new Vector2(0, 0);
+                backgroundRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x);
+                backgroundRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y);
+                backgroundRT.localScale = new Vector3(1, 1, 1);
+            }
+
+            // grid
+            grid = go.AddComponent<InventoryGrid>();
+            grid.name = name + "Grid";
+            var root = new GameObject("Root", typeof(RectTransform));
+            root.transform.SetParent(go.transform, false);
+            grid.m_elementPrefab = inventoryGui.m_playerGrid.m_elementPrefab;
+            grid.m_gridRoot = root.transform as RectTransform;
+            grid.m_elementSpace = inventoryGui.m_playerGrid.m_elementSpace;
+            grid.ResetView();
+
+            if (isInventory) {
+                grid.m_onSelected = null;
+                grid.m_onRightClick = null;
+            } else {
+                grid.m_onSelected += OnSelected(inventoryGui);
+                grid.m_onRightClick += OnRightClicked(inventoryGui);
+            }
+
+            grid.m_uiGroup = grid.gameObject.AddComponent<UIGroupHandler>();
+            grid.m_uiGroup.m_groupPriority = 1;
+            grid.m_uiGroup.m_active = true;
+            grid.m_uiGroup.m_enableWhenActiveAndGamepad = highlight;
+
+            // list
+            var list = inventoryGui.m_uiGroups.ToList();
+            list.Insert(2, grid.m_uiGroup);
+            inventoryGui.m_uiGroups = list.ToArray();
+        }
+        public static Action<InventoryGrid, ItemDrop.ItemData, Vector2i, InventoryGrid.Modifier> OnSelected(InventoryGui inventoryGui) {
+            return (InventoryGrid inventoryGrid, ItemDrop.ItemData item, Vector2i pos, InventoryGrid.Modifier mod) => {
+                var current = (item != null) ? item : inventoryGui.m_dragItem;
+                var rune = current?.GetRune();
+                if (rune != null) {
+                    inventoryGui.OnSelectedItem(inventoryGrid, item, pos, mod);
+                } else {
+                    Player.m_localPlayer.Message(MessageHud.MessageType.Center, "You can't put a non-rune item on this slot.");
+                }
+            };
+        }
+
+        public static Action<InventoryGrid, ItemDrop.ItemData, Vector2i> OnRightClicked(InventoryGui inventoryGui) {
+            return (InventoryGrid inventoryGrid, ItemDrop.ItemData item, Vector2i pos) => {
+                var player = Player.m_localPlayer;
+                if (item == null || player == null) return;
+                // if (player.ConsumeItem(player.m_inventory, item))
+                player.UseItem(player.m_inventory, item, true);
+            };
+        }
 
     }
 }

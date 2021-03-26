@@ -74,7 +74,6 @@ namespace RunicPower.Core {
 			statusEffect.m_name = name;
 			statusEffect.m_category = name;
 			statusEffect.m_cooldown = 0f;
-			// statusEffect.m_activationAnimation = "gpower";
 			statusEffect.m_icon = itemDrop.m_itemData.m_shared.m_icons[0];
 			statusEffect.SetRune(this);
 		}
@@ -218,7 +217,11 @@ namespace RunicPower.Core {
 			this.player = player;
 			var dmg = player.GetCurrentWeapon().GetDamage();
 			playerWeaponDmg = dmg.GetTotalElementalDamage() + dmg.GetTotalPhysicalDamage();
-			playerPowerMods = player.GetPowerModifiers();
+
+			var runes = player.GetRunes();
+			playerPowerMods = new DamageTypeValues();
+			foreach (var rune in runes) rune.AppendPower(ref playerPowerMods);
+
 			skillType = (Skills.SkillType)ClassSkill.GetIdByName(archetype);
 		}
 

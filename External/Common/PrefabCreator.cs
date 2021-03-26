@@ -1,4 +1,6 @@
-﻿using RunicPower.Core;
+﻿using BepInEx;
+using LitJson;
+using RunicPower.Core;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -31,6 +33,39 @@ namespace Common {
                     }
                 }
             }
+        }
+
+        public static T LoadJsonFile<T>(string filename) where T : class {
+            var jsonFileName = GetAssetPath(filename);
+            if (!string.IsNullOrEmpty(jsonFileName)) {
+                var jsonFile = File.ReadAllText(jsonFileName);
+                return JsonMapper.ToObject<T>(jsonFile);
+            }
+
+            return null;
+        }
+
+        public static string GetAssetPath(string assetName) {
+            var assetFileName = Path.Combine(Paths.PluginPath, "RunicPower", assetName);
+            if (!File.Exists(assetFileName)) {
+                Assembly assembly = typeof(RunicPower.RunicPower).Assembly;
+                assetFileName = Path.Combine(Path.GetDirectoryName(assembly.Location), assetName);
+                if (!File.Exists(assetFileName)) {
+                    Debug.LogError($"Could not find asset ({assetName})");
+                    return null;
+                }
+            }
+
+            return assetFileName;
+        }
+
+        public static AssetBundle LoadAssetBundle(string filename) {
+            var assetBundlePath = GetAssetPath(filename);
+            if (!string.IsNullOrEmpty(assetBundlePath)) {
+                return AssetBundle.LoadFromFile(assetBundlePath);
+            }
+
+            return null;
         }
 
         public static Sprite LoadCustomTexture(string name) {

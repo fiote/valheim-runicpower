@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 
 namespace RunicPower {
+
 	[HarmonyPatch(typeof(ObjectDB), "CopyOtherDB")]
 	public static class ObjectDB_CopyOtherDB_Patch {
 		public static void Postfix() {

@@ -9,19 +9,15 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace RunicPower.Patches {
-	public class ExtendedStatusEffectData {
-		public Rune rune;
-	}
+	public static class StatusEffect_Prototype {
 
-	public static class StatusEffectExtensions {
+		public static Dictionary<string, StatusEffect_Extended> mapping = new Dictionary<string, StatusEffect_Extended>();
 
-		public static Dictionary<string, ExtendedStatusEffectData> mapping = new Dictionary<string, ExtendedStatusEffectData>();
-
-		public static ExtendedStatusEffectData GetExtendedData(this StatusEffect __instance) {
+		public static StatusEffect_Extended GetExtendedData(this StatusEffect __instance) {
 			var key = __instance.GetInstanceID().ToString();
 			if (key == null) return null;
 			var ext = mapping.ContainsKey(key) ? mapping[key] : null;
-			if (ext == null) mapping[key] = ext = new ExtendedStatusEffectData();
+			if (ext == null) mapping[key] = ext = new StatusEffect_Extended();
 			return ext;
 		}
 

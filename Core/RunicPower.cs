@@ -5,6 +5,7 @@ using LitJson;
 using Pipakin.SkillInjectorMod;
 using RunicPower.Core;
 using RunicPower.Patches;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -25,19 +26,17 @@ namespace RunicPower {
 		private void Awake() {
 			LoadRunes();
 			LoadClasses();
-			CreateEffects();
 			SpellsBar.RegisterKeybinds(Config);
 		}
 
 		private void LoadRunes() { 
-			runesConfig = LoadJsonFile<RunesConfig>("runes.json");
-			var assetBundle = LoadAssetBundle("runeassets");
+			runesConfig = PrefabCreator.LoadJsonFile<RunesConfig>("runes.json");
+			var assetBundle = PrefabCreator.LoadAssetBundle("runeassets");
 			if (runesConfig != null && assetBundle != null) {
 				foreach (var rune in runesConfig.runes) {
 					if (!rune.implemented) continue;
 					if (assetBundle.Contains(rune.recipe.item)) {
 						rune.prefab = assetBundle.LoadAsset<GameObject>(rune.recipe.item);
-						// rune.recipe.name = rune.name;
 						runes.Add(rune);
 					}
 				}
@@ -47,7 +46,7 @@ namespace RunicPower {
 		}
 
 		private void LoadClasses() {
-			var classesConfig = LoadJsonFile<ClassesConfig>("classes.json");
+			var classesConfig = PrefabCreator.LoadJsonFile<ClassesConfig>("classes.json");
 			foreach (var cskill in classesConfig.classes) {
 				if (cskill.implemented) {
 					cskills.Add(cskill);
@@ -55,43 +54,6 @@ namespace RunicPower {
 					SkillInjector.RegisterNewSkill(cskill.id, cskill.name, cskill.description, 1.0f, PrefabCreator.LoadCustomTexture(cskill.icon), Skills.SkillType.Unarmed);
 				}
 			}
-		}
-
-		private void CreateEffects() {
-			var sledge = ZNetScene.instance?.GetPrefab("vfx_sledge_git");
-		}
-
-		private static T LoadJsonFile<T>(string filename) where T : class {
-			var jsonFileName = GetAssetPath(filename);
-			if (!string.IsNullOrEmpty(jsonFileName)) {
-				var jsonFile = File.ReadAllText(jsonFileName);
-				return JsonMapper.ToObject<T>(jsonFile);
-			}
-
-			return null;
-		}
-
-		public static AssetBundle LoadAssetBundle(string filename) {
-			var assetBundlePath = GetAssetPath(filename);
-			if (!string.IsNullOrEmpty(assetBundlePath)) {
-				return AssetBundle.LoadFromFile(assetBundlePath);
-			}
-
-			return null;
-		}
-
-		private static string GetAssetPath(string assetName) {
-			var assetFileName = Path.Combine(Paths.PluginPath, "RunicPower", assetName);
-			if (!File.Exists(assetFileName)) {
-				Assembly assembly = typeof(RunicPower).Assembly;
-				assetFileName = Path.Combine(Path.GetDirectoryName(assembly.Location), assetName);
-				if (!File.Exists(assetFileName)) {
-					Debug.LogError($"Could not find asset ({assetName})");
-					return null;
-				}
-			}
-
-			return assetFileName;
 		}
 
 		private void OnDestroy() {
@@ -141,7 +103,6 @@ namespace RunicPower {
 				PrefabCreator.AddNewRuneRecipe(rune);
 			}
 		}
-
 
 		private void Update() {
 			var player = Player.m_localPlayer;

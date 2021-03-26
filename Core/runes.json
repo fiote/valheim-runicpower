@@ -475,7 +475,7 @@
                     {
                         "item": "ElderBark",
                         "amount": 3
-                    }   
+                    }
                 ]
             },
             "effect": {
@@ -554,5 +554,95 @@
          - Death Rune (buff: heals the party's when a enemy dies nearby)
          - Decay Rune (buff: any target attacked by the party gets its armor reduced)
         */
+
+
+        // sfx_OpenPortal
+
+        // vfx_corpse_destruction_small (good allround effect)
+        // vfx_dragon_death
+        // vfx_corpse_destruction_medium
+        // vfx_corpse_destruction_large
+        // vfx_GodExplosion
+        // vfx_HealthUpgrade
+        // vfx_StaminaUpgrade
+        // vfx_stonegolem_wakeup
+        // vfx_WishbonePing
+        // sfx_wraith_attack
+
+        // sfx_Potion_frostresist_Start
+        // sfx_Potion_health_Start
+        // sfx_Potion_stamina_Start
+
+
+        // vfx_damaged_cart (stealth cast)
+        // vfx_crow_death
+        // vfx_Damaged_Raft
+        // vfx_ghost_death
+
+        // vfx_GoblinShield (shield?)
+        // vfx_perfectblock
+        // sfx_gdking_stomp
+        // sfx_perfectblock
+
+        // vfx_sledge_iron_hit (frost cast)
+        // vfx_ColdBall_Hit
+        // vfx_ColdBall_launch
+        // vfx_dragon_coldbreath 
+        // vfx_dragon_ice_hit
+        // vfx_frostarrow_hit
+        // vfx_ice_destroyed	
+        // vfx_iceblocker_destroyed
+        // sfx_dragon_coldball_launch
+        // sfx_Frost_Start
+
+        // vfx_HearthAddFuel (fire cast)
+        // vfx_FireballHit
+        // vfx_bonfire_AddFuel 
+        // sfx_bowl_AddItem
+        // sfx_GoblinShaman_fireball_launch
+
+        // vfx_bowl_AddItem (nice visual for buff)
+        // vfx_fermenter_add
+        // vfx_firlogdestroyed_half
+        // vfx_Potion_stamina_medium
+        // vfx_Potion_health_medium
+        // vfx_seagull_death
+        // sfx_stonegolem_alerted
+
+        // vfx_BloodDeath (blood rune)
+
+        // vfx_barnacle_destroyed -pieces (poisonous shiv)
+        // vfx_ProjectileHit
+        // vfx_blob_attack (poison?)
+        // vfx_greydwarf_shaman_pray
+        // vfx_GuckSackDestroyed
+        // vfx_poisonarrow_hit
+        // sfx_barnacle_destroyed
+        // sfx_GuckSackDestroyed
+
+        // vfx_boar_love (charm)
+        // vfx_spawn
+
+        // vfx_gdking_stomp (earch/stone?)
+        // vfx_lox_groundslam
+        // vfx_RockDestroyed_large
+        // vfx_stone_floor_destroyed
+        // sfx_build_hammer_stone
+        // sfx_build_hammer_metal
+        // sfx_sledge_hit
+
+        // vfx_sledge_hit (weapon)
+        // sfx_battleaxe_swing_wosh
+        // sfx_metal_blocked
+        // sfx_sledge_swing
+
+        // vfx_serpent_attack_trigger (water)
+
+        // vfx_bush_destroyed (healing / nature?)
+        // vfx_firetree_regrow
+        // vfx_offering
+        // vfx_shrub_2_destroyed
+        // vfx_shrub_2_heath_destroyed
+        // sfx_greydwarf_shaman_heal
     ]
 }
