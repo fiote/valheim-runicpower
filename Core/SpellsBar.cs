@@ -24,14 +24,18 @@ namespace RunicPower.Core {
     }
 
 	public class SpellsBar {
-
 		public const int slotCount = 10;
+        public static Vector2 barSize = new Vector2((74 * slotCount) + 10, 90);
+
         public static string spellsBarGridName = "SpellsBarGrid";
         public static string spellsBarHotkeysName = "SpellsBarHotkeys";
         public static readonly Dictionary<int, SpellShortcut> shortcuts = new Dictionary<int, SpellShortcut>();
 
-        public static InventoryGrid spellsBarGrid;
-        public static InventoryGrid spellsBarHotkeys;
+        public static InventoryGrid invBarGrid;
+        public static InventoryGrid hotkeysGrid;
+        
+        public static RectTransform invBarRect;
+        public static RectTransform hotkeysRect;
 
         public static void RegisterKeybinds(ConfigFile config) {
             for (var i = 0; i < slotCount; i++) {
@@ -83,19 +87,15 @@ namespace RunicPower.Core {
             }
         }
 
-        public static void CreateGameObject(ref InventoryGrid grid, InventoryGui inventoryGui, GameObject parent, string name, Vector2 position, bool isInventory = false, Vector2 size = new Vector2()) {
+        public static RectTransform CreateGameObject(ref InventoryGrid grid, InventoryGui inventoryGui, GameObject parent, string name, Vector2 position, string type, Vector2 size) {
             // go
             var go = new GameObject(name, typeof(RectTransform));
             go.transform.SetParent(parent.transform, false);
 
-            // rect
-            var goRect = go.transform as RectTransform;
-            goRect.anchoredPosition = position;
-
             // hightlight
             var highlight = new GameObject("SelectedFrame", typeof(RectTransform));
 
-            if (isInventory) {
+            if (type == "inventory") {
                 highlight.transform.SetParent(go.transform, false);
                 // highlight.AddComponent<Image>().color = Color.yellow;
                 var highlightRT = highlight.transform as RectTransform;
@@ -106,7 +106,7 @@ namespace RunicPower.Core {
             }
 
             // background
-            if (isInventory) {
+            if (type == "inventory") {
                 var bkg = inventoryGui.m_player.Find("Bkg").gameObject;
                 var background = Object.Instantiate(bkg, go.transform);
                 background.name = name + "Bkg";
@@ -127,13 +127,15 @@ namespace RunicPower.Core {
             grid.m_elementSpace = inventoryGui.m_playerGrid.m_elementSpace;
             grid.ResetView();
 
-            if (isInventory) {
-                grid.m_onSelected = null;
-                grid.m_onRightClick = null;
-            } else {
+            if (type == "inventory") {
                 grid.m_onSelected += OnSelected(inventoryGui);
                 grid.m_onRightClick += OnRightClicked(inventoryGui);
             }
+
+            if (type == "hotkeys") { 
+                grid.m_onSelected = null;
+                grid.m_onRightClick += OnRightClicked(inventoryGui);
+            } 
 
             grid.m_uiGroup = grid.gameObject.AddComponent<UIGroupHandler>();
             grid.m_uiGroup.m_groupPriority = 1;
@@ -144,7 +146,17 @@ namespace RunicPower.Core {
             var list = inventoryGui.m_uiGroups.ToList();
             list.Insert(2, grid.m_uiGroup);
             inventoryGui.m_uiGroups = list.ToArray();
+
+            // rect
+            var goRect = go.transform as RectTransform;
+            if (type == "hotkeys") {
+                goRect.sizeDelta = size;
+            }
+            goRect.anchoredPosition = position;
+
+            return goRect;
         }
+
         public static Action<InventoryGrid, ItemDrop.ItemData, Vector2i, InventoryGrid.Modifier> OnSelected(InventoryGui inventoryGui) {
             return (InventoryGrid inventoryGrid, ItemDrop.ItemData item, Vector2i pos, InventoryGrid.Modifier mod) => {
                 var current = (item != null) ? item : inventoryGui.m_dragItem;

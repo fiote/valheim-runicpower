@@ -16,7 +16,7 @@ namespace RuneStones.Patches {
             var name = SpellsBar.spellsBarGridName;
             var position = new Vector2(1000, 103);
             var size = new Vector2((74 * SpellsBar.slotCount) + 10, 90);
-            SpellsBar.CreateGameObject(ref SpellsBar.spellsBarGrid, __instance, parent, name, position, true, size);
+            SpellsBar.invBarRect = SpellsBar.CreateGameObject(ref SpellsBar.invBarGrid, __instance, parent, name, position, "inventory", size);
         }
     }
 

@@ -32,8 +32,8 @@ namespace RunicPower.Patches {
 			var inv = __instance.GetSpellsBarInventory();
 			var invGui = InventoryGui.instance;
 			if (inv != null && invGui != null) {
-				SpellsBar.spellsBarGrid.UpdateInventory(inv, __instance, invGui?.m_dragItem);
-				SpellsBar.spellsBarHotkeys.UpdateInventory(inv, __instance, invGui?.m_dragItem);
+				SpellsBar.invBarGrid.UpdateInventory(inv, __instance, invGui?.m_dragItem);
+				SpellsBar.hotkeysGrid.UpdateInventory(inv, __instance, invGui?.m_dragItem);
 				return true;
 			}
 			return false;
