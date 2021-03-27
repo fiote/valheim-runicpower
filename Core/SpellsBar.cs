@@ -43,18 +43,13 @@ namespace RunicPower.Core {
                 var key = (KeyCode)System.Enum.Parse(typeof(KeyCode), knumber.ToString());
                 shortcuts[i] = new SpellShortcut(KeyCode.LeftShift, key);
             }
-
-            for (var i = 0; i < slotCount; i++) {
-                var label = GetBindingLabel(i);
-                Debug.Log(label);
-            }
         }
 
         public static void CheckInputs() {
             var player = Player.m_localPlayer;
 
             for (int i = 0; i < slotCount; ++i) {
-                CheckQuickUseInput(player, i);
+                CheckInputHotKey(player, i);
             }
         }
 
@@ -74,17 +69,23 @@ namespace RunicPower.Core {
             return (mod != null) ? mod+"+"+key: key;
         }
 
-        public static void CheckQuickUseInput(Player player, int index) {
+        public static bool IsSpellHotkeyPressed(int index, bool? assumeKeyOk = false) {
             var shortcut = shortcuts[index];
-            if (shortcut == null) return;
-
+            if (shortcut == null) return false;
             var modOk = shortcut.modifier == null || Input.GetKey((KeyCode)shortcut.modifier);
             var keyOk = Input.GetKeyDown(shortcut.key);
+            if (assumeKeyOk == true) keyOk = true;
+            return modOk && keyOk;
+        }
 
-            if (modOk && keyOk) {
-                var item = player.GetSpellsBarItem(index);
-                if (item != null) player.UseItem(null, item, false);
-            }
+        public static ItemDrop.ItemData GetSpellHotKeyItem(Player player, int index, bool? assumeKeyOk = false) {
+            var pressed = IsSpellHotkeyPressed(index, assumeKeyOk);
+            return (pressed) ? player.GetSpellsBarItem(index) : null;
+        }
+
+        public static void CheckInputHotKey(Player player, int index) {
+            var item = GetSpellHotKeyItem(player, index);
+            if (item != null) player.UseItem(null, item, false);
         }
 
         public static RectTransform CreateGameObject(ref InventoryGrid grid, InventoryGui inventoryGui, GameObject parent, string name, Vector2 position, string type, Vector2 size) {
