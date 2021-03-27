@@ -85,7 +85,7 @@ namespace RunicPower.Core {
 
         public static void CheckInputHotKey(Player player, int index) {
             var item = GetSpellHotKeyItem(player, index);
-            if (item != null) player.UseItem(null, item, false);
+            if (item != null) player.UseRuneFromSpellBar(item);
         }
 
         public static RectTransform CreateGameObject(ref InventoryGrid grid, InventoryGui inventoryGui, GameObject parent, string name, Vector2 position, string type, Vector2 size) {
@@ -173,8 +173,7 @@ namespace RunicPower.Core {
         public static Action<InventoryGrid, ItemDrop.ItemData, Vector2i> OnRightClicked(InventoryGui inventoryGui) {
             return (InventoryGrid inventoryGrid, ItemDrop.ItemData item, Vector2i pos) => {
                 var player = Player.m_localPlayer;
-                if (item == null || player == null) return;
-                if (player.ConsumeItem(player.m_inventory, item)) player.UseItem(player.m_inventory, item, true);
+                player?.UseRuneFromSpellBar(item);
             };
         }
 

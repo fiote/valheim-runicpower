@@ -44,5 +44,11 @@ namespace RunicPower.Patches {
 			var spellsBarInventory = __instance.GetSpellsBarInventory();
 			return spellsBarInventory?.GetItemAt(index, 0);
 		}
+
+		public static void UseRuneFromSpellBar(this Player __instance, ItemDrop.ItemData item) {
+			if (item == null) return;
+			var inv = __instance.GetSpellsBarInventory();
+			__instance.UseItem(inv, item, true);
+		}
 	}
 }
