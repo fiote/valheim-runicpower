@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using HarmonyLib;
+using RunicPower;
 using RunicPower.Core;
 using RunicPower.Patches;
 using UnityEngine;
@@ -24,6 +25,21 @@ namespace RuneStones.Patches {
     public static class InventoryGui_UpdateInventory_Patch {
         public static void Postfix(InventoryGui __instance, Player player) {
             player.UpdateSpellBars();
+        }
+    }
+
+    [HarmonyPatch(typeof(InventoryGui), "UpdateRecipe")]
+    public static class InventoryGui_UpdateRecipe_Patch {
+        public static void Prefix(InventoryGui __instance, Player player, float dt) {
+            var item = __instance.m_selectedRecipe.Value;
+            var rune = item?.GetRune();
+            if (rune == null) return;
+            InventoryGui_Extended.isCraftingRune = item;
+
+        }
+        public static void Postfix(InventoryGui __instance, Player player, float dt) {
+            InventoryGui_Extended.isCraftingRune = null;
+
         }
     }
 }
