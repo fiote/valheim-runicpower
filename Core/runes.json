@@ -102,7 +102,7 @@
             "effect": {
                 "doDamage": { "m_slash": 100 },
                 "pushback": true,
-                "target": "allies"
+                "target": "foes"
             }
         },
         {
