@@ -109,8 +109,6 @@ namespace Common {
                 var craftingStationExists = CraftingStations.ContainsKey(recipeConfig.craftingStation);
                 if (!craftingStationExists) {
                     Debug.LogWarning($"[PrefabCreator] Could not find crafting station ({itemId}): {recipeConfig.craftingStation}");
-                    var stationList = string.Join(", ", CraftingStations.Keys);
-                    Debug.Log($"[PrefabCreator] Available Stations: {stationList}");
                 } else {
                     newRecipe.m_craftingStation = CraftingStations[recipeConfig.craftingStation];
                 }
@@ -120,8 +118,6 @@ namespace Common {
                 var repairStationExists = CraftingStations.ContainsKey(recipeConfig.repairStation);
                 if (!repairStationExists) {
                     Debug.LogWarning($"[PrefabCreator] Could not find repair station ({itemId}): {recipeConfig.repairStation}");
-                    var stationList = string.Join(", ", CraftingStations.Keys);
-                    Debug.Log($"[PrefabCreator] Available Stations: {stationList}");
                 } else {
                     newRecipe.m_repairStation = CraftingStations[recipeConfig.repairStation];
                 }
@@ -156,11 +152,7 @@ namespace Common {
 
         public static Recipe AddNewRecipe(Recipe recipe) {
             var removed = ObjectDB.instance.m_recipes.RemoveAll(x => x.name == recipe.name);
-            if (removed > 0) Debug.Log($"[PrefabCreator] Removed recipe ({recipe.name}): {removed}");
-
             ObjectDB.instance.m_recipes.Add(recipe);
-            Debug.Log($"[PrefabCreator] Added recipe: {recipe.name}");
-
             return recipe;
         }
 

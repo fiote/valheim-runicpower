@@ -50,7 +50,7 @@ namespace RunicPower {
 			foreach (var cskill in classesConfig.classes) {
 				if (cskill.implemented) {
 					cskills.Add(cskill);
-					Debug.Log("Loading ClassSkill " + cskill.id + " " + cskill.name);
+					Debug.Log("ClassSkill " + cskill.id + " " + cskill.name);
 					SkillInjector.RegisterNewSkill(cskill.id, cskill.name, cskill.description, 1.0f, PrefabCreator.LoadCustomTexture(cskill.icon), Skills.SkillType.Unarmed);
 				}
 			}

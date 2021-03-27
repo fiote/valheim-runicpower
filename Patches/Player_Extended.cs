@@ -20,21 +20,17 @@ namespace RunicPower.Patches {
 		public const string Sentinel = "<|>";
 
 		public ExtendedPlayerData(Player player) {
-			Debug.Log("ExtendedPlayerData CREATED");
 			_player = player;
 			spellsBarInventory.m_onChanged += OnInventoryChanged;
 		}
 
 		public void Save() {
-			Debug.Log("ExtendedPlayerData SAVING...");
 			var pkg = new ZPackage();
 			spellsBarInventory.Save(pkg);
 			SaveValue(_player, nameof(spellsBarInventory), pkg.GetBase64());
-			Debug.Log("ExtendedPlayerData SAVED!");
 		}
 
 		public void Load() {
-			Debug.Log("ExtendedPlayerData LOADING...");
 			LoadValue(_player, "ExtendedPlayerData", out var init);
 			if (LoadValue(_player, nameof(spellsBarInventory), out var quickSlotData)) {
 				var pkg = new ZPackage(quickSlotData);
@@ -42,7 +38,6 @@ namespace RunicPower.Patches {
 				spellsBarInventory.Load(pkg);
 				_isLoading = false;
 			}
-			Debug.Log("ExtendedPlayerData LOADED!");
 		}
 
 		private void OnInventoryChanged() {
