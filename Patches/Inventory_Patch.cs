@@ -42,11 +42,11 @@ namespace RuneStones.Patches {
 			return true;
 		}
 	}
+	 
 
-
-	[HarmonyPatch(typeof(Inventory), "AddItem", typeof(ItemDrop.ItemData))]
+	[HarmonyPatch(typeof(Inventory), "AddItem", typeof(ItemDrop.ItemData))] 
     public static class Inventory_AddItem_Patch {
-        public static bool Prefix(Inventory __instance, ref ItemDrop.ItemData item) {
+        public static bool Prefix(Inventory __instance, ref ItemDrop.ItemData item, ref bool __result) {
 			var rune = item.GetRune();
             if (rune == null) return true;
 			var inv = SpellsBar.invBarGrid.m_inventory;
@@ -56,15 +56,15 @@ namespace RuneStones.Patches {
 				// if it does
 				if (itemData != null) {
 					// get the free space
-					var freeStack = itemData.m_shared.m_maxStackSize - itemData.m_stack;
-					// get how much can we add to it
-					var toAdd = (item.m_stack >= freeStack) ? freeStack : item.m_stack;
-					// add that to it
-					itemData.m_stack += toAdd;
+					var freeStack = itemData.m_shared.m_maxStackSize - itemData.m_stack;  
+					// get how much can we add to it 
+					var toAdd = (item.m_stack >= freeStack) ? freeStack : item.m_stack; 
+					// add that to it 
+					itemData.m_stack += toAdd; 
 					// subs that much of the item stack
 					item.m_stack -= toAdd;
 					// iv was changed
-					inv.Changed();
+					inv.Changed(); 
 				} else {
 					// if the item does not exist, check for a empty slot
 					Vector2i invPos = inv.FindEmptySlot(inv.TopFirst(item));
@@ -76,13 +76,15 @@ namespace RuneStones.Patches {
 						// iv was changed
 						inv.Changed();
 						// we're done, stop here
+						__result = true;
 						return false;
 					} else {
 						// if there is no empty slot on the spellsbar, let's return true so it goes the normal flow trying to add it to the base inventory
 						return true;
 					}
 				}
-			}
+			} 
+			__result = true;
 			return false;
         }
     }
