@@ -174,8 +174,7 @@ namespace RunicPower.Core {
             return (InventoryGrid inventoryGrid, ItemDrop.ItemData item, Vector2i pos) => {
                 var player = Player.m_localPlayer;
                 if (item == null || player == null) return;
-                // if (player.ConsumeItem(player.m_inventory, item))
-                player.UseItem(player.m_inventory, item, true);
+                if (player.ConsumeItem(player.m_inventory, item)) player.UseItem(player.m_inventory, item, true);
             };
         }
 
