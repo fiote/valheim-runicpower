@@ -30,6 +30,9 @@ namespace RunicPower.Core {
 		public RuneVFX vfx;
 		public RuneVFX sfx;
 
+		public static RuneVFX genericVFX = new RuneVFX().SetName("vfx_Potion_stamina_medium");
+		public static RuneVFX genericSFX = new RuneVFX().SetName("sfx_bowl_AddItem");
+
 		public string fxcustom;
 		public RuneEffect effect;
 		public RuneProjectile projectile;
@@ -697,9 +700,16 @@ namespace RunicPower.Core {
 
 			// get the effects
 			var custom = fxcustom;
-			ExecFX(vfx);
-			ExecFX(sfx);
-			
+
+			if (type == "Buff") {
+				ExecFX(genericVFX);
+				ExecFX(genericSFX);
+			} else {
+				ExecFX(vfx);
+				ExecFX(sfx);
+			}
+
+
 			// casting RECALL
 
 			// getting the archetype skill Id and adding experience to it
@@ -886,5 +896,10 @@ namespace RunicPower.Core {
 	public class RuneVFX {
 		public string name;
 		public List<string> list = new List<string>();
+
+		public RuneVFX SetName(string name) {
+			this.name = name;
+			return this;
+		}
 	}
 }
