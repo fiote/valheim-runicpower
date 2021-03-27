@@ -29,7 +29,7 @@ namespace RunicPower {
 			SpellsBar.RegisterKeybinds(Config);
 		}
 
-		private void LoadRunes() { 
+		private void LoadRunes() {
 			runesConfig = PrefabCreator.LoadJsonFile<RunesConfig>("runes.json");
 			var assetBundle = PrefabCreator.LoadAssetBundle("runeassets");
 			if (runesConfig != null && assetBundle != null) {
@@ -93,7 +93,7 @@ namespace RunicPower {
 				if (rune.recipe.craftingStation == "") rune.recipe.craftingStation = runesConfig.defRecipes.craftingStation;
 				if (rune.recipe.minStationLevel == 0) rune.recipe.minStationLevel = runesConfig.defRecipes.minStationLevel;
 				if (rune.recipe.repairStation == "") rune.recipe.repairStation = runesConfig.defRecipes.repairStation;
-				
+
 				rune.recipe.enabled = true;
 				rune.itemDrop.m_itemData.m_shared.m_name = rune.name;
 				rune.itemDrop.m_itemData.m_shared.m_description = rune.description;
