@@ -19,6 +19,10 @@ namespace RunicPower.Core {
 		public string icon;
 		public bool implemented;
 
+		public Skills.SkillType GetSkillType() {
+			return (Skills.SkillType)id;
+		}
+
 		public static int GetIdByName(string name) {
 			var cskill = RunicPower.cskills.Find(x => x.name == name + " Class");
 			return (cskill != null) ? cskill.id : -1;
