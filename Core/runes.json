@@ -84,10 +84,11 @@
             "recipe": {
                 "name": "Recipe_Warrior_Bladestorm",
                 "item": "Warrior_Bladestorm",
+                "amount":  2,
                 "resources": [
                     {
                         "item": "Flint",
-                        "amount": 4
+                        "amount": 1
                     }
                 ]
             },
@@ -113,10 +114,11 @@
             "recipe": {
                 "name": "Recipe_Warrior_InspiringShout",
                 "item": "Warrior_InspiringShout",
+                "amount": 1,
                 "resources": [
                     {
                         "item": "BoneFragments",
-                        "amount": 3
+                        "amount": 1
                     }
                 ]
             },
@@ -140,6 +142,7 @@
             "recipe": {
                 "name": "Recipe_Warrior_Stone",
                 "item": "Warrior_Stone",
+                "amount":  3,
                 "resources": [
                     {
                         "item": "Crystal",
@@ -166,10 +169,11 @@
             "recipe": {
                 "name": "Recipe_Warrior_Blood",
                 "item": "Warrior_Blood",
+                "amount":  1,
                 "resources": [
                     {
                         "item": "Bloodbag",
-                        "amount": 2
+                        "amount": 1
                     }
                 ]
             },
@@ -190,10 +194,11 @@
             "recipe": {
                 "name": "Recipe_Rogue_PoisonousShiv",
                 "item": "Rogue_PoisonousShiv",
+                "amount":  2,
                 "resources": [
                     {
                         "item": "MushroomYellow",
-                        "amount": 3
+                        "amount": 1
                     }
                 ]
             },
@@ -219,10 +224,11 @@
             "recipe": {
                 "name": "Recipe_Rogue_ExposeWeakness",
                 "item": "Rogue_ExposeWeakness",
+                "amount":  2,
                 "resources": [
                     {
                         "item": "Ooze",
-                        "amount": 2
+                        "amount": 1
                     }
                 ]
             },
@@ -248,10 +254,11 @@
             "recipe": {
                 "name": "Recipe_Rogue_Swift",
                 "item": "Rogue_Swift",
+                "amount":  1,
                 "resources": [
                     {
                         "item": "NeckTail",
-                        "amount": 4
+                        "amount": 1
                     }
                 ]
             },
@@ -271,6 +278,7 @@
             "recipe": {
                 "name": "Recipe_Rogue_Night",
                 "item": "Rogue_Night",
+                "amount":  3,
                 "resources": [
                     {
                         "item": "WolfFang",
@@ -294,10 +302,11 @@
             "recipe": {
                 "name": "Recipe_Cleric_HealingCircle",
                 "item": "Cleric_HealingCircle",
+                "amount":  1,
                 "resources": [
                     {
                         "item": "Dandelion",
-                        "amount": 8
+                        "amount": 2
                     }
                 ]
             },
@@ -321,8 +330,9 @@
             "description": "You slam your shield in the ground. The impact reverbs, incapicating your foes.",
             "implemented": true,
             "recipe": {
-                "name": "Recipe_Cleric_ShieldJustice",
-                "item": "Cleric_ShieldJustice",
+                "name": "Recipe_Cleric_ShieldSlam",
+                "item": "Cleric_ShieldSlam",
+                "amount":  3,
                 "resources": [
                     {
                         "item": "WolfPelt",
@@ -354,10 +364,11 @@
             "recipe": {
                 "name": "Recipe_Cleric_Light",
                 "item": "Cleric_Light",
+                "amount":  2,
                 "resources": [
                     {
                         "item": "Entrails",
-                        "amount": 2
+                        "amount": 1
                     }
                 ]
             },
@@ -376,10 +387,11 @@
             "recipe": {
                 "name": "Recipe_Cleric_Vigor",
                 "item": "Cleric_Vigor",
+                "amount":  2,
                 "resources": [
                     {
                         "item": "Blueberries",
-                        "amount": 3
+                        "amount": 1
                     }
                 ]
             },
@@ -436,11 +448,11 @@
             "recipe": {
                 "name": "Recipe_Wizard_Fireball",
                 "item": "Wizard_Fireball",
-                "amount": 3,
+                "amount": 1,
                 "resources": [
                     {
                         "item": "Resin",
-                        "amount": 6
+                        "amount": 2
                     }
                 ]
             },
@@ -471,10 +483,11 @@
             "recipe": {
                 "name": "Recipe_Wizard_Ward",
                 "item": "Wizard_Ward",
+                "amount":  1,
                 "resources": [
                     {
                         "item": "ElderBark",
-                        "amount": 3
+                        "amount": 2
                     }
                 ]
             },
@@ -499,10 +512,11 @@
             "recipe": {
                 "name": "Recipe_Wizard_Mind",
                 "item": "Wizard_Mind",
+                "amount":  1,
                 "resources": [
                     {
                         "item": "Thistle",
-                        "amount": 3
+                        "amount": 2
                     }
                 ]
             },
