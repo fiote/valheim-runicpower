@@ -28,19 +28,10 @@ namespace RuneStones.Patches {
     public static class Hud_Update_Patch {
 
         public static void Postfix(Hud __instance) {
-            var bar = SpellsBar.invBarRect;
-            if (bar != null) {
-                var vars = Chat_InputText_Patch.vars;
-                var x = bar.position.x;
-                var y = bar.position.y;
-                if (vars.ContainsKey("x")) x = vars["x"];
-                if (vars.ContainsKey("y")) y = vars["y"];
-                bar.position = new Vector2(x, y);
-            }
-
             var hot = SpellsBar.hotkeysRect;
             if (hot != null) {
                 hot.position = new Vector2(950, 70);
+                hot.gameObject.SetActive(!__instance.m_buildHud.activeSelf);
             }
         }
     }
