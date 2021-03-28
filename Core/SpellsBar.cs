@@ -88,6 +88,17 @@ namespace RunicPower.Core {
             if (item != null) player.UseRuneFromSpellBar(item);
         }
 
+        public static void UpdateVisibility() {
+            if (hotkeysRect == null) return;
+            hotkeysRect.position = new Vector2(950, 70);
+
+            var active = true;
+            if (Hud.instance.m_buildHud.activeSelf) active = false;
+            if (Player.m_localPlayer.IsFlying()) active = false;
+
+            hotkeysRect.gameObject.SetActive(active);
+        }
+
         public static RectTransform CreateGameObject(ref InventoryGrid grid, InventoryGui inventoryGui, GameObject parent, string name, Vector2 position, string type, Vector2 size) {
             // go
             var go = new GameObject(name, typeof(RectTransform));

@@ -24,15 +24,19 @@ namespace RuneStones.Patches {
         }
     }
 
-    [HarmonyPatch(typeof(Hud), "Update")]
-    public static class Hud_Update_Patch {
+    [HarmonyPatch(typeof(Hud), "SetVisible")]
+    public static class Hud_SetVisible_Patch {
 
         public static void Postfix(Hud __instance) {
-            var hot = SpellsBar.hotkeysRect;
-            if (hot != null) {
-                hot.position = new Vector2(950, 70);
-                hot.gameObject.SetActive(!__instance.m_buildHud.activeSelf);
-            }
+            SpellsBar.UpdateVisibility();
+        }
+    }
+
+    [HarmonyPatch(typeof(Hud), "UpdateBuild")]
+    public static class Hud_UpdateBuild_Patch {
+
+        public static void Postfix(Hud __instance) {
+            SpellsBar.UpdateVisibility();            
         }
     }
 }
