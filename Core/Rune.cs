@@ -385,12 +385,6 @@ namespace RunicPower.Core {
 			return GetSkilledValue((float)effect.stealthiness / 100f, 1f, 100f);
 		}
 
-
-		public float GetTickDamage(HitData.DamageType dmgType) {
-			var value = GetDamage(dmgType);
-			return value / 10f;
-		}
-
 		public List<HitData.DamageModPair> GetResistanceModifiers() {
 			if (resistanceModifiers == null) {
 				resistanceModifiers = new List<HitData.DamageModPair>();
@@ -504,6 +498,23 @@ namespace RunicPower.Core {
 				target.AddStamina(healST);
 			}
 
+			// ===== DEALING DAMAGE =================================
+
+			var hitDamage = new HitData();
+
+			if (effect.DoDamage()) {
+				Debug.Log("RUNE IS DOING DAMAGE");
+				hitDamage.m_damage.m_blunt = GetDamage(HitData.DamageType.Blunt);
+				hitDamage.m_damage.m_pierce = GetDamage(HitData.DamageType.Pierce);
+				hitDamage.m_damage.m_slash = GetDamage(HitData.DamageType.Slash);
+				hitDamage.m_damage.m_fire = GetDamage(HitData.DamageType.Fire);
+				hitDamage.m_damage.m_frost = GetDamage(HitData.DamageType.Frost);
+				hitDamage.m_damage.m_lightning = GetDamage(HitData.DamageType.Lightning);
+				hitDamage.m_damage.m_poison = GetDamage(HitData.DamageType.Poison);
+				hitDamage.m_damage.m_spirit = GetDamage(HitData.DamageType.Spirit);
+				target.ApplyDamage(hitDamage, true, false);
+			}
+
 			// ===== APPLYING ELEMENTAL EFFECTS =====================
 
 			if (effect.burn) {
@@ -513,7 +524,7 @@ namespace RunicPower.Core {
 				burning.m_damageInterval = 1f;
 				// no spirit damage, this is a simple fire burn
 				burning.m_damage.m_spirit = 0;
-				burning.m_damage.m_fire = GetTickDamage(HitData.DamageType.Fire);
+				burning.m_damage.m_fire = hitDamage.GetTotalDamage() / 10f;
 				target.m_seman.AddStatusEffect(burning);
 			}
 
@@ -532,32 +543,10 @@ namespace RunicPower.Core {
 				var poison = ObjectDB.instance.m_StatusEffects.Find(x => x.name == "Poison").Clone() as SE_Poison;
 				poison.m_ttl = GetDuration();
 				poison.m_damageInterval = 1f;
-				poison.m_damagePerHit = GetTickDamage(HitData.DamageType.Poison);
+				poison.m_damagePerHit = hitDamage.GetTotalDamage() / 10f;
 				poison.m_damageLeft = poison.m_damageInterval * poison.m_damagePerHit;
 
-				Debug.Log("m_ttl " + poison.m_ttl);
-				Debug.Log("m_damageInterval " + poison.m_damageInterval);
-				Debug.Log("m_damagePerHit " + poison.m_damagePerHit);
-				Debug.Log("m_damageLeft " + poison.m_damageLeft);
-
 				target.m_seman.AddStatusEffect(poison);
-			}
-
-			// ===== DEALING DAMAGE =================================
-
-			if (effect.DoDamage()) {
-				Debug.Log("RUNE IS DOING DAMAGE");
-
-				var hitDamage = new HitData();
-				hitDamage.m_damage.m_blunt = GetDamage(HitData.DamageType.Blunt);
-				hitDamage.m_damage.m_pierce = GetDamage(HitData.DamageType.Pierce);
-				hitDamage.m_damage.m_slash = GetDamage(HitData.DamageType.Slash);
-				hitDamage.m_damage.m_fire = GetDamage(HitData.DamageType.Fire);
-				hitDamage.m_damage.m_frost = GetDamage(HitData.DamageType.Frost);
-				hitDamage.m_damage.m_lightning = GetDamage(HitData.DamageType.Lightning);
-				hitDamage.m_damage.m_poison = GetDamage(HitData.DamageType.Poison);
-				hitDamage.m_damage.m_spirit = GetDamage(HitData.DamageType.Spirit);
-				target.ApplyDamage(hitDamage, true, false);
 			}
 
 			// ===== STAGGER ========================================
