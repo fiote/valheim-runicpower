@@ -300,29 +300,23 @@ namespace RunicPower.Core {
 
 		private float GetDamage(HitData.DamageType dmgType) {
 			// level 1: 3f + 5% of weapon
-			// level 2: 6f + 10% of weapon
-			// level 10: 30f + 50% of weapon
-			// level 50: 150f + 250% of weapon
-			// level 100: 300f + 500% of weapon
-			return GetSkilledTypedValue(effect.doDamage, dmgType, 3f, 2f);
+			// level 10: 30f + 20% of weapon
+			// level 100: 300f + 200% of weapon
+			return GetSkilledTypedValue(effect.doDamage, dmgType, 2f, 2f);
 		}
 
 		private float GetHealHP(HitData.DamageType dmgType) {
 			// level 1: 7f + 2% of weapon
-			// level 2: 14f + 4% of weapon
 			// level 10: 70f + 20% of weapon
-			// level 50: 350f + 100% of weapon
 			// level 100: 700f + 200% of weapon
-			return GetSkilledTypedValue(effect.doHealHP, dmgType, 7f, 1f);
+			return GetSkilledTypedValue(effect.doHealHP, dmgType, 6f, 1f);
 		}
 
 		private float GetHealST(HitData.DamageType dmgType) {
 			// level 1: 7f + 2% of weapon
-			// level 2: 14f + 4% of weapon
 			// level 10: 70f + 20% of weapon
-			// level 50: 350f + 100% of weapon
 			// level 100: 700f + 200% of weapon
-			return GetSkilledTypedValue(effect.doHealST, dmgType, 7f, 1f);
+			return GetSkilledTypedValue(effect.doHealST, dmgType, 6f, 1f);
 		}
 
 		private float GetPowerElemental() {
@@ -722,12 +716,8 @@ namespace RunicPower.Core {
 			// casting RECALL
 
 			// getting the archetype skill Id and adding experience to it
-			try {
-				player.RaiseSkill(skillType, 1f);
-			} catch (Exception e) {
-				Debug.LogError("failed to raise skill");
-				Debug.LogError(e.ToString());
-			}
+			if (archetype != "Generic") player.RaiseSkill(skillType, 1f);
+
 			// casting RECALL
 			if (custom == "recall") {
 				var prof = Game.instance.GetPlayerProfile();
