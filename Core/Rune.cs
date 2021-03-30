@@ -43,9 +43,9 @@ namespace RunicPower.Core {
 		public ItemDrop itemDrop;
 		public StatusEffect statusEffect;
 
-		private Player player;
-		private float playerWeaponDmg = 0;
-		private DamageTypeValues playerPowerMods = new DamageTypeValues();
+		private Player caster;
+		private float casterWeaponDmg = 0;
+		private DamageTypeValues casterPowerMods = new DamageTypeValues();
 
 		private float rangeExplosion = 5f;
 		private float rangeAOE = 20f;
@@ -217,13 +217,13 @@ namespace RunicPower.Core {
 		// ================================================================
 
 		public void SetPlayer(Player player) {
-			this.player = player;
-			var dmg = player.GetCurrentWeapon().GetDamage();
-			playerWeaponDmg = dmg.GetTotalElementalDamage() + dmg.GetTotalPhysicalDamage();
+			this.caster = player;
+			var dmg = caster.GetCurrentWeapon().GetDamage();
+			casterWeaponDmg = dmg.GetTotalElementalDamage() + dmg.GetTotalPhysicalDamage();
 
-			var runes = player.GetRunes();
-			playerPowerMods = new DamageTypeValues();
-			foreach (var rune in runes) rune.AppendPower(ref playerPowerMods);
+			var runes = caster.GetRunes();
+			casterPowerMods = new DamageTypeValues();
+			foreach (var rune in runes) rune.AppendPower(ref casterPowerMods);
 
 			skillType = (Skills.SkillType)ClassSkill.GetIdByName(archetype);
 		}
@@ -233,20 +233,20 @@ namespace RunicPower.Core {
 		// ================================================================
 
 		public float GetSkill() {
-			float skill = player.GetSkillFactor(skillType) * 100f;
+			float skill = caster.GetSkillFactor(skillType) * 100f;
 			if (skill < 1) skill = 1;
 			return skill;
 		}
 
 		public int GetHealingHP() {
 			var heal = (float)effect?.healthRecover;
-			var value = (heal / 100) * playerWeaponDmg;
+			var value = (heal / 100) * casterWeaponDmg;
 			return (int)value;
 		}
 
 		public int GetHealingStamina() {
 			var heal = (float)effect?.staminaRecover;
-			var value = (heal / 100) * playerWeaponDmg;
+			var value = (heal / 100) * casterWeaponDmg;
 			return (int)value;
 		}
 
@@ -257,11 +257,11 @@ namespace RunicPower.Core {
 			// each skill level increases damage by x
 			var skilled = value * skillMultiplier * skill;
 			// each skill level increases damage by +x% of weapon damage
-			var weapon = playerWeaponDmg * skill * weaponMultiplier / 100f;
+			var weapon = casterWeaponDmg * skill * weaponMultiplier / 100f;
 			// getting the total base value
 			var total = skilled + weapon;
 			// applying power modifiers
-			var modifier = playerPowerMods.GetByType(dmgType);
+			var modifier = casterPowerMods.GetByType(dmgType);
 			var modified = total * (100 + modifier) / 100f;
 			// checking for cap values
 			if (capValue != null && modified > capValue) modified = (float)capValue;
@@ -466,11 +466,18 @@ namespace RunicPower.Core {
 
 		public void ApplyEffectOnCharacter(Character target) {
 			if (target == null) return;
+			
+			IDestructible destructable = null;
+			Player player = null;
+
+			try { destructable = target; } catch (Exception) { }
+			try { player = (Player)target; } catch (Exception) { }
+
 
 			Debug.Log("==================================");
 			Debug.Log("ApplyEffectOn " + target);
-			var weaponDmg = player.GetCurrentWeapon().GetDamage().GetTotalDamage();
-			var damageModifiers = player.GetDamageModifiers();
+			var weaponDmg = caster.GetCurrentWeapon().GetDamage().GetTotalDamage();
+			var damageModifiers = caster.GetDamageModifiers();
 
 			// ===== RESTORING HEALTH ========================================
 
@@ -489,7 +496,7 @@ namespace RunicPower.Core {
 
 			if (healST != 0) {
 				Debug.Log("RUNE IS RECOVERING STAMINA");
-				target.AddStamina(healST);
+				player?.UseStamina(healST*-1);
 			}
 
 			// ===== DEALING DAMAGE =================================
@@ -506,7 +513,7 @@ namespace RunicPower.Core {
 				hitDamage.m_damage.m_lightning = GetDamage(HitData.DamageType.Lightning);
 				hitDamage.m_damage.m_poison = GetDamage(HitData.DamageType.Poison);
 				hitDamage.m_damage.m_spirit = GetDamage(HitData.DamageType.Spirit);
-				target.ApplyDamage(hitDamage, true, false);
+				destructable.Damage(hitDamage);
 			}
 
 			// ===== APPLYING ELEMENTAL EFFECTS =====================
@@ -547,8 +554,7 @@ namespace RunicPower.Core {
 
 			if (effect.stagger == true) {
 				Debug.Log("RUNE IS STAGGERING");
-				var staggerDir = -player.m_lookDir;
-				// target.SetRunicStagger(true, staggerDir);
+				var staggerDir = -caster.m_lookDir;
 				target.Stagger(staggerDir);
 			}
 
@@ -558,9 +564,10 @@ namespace RunicPower.Core {
 				Debug.Log("RUNE IS PUSHING BACK");
 				var hitPushback = new HitData();
 				hitPushback.m_pushForce = 500f;
-				var from = player.gameObject.transform.position;
+				var from = caster.gameObject.transform.position;
 				var to = target.gameObject.transform.position;
 				hitPushback.m_dir = (to - from).normalized;
+				// TODO: RPC_Pushback
 				target.ApplyPushback(hitPushback);
 			}
 
@@ -594,7 +601,7 @@ namespace RunicPower.Core {
 
 			GameObject obj = Projectile.FindHitObject(collider);
 			var character = GetGameObjectCharacter(obj);
-			if (character == player) {
+			if (character == caster) {
 				Debug.Log("character is player, ignoring projectile hit");
 				return;
 			}
@@ -673,7 +680,7 @@ namespace RunicPower.Core {
 			if (fx != null) {
 				var vfxPrefab = ZNetScene.instance.GetPrefab(fx.name);
 				vfxPrefab.SetActive(false);
-				var vfxGo = UnityEngine.Object.Instantiate(vfxPrefab, player.gameObject.transform.position, vfxPrefab.transform.rotation);
+				var vfxGo = UnityEngine.Object.Instantiate(vfxPrefab, caster.gameObject.transform.position, vfxPrefab.transform.rotation);
 				vfxGo.SetActive(false);
 
 				Component[] components = vfxGo.GetComponentsInChildren<Component>(true);
@@ -696,9 +703,9 @@ namespace RunicPower.Core {
 			Chat.instance.SendText(Talker.Type.Shout, name + "!");
 
 			// getting the caster-player
-			player = caster as Player;
+			this.caster = caster as Player;
 
-			SetPlayer(player);
+			SetPlayer(this.caster);
 			CreateEffect();
 
 			// get the effects
@@ -712,17 +719,16 @@ namespace RunicPower.Core {
 				ExecFX(sfx);
 			}
 
-
 			// casting RECALL
 
 			// getting the archetype skill Id and adding experience to it
-			if (archetype != "Generic") player.RaiseSkill(skillType, 1f);
+			if (archetype != "Generic") this.caster.RaiseSkill(skillType, 1f);
 
 			// casting RECALL
 			if (custom == "recall") {
 				var prof = Game.instance.GetPlayerProfile();
 				var location = prof.GetCustomSpawnPoint();
-				if (location != null) player.TeleportTo(location, player.gameObject.transform.rotation, true);
+				if (location != null) this.caster.TeleportTo(location, this.caster.gameObject.transform.rotation, true);
 				return;
 			}
 
@@ -749,8 +755,7 @@ namespace RunicPower.Core {
 				proj.Setup(attack.m_character, aimDir * attack.m_projectileVel, attack.m_attackHitNoise, hitData, null);
 			} else {
 				// getting the targets
-				var range = GetSkilledRangeAOE(effect.target);
-				var semans = GetTargetsAroundCharacter(effect.target, player, GetSkilledRange(rangeAOE));
+				var semans = GetTargetsAroundCharacter(effect.target, this.caster, GetSkilledRange(rangeAOE));
 				foreach (var seman in semans) ApplyEffectOnSeman(seman);
 			}
 		}
