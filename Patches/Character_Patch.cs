@@ -15,7 +15,7 @@ namespace RunicPower {
 		static void Prefix(Character __instance, float dt) {
 			if (!__instance.IsPlayer()) return;
 			var player = __instance as Player;
-			var ext = player.GetExtendedData();
+			var ext = player.ExtendedCharacter();
 			var runes = player.GetRunes();
 			var prevented = runes?.Find(rune => rune.effect?.ignoreFallDamage == true);
 			if (prevented != null) ext.isNotAPlayerRightNow = true;
@@ -24,7 +24,7 @@ namespace RunicPower {
 		static void Postfix(Character __instance, float dt) {
 			if (!__instance.IsPlayer()) return;
 			var player = __instance as Player;
-			var ext = player.GetExtendedData();
+			var ext = player.ExtendedCharacter();
 			ext.isNotAPlayerRightNow = false;
 		}
 	}

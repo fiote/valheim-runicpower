@@ -33,7 +33,7 @@ namespace RunicPower.Core {
 
         public static InventoryGrid invBarGrid;
         public static InventoryGrid hotkeysGrid;
-        
+
         public static RectTransform invBarRect;
         public static RectTransform hotkeysRect;
 
@@ -131,6 +131,7 @@ namespace RunicPower.Core {
 
             // grid
             grid = go.AddComponent<InventoryGrid>();
+
             grid.name = name + "Grid";
             var root = new GameObject("Root", typeof(RectTransform));
             root.transform.SetParent(go.transform, false);
@@ -140,14 +141,14 @@ namespace RunicPower.Core {
             grid.ResetView();
 
             if (type == "inventory") {
-                grid.m_onSelected += OnSelected(inventoryGui);
-                grid.m_onRightClick += OnRightClicked(inventoryGui);
+                grid.m_onSelected = OnSelected(inventoryGui);
+                grid.m_onRightClick = OnRightClicked(inventoryGui);
             }
 
-            if (type == "hotkeys") { 
+            if (type == "hotkeys") {
                 grid.m_onSelected = null;
-                grid.m_onRightClick += OnRightClicked(inventoryGui);
-            } 
+                grid.m_onRightClick = null;
+            }
 
             grid.m_uiGroup = grid.gameObject.AddComponent<UIGroupHandler>();
             grid.m_uiGroup.m_groupPriority = 1;
@@ -171,6 +172,9 @@ namespace RunicPower.Core {
 
         public static Action<InventoryGrid, ItemDrop.ItemData, Vector2i, InventoryGrid.Modifier> OnSelected(InventoryGui inventoryGui) {
             return (InventoryGrid inventoryGrid, ItemDrop.ItemData item, Vector2i pos, InventoryGrid.Modifier mod) => {
+                var ext = Player.m_localPlayer.ExtendedPlayer();
+                ext.isSelectingItemSpellsBar = true;
+
                 var current = (item != null) ? item : inventoryGui.m_dragItem;
                 var rune = current?.GetRune();
                 if (rune != null) {
@@ -178,6 +182,8 @@ namespace RunicPower.Core {
                 } else {
                     Player.m_localPlayer.Message(MessageHud.MessageType.Center, "You can't put a non-rune item on this slot.");
                 }
+
+                ext.isSelectingItemSpellsBar = false;
             };
         }
 

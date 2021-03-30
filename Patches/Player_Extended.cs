@@ -17,6 +17,11 @@ namespace RunicPower.Patches {
 
 		private Player _player;
 		private bool _isLoading;
+
+		public ItemDrop.ItemData craftingRuneItem = null;
+		public ItemDrop.ItemData lootingRuneItem = null;
+		public bool isSelectingItemSpellsBar = false;
+
 		public const string Sentinel = "<|>";
 
 		public ExtendedPlayerData(Player player) {

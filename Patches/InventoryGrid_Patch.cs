@@ -21,7 +21,7 @@ namespace RuneStones.Patches {
 
     [HarmonyPatch(typeof(InventoryGrid), "UpdateGui", typeof(Player), typeof(ItemDrop.ItemData))]
     public static class InventoryGrid_UpdateGui_Patch {
-        private static void Postfix(InventoryGrid __instance) {
+        private static void Postfix(InventoryGrid __instance, Player player, ItemDrop.ItemData dragItem) {
             if (!__instance.IsRunic()) return;
 
             for (var i = 0; i < SpellsBar.slotCount; ++i) {

@@ -10,7 +10,6 @@ using UnityEngine;
 
 namespace RunicPower {
 	public class Character_Extended {
-		public DamageTypeValues powerModifiers = new DamageTypeValues();
 		public bool isNotAPlayerRightNow = false;
 	}
 }

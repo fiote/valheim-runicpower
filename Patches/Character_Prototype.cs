@@ -13,7 +13,7 @@ namespace RunicPower {
 
 		public static Dictionary<string, Character_Extended> mapping = new Dictionary<string, Character_Extended>();
 
-		public static Character_Extended GetExtendedData(this Character __instance) {
+		public static Character_Extended ExtendedCharacter(this Character __instance) {
 			var key = __instance.GetInstanceID().ToString();
 			if (key == null) return null;
 			var ext = mapping.ContainsKey(key) ? mapping[key] : null;

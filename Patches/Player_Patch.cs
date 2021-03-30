@@ -13,14 +13,14 @@ namespace RunicPower.Patches {
 	[HarmonyPatch(typeof(Player), "Load")]
 	public static class Player_Load_Patch {
 		public static void Postfix(Player __instance) {
-			__instance.GetExtendedData().Load();
+			__instance.ExtendedPlayer().Load();
 		}
 	}
 
 	[HarmonyPatch(typeof(Player), "Save")]
 	public static class Player_Save_Patch {
 		public static void Prefix(Player __instance) {
-			__instance.GetExtendedData().Save();
+			__instance.ExtendedPlayer().Save();
 		}
 	}
 

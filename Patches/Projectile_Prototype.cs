@@ -13,7 +13,7 @@ namespace RunicPower.Patches {
 	public static class Projectile_Prototype {
 
 		public static Dictionary<string, Projectile_Extended> mapping = new Dictionary<string, Projectile_Extended>();
-		public static Projectile_Extended GetExtendedData(this Projectile self) {
+		public static Projectile_Extended ExtendedProjectile(this Projectile self) {
 			var key = self.GetInstanceID().ToString();
 			if (key == null) return null;
 			var ext = mapping.ContainsKey(key) ? mapping[key] : null;
@@ -22,11 +22,11 @@ namespace RunicPower.Patches {
 		}
 
 		public static Rune GetRune(this Projectile self) {
-			return self.GetExtendedData().rune;
+			return self.ExtendedProjectile().rune;
 		}
 
 		public static void SetRune(this Projectile self, Rune rune) {
-			self.GetExtendedData().rune = rune;
+			self.ExtendedProjectile().rune = rune;
 		}
 	}
 }

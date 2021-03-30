@@ -18,4 +18,36 @@ namespace RunicPower {
 			return false;
 		}
 	}
+
+	[HarmonyPatch(typeof(Humanoid), "Pickup")]
+	public static class Humanoid_Pickup_Patch {
+		static void Prefix(Humanoid __instance, GameObject go) {
+			if (!__instance.IsPlayer()) return;
+			
+			var itemDrop = go.GetComponent<ItemDrop>();
+			if (itemDrop == null) return;
+
+			var rune = itemDrop.m_itemData.GetRune();
+			if (rune == null) return;
+
+			Player.m_localPlayer.ExtendedPlayer().lootingRuneItem = itemDrop.m_itemData;
+		}
+		static void Postfix(Humanoid __instance, GameObject go) {
+			if (!__instance.IsPlayer()) return;
+			Player.m_localPlayer.ExtendedPlayer().lootingRuneItem = null;
+		}
+	}
+
+	[HarmonyPatch(typeof(Humanoid), "GetInventory")]
+	public static class Humanoid_GetInventory_Patch {
+		public static bool Prefix(Humanoid __instance, ref Inventory __result) {
+			if (!__instance.IsPlayer()) return true;
+
+			var ext = Player.m_localPlayer.ExtendedPlayer();
+			if (!ext.isSelectingItemSpellsBar) return true;
+
+			__result = ext.spellsBarInventory;
+			return false;
+		}
+	}
 }

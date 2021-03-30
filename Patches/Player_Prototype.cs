@@ -13,7 +13,7 @@ namespace RunicPower.Patches {
 	public static class Player_Prototype {
 
 		public static Dictionary<string, ExtendedPlayerData> mapping = new Dictionary<string, ExtendedPlayerData>();
-		public static ExtendedPlayerData GetExtendedData(this Player __instance) {
+		public static ExtendedPlayerData ExtendedPlayer(this Player __instance) {
 			var key = __instance.GetInstanceID().ToString();
 			if (key == null) return null;
 			var ext = mapping.ContainsKey(key) ? mapping[key] : null;
@@ -23,21 +23,30 @@ namespace RunicPower.Patches {
 		}
 
 		public static Inventory GetSpellsBarInventory(this Player __instance) {
-			var ext = __instance.GetExtendedData();
+			var ext = __instance.ExtendedPlayer();
 			return ext?.spellsBarInventory;
 		}
 
-		public static bool UpdateSpellBars(this Player __instance) {
-			if (__instance == null) return false;
-			var inv = __instance.GetSpellsBarInventory();
+		public static void UpdateSpellBars(this Player __instance) {
+			// Debug.Log("UpdateSpellBars");
+			var inv = __instance?.GetSpellsBarInventory();
 			var invGui = InventoryGui.instance;
 			if (inv != null && invGui != null) {
-				SpellsBar.invBarGrid.UpdateInventory(inv, __instance, invGui?.m_dragItem);
-				SpellsBar.hotkeysGrid.UpdateInventory(inv, __instance, invGui?.m_dragItem);
-				return true;
+				try {
+					SpellsBar.invBarGrid?.UpdateInventory(inv, __instance, invGui?.m_dragItem);
+				} catch (Exception e) {
+					Debug.Log("SpellsBar.invBarGrid failed " + e.Message);
+					Debug.Log(e.StackTrace);
+				}
+				try {
+					SpellsBar.hotkeysGrid?.UpdateInventory(inv, __instance, invGui?.m_dragItem);
+				} catch (Exception e) {
+					Debug.Log("SpellsBar.hotkeysGrid failed " + e.Message);
+					Debug.Log(e.StackTrace);
+				}
 			}
-			return false;
 		}
+
 
 		public static ItemDrop.ItemData GetSpellsBarItem(this Player __instance, int index) {
 			if (index < 0 || index > SpellsBar.slotCount) return null;

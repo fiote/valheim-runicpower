@@ -37,16 +37,17 @@ namespace RuneStones.Patches {
         public static void Prefix(InventoryGui __instance, Player player, float dt) {
             if (m_craftDuration_original == 0) m_craftDuration_original = __instance.m_craftDuration;
             var recipe = __instance.m_selectedRecipe.Key;
+            if (recipe == null) return;
+            if (recipe.m_item == null) return;
             var item = recipe.m_item.m_itemData;
             if (item.GetRune() == null) return;
-
-            InventoryGui_Extended.isCraftingRune = item;
             __instance.m_craftDuration = m_craftDuration_runes;
+            player.ExtendedPlayer().craftingRuneItem = item;
         }
 
         public static void Postfix(InventoryGui __instance, Player player, float dt) {
             __instance.m_craftDuration = m_craftDuration_original;
-            InventoryGui_Extended.isCraftingRune = null;
+            player.ExtendedPlayer().craftingRuneItem = null;
         }
     }
 }
