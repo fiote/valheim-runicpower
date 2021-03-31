@@ -62,4 +62,16 @@ namespace RunicPower.Patches {
 			mods.Apply(damageMods);
 		}
 	}
+
+	[HarmonyPatch(typeof(Player), "IsPlayer")]
+	public static class Player_IsPlayer_Patch {
+		public static bool Prefix(Player __instance, ref bool __result) {
+			var ext = __instance.ExtendedCharacter();
+			if (ext.isNotAPlayerRightNow) {
+				__result = false;
+				return false;
+			}
+			return true;
+		}
+	}
 }
