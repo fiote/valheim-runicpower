@@ -176,7 +176,7 @@ namespace RunicPower.Core {
                 ext.isSelectingItemSpellsBar = true;
 
                 var current = (item != null) ? item : inventoryGui.m_dragItem;
-                var rune = current?.GetRune();
+                var rune = current?.GetRuneData();
                 if (rune != null) {
                     inventoryGui.OnSelectedItem(inventoryGrid, item, pos, mod);
                 } else {

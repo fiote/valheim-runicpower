@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using RuneStones.Core;
 using RunicPower.Core;
 using RunicPower.Patches;
 using System;
@@ -24,7 +25,7 @@ namespace RunicPower {
 		public static bool IsInvisibleTo(this Character __instance, BaseAI monster) {
 			var runes = __instance.m_seman.GetRunes();
 			var range = 0f;
-			foreach (var rune in runes) if (rune.effect?.stealthiness != 0) range += rune.GetStealhiness();
+			foreach (var rune in runes) if (rune.data.effect?.stealthiness != 0) range += rune.GetStealhiness();
 
 			if (range != 0) {
 				var dist = Vector3.Distance(__instance.transform.position, monster.transform.position);

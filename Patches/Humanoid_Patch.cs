@@ -1,5 +1,6 @@
 ﻿using Common;
 using HarmonyLib;
+using RuneStones.Core;
 using RunicPower.Core;
 using RunicPower.Patches;
 using System.Collections.Generic;
@@ -10,11 +11,14 @@ namespace RunicPower {
 	[HarmonyPatch(typeof(Humanoid), "UseItem")]
 	public static class Humanoid_UseItem_Patch {
 		static bool Prefix(Humanoid __instance, Inventory inventory, ItemDrop.ItemData item, bool fromInventoryGui) {
-			var rune = item.GetRune();
-			if (rune == null) return true;
+			var data = item.GetRuneData();
+			if (data == null) return true;
 			if (inventory == null) inventory = __instance.m_inventory;
 			if (!__instance.ConsumeItem(inventory, item)) return true;
-			rune.Cast(__instance);
+
+			var player = __instance as Player;
+			new Rune(data, player).Cast();
+
 			return false;
 		}
 	}
@@ -27,7 +31,7 @@ namespace RunicPower {
 			var itemDrop = go.GetComponent<ItemDrop>();
 			if (itemDrop == null) return;
 
-			var rune = itemDrop.m_itemData.GetRune();
+			var rune = itemDrop.m_itemData.GetRuneData();
 			if (rune == null) return;
 
 			Player.m_localPlayer.ExtendedPlayer().lootingRuneItem = itemDrop.m_itemData;

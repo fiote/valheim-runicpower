@@ -10,29 +10,29 @@ namespace RunicPower.Patches {
 
         public static Dictionary<string, ItemDropData_Extended> mapping = new Dictionary<string, ItemDropData_Extended>();
 
-        public static void SetRuneByKey(string key, Rune rune) {
+        public static void SetRuneByKey(string key, RuneData data) {
             if (key == null) return;
             var ext = mapping.ContainsKey(key) ? mapping[key] : null;
             if (ext == null) {
                 mapping[key] = ext = new ItemDropData_Extended();
                 if (!key.Contains("(Clone)")) mapping[key + "(Clone)"] = ext;
             }
-            ext.rune = rune;
+            ext.rune = data;
         }
 
-        public static void SetRune(this ItemDrop itemDrop, Rune rune) {
+        public static void SetRuneData(this ItemDrop itemDrop, RuneData data) {
             var key = itemDrop?.m_itemData.m_shared.m_name;
-            SetRuneByKey(key, rune);
+            SetRuneByKey(key, data);
         }
 
-        public static Rune GetRuneByKey(string key) {
+        public static RuneData GetRuneDataByKey(string key) {
             var ext = (key != null && mapping.ContainsKey(key)) ? mapping[key] : null;
             return ext?.rune;
         }
 
-        public static Rune GetRune(this ItemDrop.ItemData itemData) {
+        public static RuneData GetRuneData(this ItemDrop.ItemData itemData) {
             var key = itemData?.m_shared?.m_name;
-            return GetRuneByKey(key);
+            return GetRuneDataByKey(key);
         }
     }
 }

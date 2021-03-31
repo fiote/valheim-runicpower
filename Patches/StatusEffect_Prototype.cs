@@ -1,5 +1,6 @@
 ﻿using Common;
 using HarmonyLib;
+using RuneStones.Core;
 using RunicPower.Core;
 using System;
 using System.Collections.Generic;
@@ -23,13 +24,17 @@ namespace RunicPower.Patches {
 
 		public static void SetRune(this StatusEffect __instance, Rune rune) {
 			var ext = __instance.ExtendedStatusEffect();
-			rune.statusEffect = __instance;
-			ext.rune = rune;
+			// rune.statusEffect = __instance;
+			ext.rune = rune; 
 		}
 
 		public static Rune GetRune(this StatusEffect __instance) {
 			var ext = __instance.ExtendedStatusEffect();
 			return ext?.rune;
+		}
+
+		public static string GetEffectString(this StatusEffect __instance) {
+			return __instance.GetRune().GetEffectString();
 		}
 	}
 }

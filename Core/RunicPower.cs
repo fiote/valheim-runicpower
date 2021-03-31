@@ -3,6 +3,7 @@ using Common;
 using HarmonyLib;
 using LitJson;
 using Pipakin.SkillInjectorMod;
+using RuneStones.Core;
 using RunicPower.Core;
 using RunicPower.Patches;
 using System;
@@ -21,7 +22,8 @@ namespace RunicPower {
 
 		public static RunesConfig runesConfig;
 		public static List<Rune> runes = new List<Rune>();
-		public static List<ClassSkill> cskills = new List<ClassSkill>();
+		public static List<RuneData> runesData = new List<RuneData>();
+		public static List<ClassSkill> listofCSkills = new List<ClassSkill>();
 
 		private void Awake() {
 			LoadRunes();
@@ -33,11 +35,11 @@ namespace RunicPower {
 			runesConfig = PrefabCreator.LoadJsonFile<RunesConfig>("runes.json");
 			var assetBundle = PrefabCreator.LoadAssetBundle("runeassets");
 			if (runesConfig != null && assetBundle != null) {
-				foreach (var rune in runesConfig.runes) {
-					if (!rune.implemented) continue;
-					if (assetBundle.Contains(rune.recipe.item)) {
-						rune.prefab = assetBundle.LoadAsset<GameObject>(rune.recipe.item);
-						runes.Add(rune);
+				foreach (var data in runesConfig.runes) {
+					if (!data.implemented) continue;
+					if (assetBundle.Contains(data.recipe.item)) {
+						data.prefab = assetBundle.LoadAsset<GameObject>(data.recipe.item);
+						runesData.Add(data);
 					}
 				}
 			}
@@ -49,7 +51,7 @@ namespace RunicPower {
 			var classesConfig = PrefabCreator.LoadJsonFile<ClassesConfig>("classes.json");
 			foreach (var cskill in classesConfig.classes) {
 				if (cskill.implemented) {
-					cskills.Add(cskill);
+					listofCSkills.Add(cskill);
 					Debug.Log("ClassSkill " + cskill.id + " " + cskill.name);
 					SkillInjector.RegisterNewSkill(cskill.id, cskill.name, cskill.description, 1.0f, PrefabCreator.LoadCustomTexture(cskill.icon), Skills.SkillType.Unarmed);
 				}
@@ -58,50 +60,74 @@ namespace RunicPower {
 
 		private void OnDestroy() {
 			_harmony?.UnpatchAll();
-			foreach (var rune in runes) Destroy(rune.prefab);
-			runes.Clear();
+			foreach (var rune in runesData) Destroy(rune.prefab);
+			runesData.Clear();
 		}
 
 		public static void TryRegisterPrefabs(ZNetScene zNetScene) {
 			if (zNetScene == null) return;
-			foreach (var rune in runes) zNetScene.m_prefabs.Add(rune.prefab);
+			foreach (var rune in runesData) zNetScene.m_prefabs.Add(rune.prefab);
 		}
 
 		public static void TryRegisterItems() {
 			if (ObjectDB.instance == null || ObjectDB.instance.m_items.Count == 0) return;
 
-			foreach (var rune in runes) {
-				rune.itemDrop = rune.prefab.GetComponent<ItemDrop>();
-				if (rune.itemDrop == null) continue;
-				if (ObjectDB.instance.GetItemPrefab(rune.prefab.name.GetStableHashCode()) != null) continue;
-				RegisterRune(rune);
+			foreach (var runeConfig in runesData) {
+				runeConfig.itemDrop = runeConfig.prefab.GetComponent<ItemDrop>();
+				if (runeConfig.itemDrop == null) continue;
+				if (ObjectDB.instance.GetItemPrefab(runeConfig.prefab.name.GetStableHashCode()) != null) continue;
+				RegisterRuneConfig(runeConfig);
 			}
 		}
 
-		private static void RegisterRune(Rune rune) {
-			var itemDrop = rune.itemDrop;
-			itemDrop.SetRune(rune);
-			ObjectDB.instance.m_items.Add(rune.prefab);
+		private static void RegisterRuneConfig(RuneData data) {
+			var itemDrop = data.itemDrop;
+			itemDrop.SetRuneData(data);
+			ObjectDB.instance.m_items.Add(data.prefab);
 
 		}
 
 		public static void TryRegisterRecipes() {
 			if (ObjectDB.instance == null || ObjectDB.instance.m_items.Count == 0) return;
 			PrefabCreator.Reset();
-			foreach (var rune in runes) {
-				if (rune.recipe.amount == 0) rune.recipe.amount = runesConfig.defRecipes.amount;
-				if (rune.recipe.craftingStation == "") rune.recipe.craftingStation = runesConfig.defRecipes.craftingStation;
-				if (rune.recipe.minStationLevel == 0) rune.recipe.minStationLevel = runesConfig.defRecipes.minStationLevel;
-				if (rune.recipe.repairStation == "") rune.recipe.repairStation = runesConfig.defRecipes.repairStation;
+			foreach (var data in runesData) {
+				if (data.recipe.amount == 0) data.recipe.amount = runesConfig.defRecipes.amount;
+				if (data.recipe.craftingStation == "") data.recipe.craftingStation = runesConfig.defRecipes.craftingStation;
+				if (data.recipe.minStationLevel == 0) data.recipe.minStationLevel = runesConfig.defRecipes.minStationLevel;
+				if (data.recipe.repairStation == "") data.recipe.repairStation = runesConfig.defRecipes.repairStation;
 
-				rune.recipe.enabled = true;
-				rune.itemDrop.m_itemData.m_shared.m_name = rune.name;
-				rune.itemDrop.m_itemData.m_shared.m_description = rune.description;
-				rune.itemDrop.m_itemData.m_shared.m_maxStackSize = 100;
-				rune.itemDrop.m_itemData.m_shared.m_weight = 0.1f;
+				data.recipe.enabled = true;
+				data.itemDrop.m_itemData.m_shared.m_name = data.name;
+				data.itemDrop.m_itemData.m_shared.m_description = data.description;
+				data.itemDrop.m_itemData.m_shared.m_maxStackSize = 100;
+				data.itemDrop.m_itemData.m_shared.m_weight = 0.1f;
 
-				PrefabCreator.AddNewRuneRecipe(rune);
+				PrefabCreator.AddNewRuneRecipe(data);
+
+				var rune = new Rune(data, null);
+				runes.Add(rune);
 			}
+		}
+		public static Rune GetStaticRune(RuneData data) {
+			var rune = runes.Find(r => r.data.name == data.name);
+			rune.SetCaster(Player.m_localPlayer);
+			return rune;
+		}
+
+		public static StatusEffect CreateStatusEffect(string name, Player caster) {
+			Debug.Log("CreateStatusEffect " + name + " " + caster);
+
+			var data = runesData.Find(r => r.recipe.item == name);
+			if (data == null) {
+				Debug.Log("no data found in " + runesData.Count + " datas");
+				return null;
+			}
+
+			var rune = new Rune(data, caster);
+			rune.CreateEffect();
+
+			Debug.Log("rune = " + rune);
+			return rune.statusEffect;
 		}
 
 		private void Update() {

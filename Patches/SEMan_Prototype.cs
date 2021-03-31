@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using RuneStones.Core;
 
 namespace RunicPower.Patches {
     public static class SEMan_Prototype {
@@ -23,6 +24,20 @@ namespace RunicPower.Patches {
 
             return list;
         }
+        public static void AddRunicEffect(this SEMan __instance, string name, Player caster, bool resetTime) {
+            Debug.Log("AddRunicEffect " + __instance + " " + name+" "+caster);
+            // if the seman already have this effect
+            StatusEffect statusEffect = __instance.GetStatusEffect(name);
+            if (statusEffect != null) {
+                Debug.Log(__instance + " already have it " + statusEffect);
+                // we reset its time if needed
+                if (resetTime) statusEffect.ResetTime();
+                // and be done with it
+                return;
+            }
+            // otherwise let's crete a new effect and add it to the target
+            StatusEffect statusEffect2 = RunicPower.CreateStatusEffect(name, caster);
+            if (statusEffect2 != null) __instance.AddStatusEffect(statusEffect2);
+        }
     }
-
 }

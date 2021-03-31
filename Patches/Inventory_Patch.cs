@@ -51,7 +51,7 @@ namespace RuneStones.Patches {
 			// if we're not crafting/looting a rune, ignore this flow
 			var ext = Player.m_localPlayer?.ExtendedPlayer();
 			if (ext == null || (ext.craftingRuneItem == null && ext.lootingRuneItem == null)) return true;
-			var rune = item.GetRune();
+			var rune = item.GetRuneData();
 			if (rune == null) return true;
 
 			var inv = SpellsBar.invBarGrid.m_inventory;

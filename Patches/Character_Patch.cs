@@ -17,7 +17,7 @@ namespace RunicPower {
 			var player = __instance as Player;
 			var ext = player.ExtendedCharacter();
 			var runes = player.GetRunes();
-			var prevented = runes?.Find(rune => rune.effect?.ignoreFallDamage == true);
+			var prevented = runes?.Find(rune => rune.data.effect?.ignoreFallDamage == true);
 			if (prevented != null) ext.isNotAPlayerRightNow = true;
 		}
 

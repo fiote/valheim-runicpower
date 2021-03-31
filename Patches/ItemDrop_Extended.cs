@@ -8,7 +8,7 @@ using UnityEngine;
 namespace RunicPower.Patches {
 	public class ItemDropData_Extended {
 
-		public Rune rune;
+		public RuneData rune;
 
 	}
 }

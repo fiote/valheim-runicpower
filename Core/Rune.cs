@@ -1,60 +1,28 @@
-﻿using Common;
+﻿using RunicPower;
+using RunicPower.Core;
 using RunicPower.Patches;
-using RunicPower;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using static UnityEngine.ParticleSystem;
-using RuneStones.Patches;
 
-namespace RunicPower.Core {
-
-	[Serializable]
-	public class RunesConfig {
-		public DefaultRecipeConfig defRecipes;
-		public List<Rune> runes = new List<Rune>();
-	}
-
-	[Serializable]
+namespace RuneStones.Core {
 	public class Rune {
-		public string name;
-		public string type;
-		public string archetype;
-		public string description;
-		public bool implemented;
-		public RecipeConfig recipe;
+		public RuneData data;
+		public Player caster;
 
-		public RuneVFX vfx;
-		public RuneVFX sfx;
+		public float casterWeaponDmg = 0;
+		public DamageTypeValues casterPowerMods = new DamageTypeValues();
 
-		public static RuneVFX genericVFX = new RuneVFX().SetName("vfx_Potion_stamina_medium");
-		public static RuneVFX genericSFX = new RuneVFX().SetName("sfx_bowl_AddItem");
-
-		public string fxcustom;
-		public RuneEffect effect;
-		public RuneProjectile projectile;
-
-		public static int retrycount = 5;
-
-		public GameObject prefab;
-		public ItemDrop itemDrop;
 		public StatusEffect statusEffect;
 
-		private Player caster;
-		private float casterWeaponDmg = 0;
-		private DamageTypeValues casterPowerMods = new DamageTypeValues();
-
-		private float rangeExplosion = 5f;
-		private float rangeAOE = 20f;
-		private float rangeAOEallies = 20f;
-		private float rangeAOEfoes = 10f;
-
-		private Skills.SkillType skillType;
-
-		public List<HitData.DamageModPair> resistanceModifiers;
+		public Rune(RuneData data, Player caster) {
+			this.data = data;
+			this.caster = caster;
+			this.data.Config();
+		}
 
 		public static Array dmgTypes = Enum.GetValues(typeof(HitData.DamageType));
 
@@ -68,16 +36,19 @@ namespace RunicPower.Core {
 			{"Weak", HitData.DamageModifier.Weak }
 		};
 
+		// ================================================================
+		// EFFECT
+		// ================================================================
 
 		public void CreateEffect() {
-			if (effect == null || effect.duration == 0) return;
+			if (data.effect == null || data.effect.duration == 0) return;
 			statusEffect = ScriptableObject.CreateInstance<StatusEffect>();
 			statusEffect.m_ttl = GetDuration();
-			statusEffect.name = name;
-			statusEffect.m_name = name;
-			statusEffect.m_category = name;
+			statusEffect.name = data.name;
+			statusEffect.m_name = data.name;
+			statusEffect.m_category = data.name;
 			statusEffect.m_cooldown = 0f;
-			statusEffect.m_icon = itemDrop.m_itemData.m_shared.m_icons[0];
+			statusEffect.m_icon = data.itemDrop.m_itemData.m_shared.m_icons[0];
 			statusEffect.SetRune(this);
 		}
 
@@ -108,21 +79,24 @@ namespace RunicPower.Core {
 
 		public string GetTooltip(ItemDrop.ItemData item) {
 			StringBuilder text = new StringBuilder(256);
-			SetPlayer(Player.m_localPlayer);
+			UpdateCaster();
+
+			var complete = item != null;
 
 			var colorClass = "white";
-			if (archetype == "Warrior") colorClass = "#C69B6D";
-			if (archetype == "Cleric") colorClass = "#F48CBA";
-			if (archetype == "Rogue") colorClass = "#FFF468";
-			if (archetype == "Wizard") colorClass = "#3FC7EB";
+			if (data.archetype == "Warrior") colorClass = "#C69B6D";
+			if (data.archetype == "Cleric") colorClass = "#F48CBA";
+			if (data.archetype == "Rogue") colorClass = "#FFF468";
+			if (data.archetype == "Wizard") colorClass = "#3FC7EB";
 
-			text.AppendFormat("<color={0}>[{1} {2}]</color> {3}", colorClass, archetype, type, item.m_shared.m_description);
-			text.AppendFormat("\n");
+			if (complete) {
+				text.AppendFormat("<color={0}>[{1} {2}]</color> {3}\n", colorClass, data.archetype, data.type, item.m_shared.m_description);
+			}
 
-			var fx = effect;
+			var fx = data.effect;
 
 			if (fx != null) {
-				text.Append("\n-----------------------");
+				if (complete) text.Append("\n-----------------------");
 
 				// REGEN
 				if (fx.healthRegen != 0) text.AppendFormat("\nHealth regen <color=orange>+{0}%</color>", fx.healthRegen * 100);
@@ -184,26 +158,28 @@ namespace RunicPower.Core {
 					text.Append(runeModsToString);
 				}
 
-				text.Append("\n-----------------------");
+				if (complete) {
+					text.Append("\n-----------------------");
 
-				text.AppendFormat("\n");
-				var duration = GetDuration();
-				var texttime = (duration == 0) ? "Instant" : duration + "s";
-				text.AppendFormat("\nDuration: <color=orange>{0}</color>", texttime);
+					text.AppendFormat("\n");
+					var duration = GetDuration();
+					var texttime = (duration == 0) ? "Instant" : duration + "s";
+					text.AppendFormat("\nDuration: <color=orange>{0}</color>", texttime);
 
-				if (fx.target != "") {
-					var dstarget = mapTarget[fx.target];
-					if (fx.target == "projectile") {
-						if (projectile.explode) {
-							text.AppendFormat("\nTarget: <color=orange>{0} (Explosive)</color> ({1} meters)", dstarget, GetSkilledRange(rangeExplosion));
+					if (fx.target != "") {
+						var dstarget = mapTarget[fx.target];
+						if (fx.target == "projectile") {
+							if (data.projectile.explode) {
+								text.AppendFormat("\nTarget: <color=orange>{0} (Explosive)</color> ({1} meters)", dstarget, GetSkilledRange(data.rangeExplosion));
+							} else {
+								text.AppendFormat("\nTarget: <color=orange>{0}</color>", dstarget);
+							}
 						} else {
-							text.AppendFormat("\nTarget: <color=orange>{0}</color>", dstarget);
-						}
-					} else {
-						if (fx.target == "self") {
-							text.AppendFormat("\nTarget: <color=orange>{0}</color>", dstarget);
-						} else {
-							text.AppendFormat("\nTarget: <color=orange>{0}</color> ({1} meters)", dstarget, GetSkilledRangeAOE(fx.target));
+							if (fx.target == "self") {
+								text.AppendFormat("\nTarget: <color=orange>{0}</color>", dstarget);
+							} else {
+								text.AppendFormat("\nTarget: <color=orange>{0}</color> ({1} meters)", dstarget, GetSkilledRangeAOE(fx.target));
+							}
 						}
 					}
 				}
@@ -212,20 +188,25 @@ namespace RunicPower.Core {
 			return text.ToString();
 		}
 
+		public string GetEffectTooltip() {
+			return GetTooltip(null);
+		}
+
 		// ================================================================
 		// SETTERS
 		// ================================================================
 
-		public void SetPlayer(Player player) {
-			this.caster = player;
-			var dmg = caster.GetCurrentWeapon().GetDamage();
-			casterWeaponDmg = dmg.GetTotalElementalDamage() + dmg.GetTotalPhysicalDamage();
+		public void SetCaster(Player player) {
+			caster = player;
+			UpdateCaster();
+		}
 
+		public void UpdateCaster() {
+			var dmg = caster.GetCurrentWeapon().GetDamage();
 			var runes = caster.GetRunes();
+			casterWeaponDmg = dmg.GetTotalElementalDamage() + dmg.GetTotalPhysicalDamage();
 			casterPowerMods = new DamageTypeValues();
 			foreach (var rune in runes) rune.AppendPower(ref casterPowerMods);
-
-			skillType = (Skills.SkillType)ClassSkill.GetIdByName(archetype);
 		}
 
 		// ================================================================
@@ -233,19 +214,31 @@ namespace RunicPower.Core {
 		// ================================================================
 
 		public float GetSkill() {
-			float skill = caster.GetSkillFactor(skillType) * 100f;
+			float skill = caster.GetSkillFactor(data.skillType) * 100f;
 			if (skill < 1) skill = 1;
 			return skill;
 		}
 
+		public int GetDuration() {
+			int value = data.effect.duration;
+			int skill = (int)GetSkill() - 1;
+			var multi = (100f + skill * 2) / 100f;
+			return Mathf.RoundToInt(value * multi);
+		}
+
+		public string GetEffectString() {
+			var parts = new string[] { "RUNICPOWER", data.recipe.item, caster.GetZDOID().ToString() };
+			return string.Join("|", parts);
+		}
+
 		public int GetHealingHP() {
-			var heal = (float)effect?.healthRecover;
+			var heal = (float)data.effect?.healthRecover;
 			var value = (heal / 100) * casterWeaponDmg;
 			return (int)value;
 		}
 
 		public int GetHealingStamina() {
-			var heal = (float)effect?.staminaRecover;
+			var heal = (float)data.effect?.staminaRecover;
 			var value = (heal / 100) * casterWeaponDmg;
 			return (int)value;
 		}
@@ -280,13 +273,6 @@ namespace RunicPower.Core {
 			return Mathf.RoundToInt(skilled);
 		}
 
-		public int GetDuration() {
-			int value = effect.duration;
-			int skill = (int)GetSkill() - 1;
-			var multi = (100f + skill * 2) / 100f;
-			return Mathf.RoundToInt(value * multi);
-		}
-
 		public int GetSkilledRange(float value) {
 			int skill = (int)GetSkill() - 1;
 			var multi = (100f + skill) / 100f;
@@ -294,7 +280,7 @@ namespace RunicPower.Core {
 		}
 
 		public int GetSkilledRangeAOE(string type) {
-			var range = (type == "allies") ? rangeAOEallies : rangeAOEfoes;
+			var range = (type == "allies") ? data.rangeAOEallies : data.rangeAOEfoes;
 			return GetSkilledRange(range);
 		}
 
@@ -302,39 +288,21 @@ namespace RunicPower.Core {
 			// level 1: 3f + 5% of weapon
 			// level 10: 30f + 20% of weapon
 			// level 100: 300f + 200% of weapon
-			return GetSkilledTypedValue(effect.doDamage, dmgType, 2f, 2f);
+			return GetSkilledTypedValue(data.effect.doDamage, dmgType, 2f, 2f);
 		}
 
 		private float GetHealHP(HitData.DamageType dmgType) {
 			// level 1: 7f + 2% of weapon
 			// level 10: 70f + 20% of weapon
 			// level 100: 700f + 200% of weapon
-			return GetSkilledTypedValue(effect.doHealHP, dmgType, 6f, 1f);
+			return GetSkilledTypedValue(data.effect.doHealHP, dmgType, 6f, 1f);
 		}
 
 		private float GetHealST(HitData.DamageType dmgType) {
 			// level 1: 7f + 2% of weapon
 			// level 10: 70f + 20% of weapon
 			// level 100: 700f + 200% of weapon
-			return GetSkilledTypedValue(effect.doHealST, dmgType, 6f, 1f);
-		}
-
-		private float GetPowerElemental() {
-			// level 1: +2%
-			// level 2: +4%
-			// level 10: +20%
-			// level 50: +100%
-			// level 100: +200%
-			return 0f;
-		}
-
-		private float GetPowerPhysical() {
-			// level 1: +2%
-			// level 2: +4%
-			// level 10: +20%
-			// level 50: +100%
-			// level 100: +200%
-			return 0f;
+			return GetSkilledTypedValue(data.effect.doHealST, dmgType, 6f, 1f);
 		}
 
 		private int GetPower(HitData.DamageType dmgType) {
@@ -343,7 +311,7 @@ namespace RunicPower.Core {
 			// level 10: +20%
 			// level 50: +100%
 			// level 100: +200%
-			return GetSkilledTypedValue(effect.doPower, dmgType, 2f, 0f);
+			return GetSkilledTypedValue(data.effect.doPower, dmgType, 2f, 0f);
 		}
 
 		private int GetResist(HitData.DamageType dmgType) {
@@ -351,7 +319,7 @@ namespace RunicPower.Core {
 			// level 2: +4%
 			// level 10: +20%
 			// level 50: +100%
-			return GetSkilledTypedValue(effect.doResist, dmgType, 2f, 0f, 100f);
+			return GetSkilledTypedValue(data.effect.doResist, dmgType, 2f, 0f, 100f);
 		}
 
 		private float GetMovementBonus() {
@@ -359,7 +327,7 @@ namespace RunicPower.Core {
 			// level 2: +2%
 			// level 10: +10%
 			// level 50: +50%
-			return GetSkilledValue((float)effect.movementBonus / 100f, 1f, 50f);
+			return GetSkilledValue((float)data.effect.movementBonus / 100f, 1f, 50f);
 		}
 
 		public float GetHealthSteal() {
@@ -368,30 +336,30 @@ namespace RunicPower.Core {
 			// level 10: +10%
 			// level 50: +50%
 			// level 100: +100%
-			return GetSkilledValue((float)effect.healthBack / 100f, 1f);
+			return GetSkilledValue((float)data.effect.healthBack / 100f, 1f);
 		}
 
 		public float GetExpose() {
-			return GetSkilledValue((float)effect.expose / 100f, 2f);
+			return GetSkilledValue((float)data.effect.expose / 100f, 2f);
 		}
 
 		public float GetStealhiness() {
-			return GetSkilledValue((float)effect.stealthiness / 100f, 1f, 100f);
+			return GetSkilledValue((float)data.effect.stealthiness / 100f, 1f, 100f);
 		}
 
 		public List<HitData.DamageModPair> GetResistanceModifiers() {
-			if (resistanceModifiers == null) {
-				resistanceModifiers = new List<HitData.DamageModPair>();
-				GetResistanceModifier(HitData.DamageType.Blunt, effect?.physicalResitance);
-				GetResistanceModifier(HitData.DamageType.Pierce, effect?.physicalResitance);
-				GetResistanceModifier(HitData.DamageType.Slash, effect?.physicalResitance);
-				GetResistanceModifier(HitData.DamageType.Fire, effect?.elementalResistance);
-				GetResistanceModifier(HitData.DamageType.Frost, effect?.elementalResistance);
-				GetResistanceModifier(HitData.DamageType.Lightning, effect?.elementalResistance);
-				GetResistanceModifier(HitData.DamageType.Poison, effect?.elementalResistance);
-				GetResistanceModifier(HitData.DamageType.Spirit, effect?.elementalResistance);
+			if (data.resistanceModifiers == null) {
+				data.resistanceModifiers = new List<HitData.DamageModPair>();
+				GetResistanceModifier(HitData.DamageType.Blunt, data.effect?.physicalResitance);
+				GetResistanceModifier(HitData.DamageType.Pierce, data.effect?.physicalResitance);
+				GetResistanceModifier(HitData.DamageType.Slash, data.effect?.physicalResitance);
+				GetResistanceModifier(HitData.DamageType.Fire, data.effect?.elementalResistance);
+				GetResistanceModifier(HitData.DamageType.Frost, data.effect?.elementalResistance);
+				GetResistanceModifier(HitData.DamageType.Lightning, data.effect?.elementalResistance);
+				GetResistanceModifier(HitData.DamageType.Poison, data.effect?.elementalResistance);
+				GetResistanceModifier(HitData.DamageType.Spirit, data.effect?.elementalResistance);
 			}
-			return resistanceModifiers;
+			return data.resistanceModifiers;
 		}
 
 		// ================================================================
@@ -399,17 +367,17 @@ namespace RunicPower.Core {
 		// ================================================================
 
 		public void ModifyStaminaRegen(Player player, ref float staminaMultiplier) {
-			if (effect == null) return;
-			if (effect.staminaRegen != 0) staminaMultiplier += effect.staminaRegen + 1;
+			if (data.effect == null) return;
+			if (data.effect.staminaRegen != 0) staminaMultiplier += data.effect.staminaRegen + 1;
 		}
 
 		public void ModifyEquipmentMovement(Player player, ref float equipmentMovement) {
-			if (effect == null) return;
+			if (data.effect == null) return;
 			equipmentMovement += GetMovementBonus() / 100f;
 		}
 
 		public void AppendPower(ref DamageTypeValues power) {
-			if (effect == null) return;
+			if (data.effect == null) return;
 			// MULTIPLIERS
 			foreach (HitData.DamageType dmgType in dmgTypes) {
 				var value = GetPower(dmgType);
@@ -457,7 +425,7 @@ namespace RunicPower.Core {
 		public void GetResistanceModifier(HitData.DamageType type, String value) {
 			if (value == null || value == "") return;
 			if (!mapDamageModifier.ContainsKey(value)) return;
-			resistanceModifiers.Add(new HitData.DamageModPair() { m_type = type, m_modifier = mapDamageModifier[value] });
+			data.resistanceModifiers.Add(new HitData.DamageModPair() { m_type = type, m_modifier = mapDamageModifier[value] });
 		}
 
 		// ================================================================
@@ -466,7 +434,7 @@ namespace RunicPower.Core {
 
 		public void ApplyEffectOnCharacter(Character target) {
 			if (target == null) return;
-			
+
 			IDestructible destructable = null;
 			Player player = null;
 
@@ -496,14 +464,14 @@ namespace RunicPower.Core {
 
 			if (healST != 0) {
 				Debug.Log("RUNE IS RECOVERING STAMINA");
-				player?.UseStamina(healST*-1);
+				player?.UseStamina(healST * -1);
 			}
 
 			// ===== DEALING DAMAGE =================================
 
 			var hitDamage = new HitData();
 
-			if (effect.DoDamage()) {
+			if (data.effect.DoDamage()) {
 				Debug.Log("RUNE IS DOING DAMAGE");
 				hitDamage.m_damage.m_blunt = GetDamage(HitData.DamageType.Blunt);
 				hitDamage.m_damage.m_pierce = GetDamage(HitData.DamageType.Pierce);
@@ -518,7 +486,7 @@ namespace RunicPower.Core {
 
 			// ===== APPLYING ELEMENTAL EFFECTS =====================
 
-			if (effect.burn) {
+			if (data.effect.burn) {
 				Debug.Log("RUNE IS APPLYING BURN");
 				var burning = ObjectDB.instance.m_StatusEffects.Find(x => x.name == "Burning").Clone() as SE_Burning;
 				burning.m_ttl = GetDuration();
@@ -529,7 +497,7 @@ namespace RunicPower.Core {
 				target.m_seman.AddStatusEffect(burning);
 			}
 
-			if (effect.slow) {
+			if (data.effect.slow) {
 				Debug.Log("RUNE IS APPLYING SLOW");
 				var frost = ObjectDB.instance.m_StatusEffects.Find(x => x.name == "Frost").Clone() as SE_Frost;
 				frost.m_ttl = GetDuration();
@@ -539,7 +507,7 @@ namespace RunicPower.Core {
 				target.m_seman.AddStatusEffect(frost);
 			}
 
-			if (effect.poison) {
+			if (data.effect.poison) {
 				Debug.Log("RUNE IS APPLYING POISON");
 				var poison = ObjectDB.instance.m_StatusEffects.Find(x => x.name == "Poison").Clone() as SE_Poison;
 				poison.m_ttl = GetDuration();
@@ -552,7 +520,7 @@ namespace RunicPower.Core {
 
 			// ===== STAGGER ========================================
 
-			if (effect.stagger == true) {
+			if (data.effect.stagger == true) {
 				Debug.Log("RUNE IS STAGGERING");
 				var staggerDir = -caster.m_lookDir;
 				target.Stagger(staggerDir);
@@ -560,7 +528,7 @@ namespace RunicPower.Core {
 
 			// ===== PUSH BACK ======================================
 
-			if (effect.pushback == true) {
+			if (data.effect.pushback == true) {
 				Debug.Log("RUNE IS PUSHING BACK");
 				var hitPushback = new HitData();
 				hitPushback.m_pushForce = 500f;
@@ -574,9 +542,9 @@ namespace RunicPower.Core {
 			// ===== ADDING AS EFFFECT ======================================
 
 			// if there is a duration, it means it'a buff. So let's apply it to targets
-			if (effect.duration > 0 && statusEffect) {
+			if (data.effect.duration > 0) {
 				Debug.Log("RUNE IS ADDING SOME (DE)BUFF TO " + target.name);
-				target.m_seman.AddStatusEffect(statusEffect, true);
+				target.m_seman.AddStatusEffect(GetEffectString(), true);
 			}
 		}
 
@@ -586,11 +554,11 @@ namespace RunicPower.Core {
 
 		public void ApplyProjectile(Collider collider, Vector3 hitPoint) {
 			Debug.Log("ApplyProjectile");
-			if (effect == null) {
+			if (data.effect == null) {
 				Debug.Log("effect == null");
 				return;
 			}
-			if (projectile == null) {
+			if (data.projectile == null) {
 				Debug.Log("projectile == null");
 				return;
 			}
@@ -608,8 +576,8 @@ namespace RunicPower.Core {
 
 			var semans = new List<SEMan>();
 
-			if (projectile.explode) {
-				semans = GetFoesAround(hitPoint, GetSkilledRange(rangeExplosion));
+			if (data.projectile.explode) {
+				semans = GetFoesAround(hitPoint, GetSkilledRange(data.rangeExplosion));
 			} else {
 				semans.Add(character?.m_seman);
 			}
@@ -697,32 +665,26 @@ namespace RunicPower.Core {
 			}
 		}
 
-		public void Cast(Humanoid caster) {
+		public void Cast() {
 			Debug.Log("============================================");
 			// letting everyone knows the caster used the rune power
-			Chat.instance.SendText(Talker.Type.Shout, name + "!");
-
-			// getting the caster-player
-			this.caster = caster as Player;
-
-			SetPlayer(this.caster);
-			CreateEffect();
+			Chat.instance.SendText(Talker.Type.Shout, data.name + "!");
 
 			// get the effects
-			var custom = fxcustom;
+			var custom = data.fxcustom;
 
-			if (type == "Buff") {
-				ExecFX(genericVFX);
-				ExecFX(genericSFX);
+			if (data.type == "Buff") {
+				ExecFX(RuneData.genericVFX);
+				ExecFX(RuneData.genericSFX);
 			} else {
-				ExecFX(vfx);
-				ExecFX(sfx);
+				ExecFX(data.vfx);
+				ExecFX(data.sfx);
 			}
 
 			// casting RECALL
 
 			// getting the archetype skill Id and adding experience to it
-			if (archetype != "Generic") this.caster.RaiseSkill(skillType, 1f);
+			if (data.archetype != "Generic") caster.RaiseSkill(data.skillType, 1f);
 
 			// casting RECALL
 			if (custom == "recall") {
@@ -732,178 +694,33 @@ namespace RunicPower.Core {
 				return;
 			}
 
-			if (effect == null) {
+			if (data.effect == null) {
 				return;
 			}
 
-			if (effect.target == "projectile") {
+			if (data.effect.target == "projectile") {
 				var attack = new Attack();
 				attack.m_character = caster;
 				attack.m_attackHeight = 2f;
 				attack.m_attackRange = 1f;
 				attack.m_attackHitNoise = 0;
-				attack.m_projectileVel = projectile.speed;
+				attack.m_projectileVel = data.projectile.speed;
 				attack.GetProjectileSpawnPoint(out var spawnPoint, out var aimDir);
 				aimDir = GameCamera.instance.transform.forward;
 				var hitData = new HitData();
-				var projPrefab = ZNetScene.instance.GetPrefab(projectile.name);
+				var projPrefab = ZNetScene.instance.GetPrefab(data.projectile.name);
 				GameObject projGo = UnityEngine.Object.Instantiate(projPrefab, spawnPoint, Quaternion.LookRotation(aimDir));
 				var proj = projGo.GetComponent<IProjectile>() as Projectile;
 				proj.m_gravity = 0f;
-				proj.m_ttl = (float)projectile.duration;
+				proj.m_ttl = (float)data.projectile.duration;
 				proj.SetRune(this);
 				proj.Setup(attack.m_character, aimDir * attack.m_projectileVel, attack.m_attackHitNoise, hitData, null);
 			} else {
 				// getting the targets
-				var semans = GetTargetsAroundCharacter(effect.target, this.caster, GetSkilledRange(rangeAOE));
+				var semans = GetTargetsAroundCharacter(data.effect.target, this.caster, GetSkilledRange(data.rangeAOE));
 				foreach (var seman in semans) ApplyEffectOnSeman(seman);
 			}
 		}
-	}
 
-	[Serializable]
-	public class DamageTypeValues {
-		public int m_blunt;
-		public int m_pierce;
-		public int m_slash;
-
-		public int m_fire;
-		public int m_frost;
-		public int m_lightning;
-		public int m_poison;
-		public int m_spirit;
-
-		public float Elemental() {
-			return m_fire + m_frost + m_lightning + m_poison + m_spirit;
-		}
-
-		public bool IsElemental() {
-			return m_fire != 0 && m_fire == m_frost && m_lightning == m_poison && m_poison == m_spirit && m_spirit == m_fire;
-		}
-
-		public bool IsValued() {
-			return IsPhysical() || IsElemental();
-		}
-
-		public float Physical() {
-			return m_blunt + m_pierce + m_slash;
-		}
-
-		public bool IsPhysical() {
-			return m_blunt != 0 && m_blunt == m_pierce && m_pierce == m_slash;
-		}
-
-		public float Total() {
-			return Elemental() + Physical();
-		}
-
-		public DamageTypeValues Reset() {
-			m_blunt = 0;
-			m_pierce = 0;
-			m_slash = 0;
-			m_fire = 0;
-			m_frost = 0;
-			m_lightning = 0;
-			m_poison = 0;
-			m_spirit = 0;
-			return this;
-		}
-
-		public void AddByType(HitData.DamageType dmgType, int value) {
-			SetByType(dmgType, GetByType(dmgType) + value);
-		}
-
-		public void SetByType(HitData.DamageType dmgType, int value) {
-			if (dmgType is HitData.DamageType.Blunt) m_blunt = value;
-			if (dmgType is HitData.DamageType.Pierce) m_pierce = value;
-			if (dmgType is HitData.DamageType.Slash) m_slash = value;
-			if (dmgType is HitData.DamageType.Fire) m_fire = value;
-			if (dmgType is HitData.DamageType.Frost) m_frost = value;
-			if (dmgType is HitData.DamageType.Lightning) m_lightning = value;
-			if (dmgType is HitData.DamageType.Poison) m_poison = value;
-			if (dmgType is HitData.DamageType.Spirit) m_spirit = value;
-		}
-
-		public int GetByType(HitData.DamageType dmgType) {
-			if (dmgType is HitData.DamageType.Blunt) return m_blunt;
-			if (dmgType is HitData.DamageType.Pierce) return m_pierce;
-			if (dmgType is HitData.DamageType.Slash) return m_slash;
-			if (dmgType is HitData.DamageType.Fire) return m_fire;
-			if (dmgType is HitData.DamageType.Frost) return m_frost;
-			if (dmgType is HitData.DamageType.Lightning) return m_lightning;
-			if (dmgType is HitData.DamageType.Poison) return m_poison;
-			if (dmgType is HitData.DamageType.Spirit) return m_spirit;
-			return 0;
-		}
-
-		override public string ToString() {
-			return "DamageTypeValues(m_blunt=" + m_blunt + ", m_pierce=" + m_pierce + ", m_slash=" + m_slash + ", m_fire=" + m_fire + ", m_frost=" + m_frost + ", m_lightning=" + m_lightning + ", m_poison=" + m_poison + ", m_spirit=" + m_spirit + ")";
-		}
-	}
-
-	[Serializable]
-	public class RuneEffect {
-		public int duration;
-		public string target;
-
-		public int healthRegen;
-		public int staminaRegen;
-
-		public decimal healthBack;
-		public decimal staminaBack;
-
-		public int healthRecover;
-		public int staminaRecover;
-
-		public string physicalResitance;
-		public string elementalResistance;
-
-		public DamageTypeValues doDamage = new DamageTypeValues();
-		public DamageTypeValues doResist = new DamageTypeValues();
-		public DamageTypeValues doPower = new DamageTypeValues();
-		public DamageTypeValues doHealHP = new DamageTypeValues();
-		public DamageTypeValues doHealST = new DamageTypeValues();
-
-		public decimal stealthiness;
-
-		public bool stagger;
-		public bool pushback;
-		public bool pull;
-		public bool fear;
-		public bool burn;
-		public bool slow;
-		public bool cripple;
-		public bool poison;
-
-		public decimal expose;
-		public decimal movementBonus;
-		public bool ignoreFallDamage;
-
-		public bool DoDamage() {
-			return doDamage.Total() != 0;
-		}
-
-		public bool DoHeal() {
-			return (doHealST.Total() + doHealHP.Total()) != 0;
-		}
-	}
-
-	[Serializable]
-	public class RuneProjectile {
-		public string name;
-		public int speed;
-		public decimal duration;
-		public bool explode;
-	}
-
-
-	public class RuneVFX {
-		public string name;
-		public List<string> list = new List<string>();
-
-		public RuneVFX SetName(string name) {
-			this.name = name;
-			return this;
-		}
 	}
 }

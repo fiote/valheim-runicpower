@@ -1,5 +1,6 @@
 ﻿using Common;
 using HarmonyLib;
+using RuneStones.Core;
 using RunicPower.Core;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace RunicPower.Patches {
 			return ext;
 		}
 
-		public static Rune GetRune(this Projectile self) {
+		public static Rune GetRuneConfig(this Projectile self) {
 			return self.ExtendedProjectile().rune;
 		}
 

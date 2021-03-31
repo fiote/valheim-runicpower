@@ -40,7 +40,7 @@ namespace RuneStones.Patches {
             if (recipe == null) return;
             if (recipe.m_item == null) return;
             var item = recipe.m_item.m_itemData;
-            if (item.GetRune() == null) return;
+            if (item.GetRuneData() == null) return;
             __instance.m_craftDuration = m_craftDuration_runes;
             player.ExtendedPlayer().craftingRuneItem = item;
         }

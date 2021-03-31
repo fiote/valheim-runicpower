@@ -156,8 +156,8 @@ namespace Common {
             return recipe;
         }
 
-        public static Recipe AddNewRuneRecipe(Rune rune) {
-            return AddNewRecipe(rune.recipe.name, rune.recipe.item, rune.recipe);
+        public static Recipe AddNewRuneRecipe(RuneData data) {
+            return AddNewRecipe(data.recipe.name, data.recipe.item, data.recipe);
 		}
     }
 }

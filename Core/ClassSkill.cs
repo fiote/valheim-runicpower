@@ -24,7 +24,7 @@ namespace RunicPower.Core {
 		}
 
 		public static int GetIdByName(string name) {
-			var cskill = RunicPower.cskills.Find(x => x.name == name + " Class");
+			var cskill = RunicPower.listofCSkills.Find(x => x.name == name + " Class");
 			return (cskill != null) ? cskill.id : -1;
 		}
 	}

@@ -21,4 +21,22 @@ namespace RunicPower.Patches {
         }
     }
 
+    [HarmonyPatch(typeof(SEMan), "Internal_AddStatusEffect")]
+    public static class Character_Internal_AddStatusEffect_Patch {
+        static bool Prefix(SEMan __instance, string name, bool resetTime) {
+            Debug.Log("Internal_AddStatusEffect " + __instance + " " + name);
+
+            var parts = name.Split('|');
+            if (parts[0] != "RUNICPOWER") return true;
+
+            var effectName = parts[1];
+            var effectCaster = Player.GetAllPlayers().Find(p => p.GetZDOID().ToString() == parts[2]);
+            __instance.AddRunicEffect(effectName, effectCaster, resetTime);
+            return false;
+        }
+    }
+
+
+    
+
 }
