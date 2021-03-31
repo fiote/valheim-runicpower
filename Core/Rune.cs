@@ -77,8 +77,8 @@ namespace RuneStones.Core {
 
 		public string GetEffectString() {
 			var buffs = new List<string>();
-			GetEffectStringPart(ref buffs, "hpRegen", getHealthRegen());
-			GetEffectStringPart(ref buffs, "stRegen", getStaminaRegen());
+			GetEffectStringPart(ref buffs, "hpRegen", GetHealthRegen());
+			GetEffectStringPart(ref buffs, "stRegen", GetStaminaRegen());
 			GetEffectStringPart(ref buffs, "movement", GetMovementBonus());
 			GetEffectStringPart(ref buffs, "ignoreFall", GetIgnoreFallDamage());
 			GetEffectStringPart(ref buffs, "stealth", GetStealhiness());
@@ -165,8 +165,8 @@ namespace RuneStones.Core {
 				if (complete) text.Append("\n-----------------------\n");
 
 				// REGEN
-				if (fx.healthRegen != 0) text.AppendFormat("Health regen <color=orange>+{0}%</color>\n", getHealthRegen()*100f);
-				if (fx.staminaRegen != 0) text.AppendFormat("Stamina regen <color=orange>+{0}%</color>\n", getStaminaRegen()*100f);
+				if (fx.healthRegen != 0) text.AppendFormat("Health regen <color=orange>+{0}%</color>\n", GetHealthRegen()*100f);
+				if (fx.staminaRegen != 0) text.AppendFormat("Stamina regen <color=orange>+{0}%</color>\n", GetStaminaRegen()*100f);
 
 				// MOVEMENT
 				if (fx.movementBonus != 0) text.AppendFormat("Movement speed <color=orange>+{0}%</color>\n", GetMovementBonus());
@@ -404,13 +404,13 @@ namespace RuneStones.Core {
 			return GetSkilledValue((float)data.effect.healthBack / 100f, 1f);
 		}
 
-		public float getHealthRegen() {
+		public float GetHealthRegen() {
 			var vfixed = GetFixed("hpRegen");
 			if (vfixed != 0) return vfixed;
 			return GetSkilledValue((float)data.effect.healthRegen / 100f, 0.1f);
 		}
 
-		public float getStaminaRegen() {
+		public float GetStaminaRegen() {
 			var vfixed = GetFixed("stRegen");
 			if (vfixed != 0) return vfixed;
 			return GetSkilledValue((float)data.effect.staminaRegen / 100f, 0.1f);
@@ -457,13 +457,13 @@ namespace RuneStones.Core {
 
 		public void ModifyStaminaRegen(ref float staminaMultiplier) {
 			if (data.effect == null) return;
-			var regen = getStaminaRegen();
+			var regen = GetStaminaRegen();
 			if (regen != 0) staminaMultiplier += regen;
 		}
 
 		public void ModifyHealthRegen(ref float healthMultiplier) {
 			if (data.effect == null) return;
-			var regen = getHealthRegen();
+			var regen = GetHealthRegen();
 			if (regen != 0) healthMultiplier += regen;
 		}
 

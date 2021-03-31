@@ -38,4 +38,28 @@ namespace RunicPower.Patches {
 			return (item == null);
 		}
 	}
+
+	[HarmonyPatch(typeof(Player), "UpdateMovementModifier")]
+	public static class Player_UpdateMovementModifier_Patch {
+		public static void Postfix(Player __instance) {
+			var runes = __instance?.m_seman.GetRunes();
+			if (runes == null) return;
+			foreach (var rune in runes) {
+				rune.ModifyEquipmentMovement(ref __instance.m_equipmentMovementModifier);
+			}
+		}
+	}
+
+	[HarmonyPatch(typeof(Player), "ApplyArmorDamageMods")]
+	public static class Player_ApplyArmorDamageMods_Patch {
+		public static void Postfix(Player __instance, ref HitData.DamageModifiers mods) {
+			var damageMods = new List<HitData.DamageModPair>();
+			var runes = __instance.m_seman.GetRunes();
+			foreach (var rune in runes) {
+				var rmods = rune.GetResistanceModifiers();
+				foreach (var rmod in rmods) damageMods.Add(rmod);
+			}
+			mods.Apply(damageMods);
+		}
+	}
 }
