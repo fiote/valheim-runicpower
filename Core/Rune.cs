@@ -37,6 +37,8 @@ namespace RuneStones.Core {
 			{"Weak", HitData.DamageModifier.Weak }
 		};
 
+		public Dictionary<string, float> fixedValues = new Dictionary<string, float>();
+
 		// ================================================================
 		// EFFECT
 		// ================================================================
@@ -55,6 +57,22 @@ namespace RuneStones.Core {
 
 		public void ParseBuffs(string dsbuffs) {
 			Debug.Log("PARSE BUFFS " + dsbuffs);
+
+			fixedValues = new Dictionary<string, float>();
+			var buffs = dsbuffs.Split(';');
+
+			foreach(var buff in buffs) {
+				var parts = buff.Split('=');
+				var key = parts[0];
+				var value = float.Parse(parts[1]);
+				fixedValues[key] = value;
+				Debug.Log("key " + key + " value " + value);
+			}
+		}
+
+		public float GetFixed(string key) {
+			if (fixedValues.ContainsKey(key)) return fixedValues[key];
+			return 0;
 		}
 
 		public string GetEffectString() {
@@ -62,40 +80,20 @@ namespace RuneStones.Core {
 			GetEffectStringPart(ref buffs, "hpRegen", getHealthRegen());
 			GetEffectStringPart(ref buffs, "stRegen", getStaminaRegen());
 			GetEffectStringPart(ref buffs, "movement", GetMovementBonus());
-			GetEffectStringPart(ref buffs, "ignore", data.effect?.ignoreFallDamage);
+			GetEffectStringPart(ref buffs, "ignoreFall", GetIgnoreFallDamage());
 			GetEffectStringPart(ref buffs, "stealth", GetStealhiness());
 			GetEffectStringPart(ref buffs, "exposed", GetExpose());
-			GetEffectStringPart(ref buffs, "hpSteam", GetHealthSteal());
+			GetEffectStringPart(ref buffs, "hpSteal", GetHealthSteal());
 
-			if (data.effect.doPower.IsValued()) {
-				if (data.effect.doPower.IsElemental()) {
-					GetEffectStringPart(ref buffs, "power.Elemental", GetPower(HitData.DamageType.Fire));
-				} else {
-					foreach (var dmgType in RuneData.elTypes) GetEffectStringPart(ref buffs, "power."+dmgType, GetPower(dmgType));
-				}
-				if (data.effect.doPower.IsPhysical()) {
-						GetEffectStringPart(ref buffs, "power.Slash", GetPower(HitData.DamageType.Physical));
-				} else {
-					foreach (var dmgType in RuneData.phTypes) GetEffectStringPart(ref buffs, "power." + dmgType, GetPower(dmgType));
-				}
-			}
-
-			if (data.effect.doResist.IsValued()) {
-				if (data.effect.doResist.IsElemental()) {
-					GetEffectStringPart(ref buffs, "resist.Elemental", GetResist(HitData.DamageType.Fire));
-				} else {
-					foreach (var dmgType in RuneData.elTypes) GetEffectStringPart(ref buffs, "resist." + dmgType, GetResist(dmgType));
-				}
-				if (data.effect.doResist.IsPhysical()) {
-					GetEffectStringPart(ref buffs, "resist.Slash", GetResist(HitData.DamageType.Physical));
-				} else {
-					foreach (var dmgType in RuneData.phTypes) GetEffectStringPart(ref buffs, "resist." + dmgType, GetResist(dmgType));
-				}
+			foreach (HitData.DamageType dmgType in dmgTypes) {
+				GetEffectStringPart(ref buffs, "power." + dmgType, GetPower(dmgType));
+				GetEffectStringPart(ref buffs, "resist." + dmgType, GetResist(dmgType));
 			}
 
 			var parts = new List<string>();
 			parts.Add("RUNICPOWER");
 			parts.Add(data.recipe.item);
+			parts.Add(caster.GetZDOID().ToString()); 
 			parts.Add(string.Join(";", buffs));
 
 			return string.Join("|", parts);
@@ -355,6 +353,9 @@ namespace RuneStones.Core {
 		}
 
 		private int GetPower(HitData.DamageType dmgType) {
+			var vfixed = GetFixed("power." + dmgType);
+			if (vfixed != 0) return Mathf.RoundToInt(vfixed);
+
 			// level 1: +2%
 			// level 2: +4%
 			// level 10: +20%
@@ -364,6 +365,9 @@ namespace RuneStones.Core {
 		}
 
 		private int GetResist(HitData.DamageType dmgType) {
+			var vfixed = GetFixed("resist."+dmgType);
+			if (vfixed != 0) return Mathf.RoundToInt(vfixed);
+
 			// level 1: +2%
 			// level 2: +4%
 			// level 10: +20%
@@ -372,6 +376,9 @@ namespace RuneStones.Core {
 		}
 
 		private float GetMovementBonus() {
+			var vfixed = GetFixed("movement");
+			if (vfixed != 0) return vfixed;
+
 			// level 1: +1%
 			// level 2: +2%
 			// level 10: +10%
@@ -380,6 +387,9 @@ namespace RuneStones.Core {
 		}
 
 		public float GetHealthSteal() {
+			var vfixed = GetFixed("hpSteal");
+			if (vfixed != 0) return vfixed;
+
 			// level 1: +1%
 			// level 2: +2%
 			// level 10: +10%
@@ -388,11 +398,23 @@ namespace RuneStones.Core {
 			return GetSkilledValue((float)data.effect.healthBack / 100f, 1f);
 		}
 
+		public bool GetIgnoreFallDamage() {
+			var vfixed = GetFixed("ignoreFall");
+			if (vfixed != 0) return true;
+			return data.effect?.ignoreFallDamage == true;
+		}
+
 		public float GetExpose() {
+			var vfixed = GetFixed("exposed");
+			if (vfixed != 0) return vfixed;
+
 			return GetSkilledValue((float)data.effect.expose / 100f, 2f);
 		}
 
 		public float GetStealhiness() {
+			var vfixed = GetFixed("stealth");
+			if (vfixed != 0) return vfixed;
+
 			return GetSkilledValue((float)data.effect.stealthiness / 100f, 1f, 100f);
 		}
 
@@ -412,11 +434,17 @@ namespace RuneStones.Core {
 		}
 
 		public float getHealthRegen() {
+			var vfixed = GetFixed("hpRegen");
+			if (vfixed != 0) return vfixed;
+
 			if (data.effect == null) return 0;
 			return data.effect.healthRegen * 100;
 		}
 
 		public float getStaminaRegen() {
+			var vfixed = GetFixed("stRegen");
+			if (vfixed != 0) return vfixed;
+
 			if (data.effect == null) return 0;
 			return data.effect.staminaRegen * 100;
 		}
