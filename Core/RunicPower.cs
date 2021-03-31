@@ -124,8 +124,8 @@ namespace RunicPower {
 			}
 
 			var rune = new Rune(data, caster);
-			rune.CreateEffect();
 			rune.ParseBuffs(dsbuffs);
+			rune.CreateEffect();
 
 			Debug.Log("rune = " + rune);
 			return rune.statusEffect;

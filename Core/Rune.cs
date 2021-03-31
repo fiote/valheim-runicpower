@@ -90,10 +90,12 @@ namespace RuneStones.Core {
 				GetEffectStringPart(ref buffs, "resist." + dmgType, GetResist(dmgType));
 			}
 
+			GetEffectStringPart(ref buffs, "duration", GetDuration());
+
 			var parts = new List<string>();
 			parts.Add("RUNICPOWER");
 			parts.Add(data.recipe.item);
-			parts.Add(caster.GetZDOID().ToString()); 
+			parts.Add(caster.GetZDOID().ToString());
 			parts.Add(string.Join(";", buffs));
 
 			return string.Join("|", parts);
@@ -128,14 +130,14 @@ namespace RuneStones.Core {
 		public bool TooltipAppendPower(ref StringBuilder text, HitData.DamageType dmgType, string label = null) {
 			var power = GetPower(dmgType);
 			if (label == null) label = dmgType.ToString();
-			if (power != 0) text.AppendFormat("\nIncreases <color=orange>{1}</color> power by <color=orange>{0}%</color>", power, label);
+			if (power != 0) text.AppendFormat("Increases <color=orange>{1}</color> power by <color=orange>{0}%</color>\n", power, label);
 			return power != 0;
 		}
 
 		public bool TooltipAppendResist(ref StringBuilder text, HitData.DamageType dmgType, string label = null) {
 			var resist = GetResist(dmgType);
 			if (label == null) label = dmgType.ToString();
-			if (resist != 0) text.AppendFormat("\nIncreases <color=orange>{1}</color> resistance by <color=orange>{0}%</color>", resist, label);
+			if (resist != 0) text.AppendFormat("Increases <color=orange>{1}</color> resistance by <color=orange>{0}%</color>\n", resist, label);
 			return resist != 0;
 		}
 
@@ -153,28 +155,30 @@ namespace RuneStones.Core {
 
 			if (complete) {
 				text.AppendFormat("<color={0}>[{1} {2}]</color> {3}\n", colorClass, data.archetype, data.type, item.m_shared.m_description);
+			} else {
+				text.AppendFormat("<color={0}>[{1} {2}]</color>\n", colorClass, data.archetype, data.type);
 			}
 
 			var fx = data.effect;
 
 			if (fx != null) {
-				if (complete) text.Append("\n-----------------------");
+				if (complete) text.Append("\n-----------------------\n");
 
 				// REGEN
-				if (fx.healthRegen != 0) text.AppendFormat("\nHealth regen <color=orange>+{0}%</color>", getHealthRegen());
-				if (fx.staminaRegen != 0) text.AppendFormat("\nStamina regen <color=orange>+{0}%</color>", getStaminaRegen());
+				if (fx.healthRegen != 0) text.AppendFormat("Health regen <color=orange>+{0}%</color>\n", getHealthRegen());
+				if (fx.staminaRegen != 0) text.AppendFormat("Stamina regen <color=orange>+{0}%</color>\n", getStaminaRegen());
 
 				// MOVEMENT
-				if (fx.movementBonus != 0) text.AppendFormat("\nMovement speed <color=orange>+{0}%</color>", GetMovementBonus());
-				if (fx.ignoreFallDamage) text.AppendFormat("\nFall damage <color=orange>-100%</color>");
+				if (fx.movementBonus != 0) text.AppendFormat("Movement speed <color=orange>+{0}%</color>\n", GetMovementBonus());
+				if (fx.ignoreFallDamage) text.AppendFormat("Fall damage <color=orange>-100%</color>\n");
 
 				foreach (HitData.DamageType dmgType in dmgTypes) {
 					var health = GetHealHP(dmgType);
 					var stamina = GetHealST(dmgType);
 					var damage = GetDamage(dmgType);
-					if (health != 0) text.AppendFormat("\nRecovers <color=orange>{0}</color> Health (<color=orange>{1}</color>)", health, dmgType);
-					if (stamina != 0) text.AppendFormat("\nRecovers <color=orange>{0}</color> Stamina (<color=orange>{1}</color>)", stamina, dmgType);
-					if (damage != 0) text.AppendFormat("\nDeals <color=orange>{0}</color> Damage (<color=orange>{1}</color>)", damage, dmgType);
+					if (health != 0) text.AppendFormat("Recovers <color=orange>{0}</color> Health (<color=orange>{1}</color>)\n", health, dmgType);
+					if (stamina != 0) text.AppendFormat("Recovers <color=orange>{0}</color> Stamina (<color=orange>{1}</color>)\n", stamina, dmgType);
+					if (damage != 0) text.AppendFormat("Deals <color=orange>{0}</color> Damage (<color=orange>{1}</color>)\n", damage, dmgType);
 				}
 				if (fx.doPower.IsValued()) {
 					if (fx.doPower.IsElemental()) TooltipAppendPower(ref text, HitData.DamageType.Fire, "Elemental"); else foreach (var dmgType in RuneData.elTypes) TooltipAppendPower(ref text, dmgType);
@@ -187,18 +191,18 @@ namespace RuneStones.Core {
 				}
 
 				// RANDOM EFFECTS
-				if (fx.stagger) text.AppendFormat("\n<color=orange>Staggers</color> the target");
-				if (fx.pushback) text.AppendFormat("\n<color=orange>Pushes</color> the target");
-				if (fx.pull) text.AppendFormat("\n<color=orange>Pulls</color> the target");
-				if (fx.fear) text.AppendFormat("\n<color=orange>Fears</color> the target");
-				if (fx.burn) text.AppendFormat("\n<color=orange>Burns</color> the target");
-				if (fx.poison) text.AppendFormat("\n<color=orange>Poison</color> the target");
-				if (fx.slow) text.AppendFormat("\n<color=orange>Slows</color> the target");
-				if (fx.cripple) text.AppendFormat("\n<color=orange>Cripples</color> the target");
+				if (fx.stagger) text.AppendFormat("<color=orange>Staggers</color> the target\n");
+				if (fx.pushback) text.AppendFormat("<color=orange>Pushes</color> the target\n");
+				if (fx.pull) text.AppendFormat("<color=orange>Pulls</color> the target\n");
+				if (fx.fear) text.AppendFormat("<color=orange>Fears</color> the target\n");
+				if (fx.burn) text.AppendFormat("<color=orange>Burns</color> the target\n");
+				if (fx.poison) text.AppendFormat("<color=orange>Poison</color> the target\n");
+				if (fx.slow) text.AppendFormat("<color=orange>Slows</color> the target\n");
+				if (fx.cripple) text.AppendFormat("<color=orange>Cripples</color> the target\n");
 
-				if (fx.stealthiness != 0) text.AppendFormat("\nBecomes invisible to foes within <color=orange>{0} meters</color>", GetStealhiness());
-				if (fx.expose != 0) text.AppendFormat("\nIncreases damage taken by <color=orange>{0}%</color>", GetExpose());
-				if (fx.healthBack != 0) text.AppendFormat("\nRecovers <color=orange>{0}%</color> of each attack as <color=orange>HP</color>", GetHealthSteal());
+				if (fx.stealthiness != 0) text.AppendFormat("Becomes invisible to foes within <color=orange>{0} meters</color>\n", GetStealhiness());
+				if (fx.expose != 0) text.AppendFormat("Increases damage taken by <color=orange>{0}%</color>\n", GetExpose());
+				if (fx.healthBack != 0) text.AppendFormat("Recovers <color=orange>{0}%</color> of each attack as <color=orange>HP</color>\n", GetHealthSteal());
 
 				var runeMods = GetResistanceModifiers();
 
@@ -208,26 +212,25 @@ namespace RuneStones.Core {
 				}
 
 				if (complete) {
-					text.Append("\n-----------------------");
+					text.Append("\n-----------------------\n");
 
-					text.AppendFormat("\n");
 					var duration = GetDuration();
 					var texttime = (duration == 0) ? "Instant" : duration + "s";
-					text.AppendFormat("\nDuration: <color=orange>{0}</color>", texttime);
+					text.AppendFormat("Duration: <color=orange>{0}</color>\n", texttime);
 
 					if (fx.target != "") {
 						var dstarget = mapTarget[fx.target];
 						if (fx.target == "projectile") {
 							if (data.projectile.explode) {
-								text.AppendFormat("\nTarget: <color=orange>{0} (Explosive)</color> ({1} meters)", dstarget, GetSkilledRange(data.rangeExplosion));
+								text.AppendFormat("Target: <color=orange>{0} (Explosive)</color> ({1} meters)\n", dstarget, GetSkilledRange(data.rangeExplosion));
 							} else {
-								text.AppendFormat("\nTarget: <color=orange>{0}</color>", dstarget);
+								text.AppendFormat("Target: <color=orange>{0}</color>\n", dstarget);
 							}
 						} else {
 							if (fx.target == "self") {
-								text.AppendFormat("\nTarget: <color=orange>{0}</color>", dstarget);
+								text.AppendFormat("Target: <color=orange>{0}</color>\n", dstarget);
 							} else {
-								text.AppendFormat("\nTarget: <color=orange>{0}</color> ({1} meters)", dstarget, GetSkilledRangeAOE(fx.target));
+								text.AppendFormat("Target: <color=orange>{0}</color> ({1} meters)\n", dstarget, GetSkilledRangeAOE(fx.target));
 							}
 						}
 					}
@@ -272,6 +275,9 @@ namespace RuneStones.Core {
 		}
 
 		public int GetDuration() {
+			var vfixed = GetFixed("duration");
+			if (vfixed != 0) return Mathf.RoundToInt(vfixed);
+
 			int value = data.effect.duration;
 			int skill = (int)GetSkill() - 1;
 			var multi = (100f + skill * 2) / 100f;
