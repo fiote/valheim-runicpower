@@ -77,15 +77,15 @@ namespace RunicPower.Core {
 
 	[Serializable]
 	public class DamageTypeValues {
-		public int m_blunt;
-		public int m_pierce;
-		public int m_slash;
+		public float m_blunt;
+		public float m_pierce;
+		public float m_slash;
 
-		public int m_fire;
-		public int m_frost;
-		public int m_lightning;
-		public int m_poison;
-		public int m_spirit;
+		public float m_fire;
+		public float m_frost;
+		public float m_lightning;
+		public float m_poison;
+		public float m_spirit;
 
 		public float Elemental() {
 			return m_fire + m_frost + m_lightning + m_poison + m_spirit;
@@ -123,11 +123,11 @@ namespace RunicPower.Core {
 			return this;
 		}
 
-		public void AddByType(HitData.DamageType dmgType, int value) {
+		public void AddByType(HitData.DamageType dmgType, float value) {
 			SetByType(dmgType, GetByType(dmgType) + value);
 		}
 
-		public void SetByType(HitData.DamageType dmgType, int value) {
+		public void SetByType(HitData.DamageType dmgType, float value) {
 			if (dmgType is HitData.DamageType.Blunt) m_blunt = value;
 			if (dmgType is HitData.DamageType.Pierce) m_pierce = value;
 			if (dmgType is HitData.DamageType.Slash) m_slash = value;
@@ -138,7 +138,7 @@ namespace RunicPower.Core {
 			if (dmgType is HitData.DamageType.Spirit) m_spirit = value;
 		}
 
-		public int GetByType(HitData.DamageType dmgType) {
+		public float GetByType(HitData.DamageType dmgType) {
 			if (dmgType is HitData.DamageType.Blunt) return m_blunt;
 			if (dmgType is HitData.DamageType.Pierce) return m_pierce;
 			if (dmgType is HitData.DamageType.Slash) return m_slash;

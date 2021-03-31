@@ -165,8 +165,8 @@ namespace RuneStones.Core {
 				if (complete) text.Append("\n-----------------------\n");
 
 				// REGEN
-				if (fx.healthRegen != 0) text.AppendFormat("Health regen <color=orange>+{0}%</color>\n", getHealthRegen());
-				if (fx.staminaRegen != 0) text.AppendFormat("Stamina regen <color=orange>+{0}%</color>\n", getStaminaRegen());
+				if (fx.healthRegen != 0) text.AppendFormat("Health regen <color=orange>+{0}%</color>\n", getHealthRegen()*100f);
+				if (fx.staminaRegen != 0) text.AppendFormat("Stamina regen <color=orange>+{0}%</color>\n", getStaminaRegen()*100f);
 
 				// MOVEMENT
 				if (fx.movementBonus != 0) text.AppendFormat("Movement speed <color=orange>+{0}%</color>\n", GetMovementBonus());
@@ -296,7 +296,7 @@ namespace RuneStones.Core {
 			return (int)value;
 		}
 
-		public int GetSkilledTypedValue(DamageTypeValues source, HitData.DamageType dmgType, float skillMultiplier, float weaponMultiplier, float? capValue = null) {
+		public float GetSkilledTypedValue(DamageTypeValues source, HitData.DamageType dmgType, float skillMultiplier, float weaponMultiplier, float? capValue = null) {
 			float skill = GetSkill();
 			var value = source.GetByType(dmgType) / 100f;
 			if (value == 0) return 0;
@@ -312,10 +312,10 @@ namespace RuneStones.Core {
 			// checking for cap values
 			if (capValue != null && modified > capValue) modified = (float)capValue;
 			// returning a rounded value
-			return Mathf.RoundToInt(modified);
+			return modified;
 		}
 
-		public int GetSkilledValue(float value, float skillMultiplier, float? capValue = null) {
+		public float GetSkilledValue(float value, float skillMultiplier, float? capValue = null) {
 			float skill = GetSkill();
 			if (value == 0) return 0;
 			// each skill level increases damage by x
@@ -323,7 +323,7 @@ namespace RuneStones.Core {
 			// checking for cap values
 			if (capValue != null && skilled > capValue) skilled = (float)capValue;
 			// returning a rounded value
-			return Mathf.RoundToInt(skilled);
+			return skilled;
 		}
 
 		public int GetSkilledRange(float value) {
@@ -358,7 +358,7 @@ namespace RuneStones.Core {
 			return GetSkilledTypedValue(data.effect.doHealST, dmgType, 6f, 1f);
 		}
 
-		private int GetPower(HitData.DamageType dmgType) {
+		private float GetPower(HitData.DamageType dmgType) {
 			var vfixed = GetFixed("power." + dmgType);
 			if (vfixed != 0) return Mathf.RoundToInt(vfixed);
 
@@ -370,7 +370,7 @@ namespace RuneStones.Core {
 			return GetSkilledTypedValue(data.effect.doPower, dmgType, 2f, 0f);
 		}
 
-		private int GetResist(HitData.DamageType dmgType) {
+		private float GetResist(HitData.DamageType dmgType) {
 			var vfixed = GetFixed("resist."+dmgType);
 			if (vfixed != 0) return Mathf.RoundToInt(vfixed);
 
@@ -403,6 +403,19 @@ namespace RuneStones.Core {
 			// level 100: +100%
 			return GetSkilledValue((float)data.effect.healthBack / 100f, 1f);
 		}
+
+		public float getHealthRegen() {
+			var vfixed = GetFixed("hpRegen");
+			if (vfixed != 0) return vfixed;
+			return GetSkilledValue((float)data.effect.healthRegen / 100f, 0.1f);
+		}
+
+		public float getStaminaRegen() {
+			var vfixed = GetFixed("stRegen");
+			if (vfixed != 0) return vfixed;
+			return GetSkilledValue((float)data.effect.staminaRegen / 100f, 0.1f);
+		}
+
 
 		public bool GetIgnoreFallDamage() {
 			var vfixed = GetFixed("ignoreFall");
@@ -438,33 +451,23 @@ namespace RuneStones.Core {
 			}
 			return data.resistanceModifiers;
 		}
-
-		public float getHealthRegen() {
-			var vfixed = GetFixed("hpRegen");
-			if (vfixed != 0) return vfixed;
-
-			if (data.effect == null) return 0;
-			return data.effect.healthRegen * 100;
-		}
-
-		public float getStaminaRegen() {
-			var vfixed = GetFixed("stRegen");
-			if (vfixed != 0) return vfixed;
-
-			if (data.effect == null) return 0;
-			return data.effect.staminaRegen * 100;
-		}
-
 		// ================================================================
 		// MODIFY
 		// ================================================================
 
-		public void ModifyStaminaRegen(Player player, ref float staminaMultiplier) {
+		public void ModifyStaminaRegen(ref float staminaMultiplier) {
 			if (data.effect == null) return;
-			if (data.effect.staminaRegen != 0) staminaMultiplier += data.effect.staminaRegen + 1;
+			var regen = getStaminaRegen();
+			if (regen != 0) staminaMultiplier += regen;
 		}
 
-		public void ModifyEquipmentMovement(Player player, ref float equipmentMovement) {
+		public void ModifyHealthRegen(ref float healthMultiplier) {
+			if (data.effect == null) return;
+			var regen = getHealthRegen();
+			if (regen != 0) healthMultiplier += regen;
+		}
+
+		public void ModifyEquipmentMovement(ref float equipmentMovement) {
 			if (data.effect == null) return;
 			equipmentMovement += GetMovementBonus() / 100f;
 		}

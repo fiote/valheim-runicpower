@@ -373,7 +373,7 @@
                 ]
             },
             "effect": {
-                "healthRegen": 10,
+                "healthRegen": 100,
                 "target": "allies",
                 "duration": 300
             }
@@ -396,7 +396,7 @@
                 ]
             },
             "effect": {
-                "staminaRegen": 10,
+                "staminaRegen": 100,
                 "target": "allies",
                 "duration": 300
             }
