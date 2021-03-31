@@ -114,8 +114,8 @@ namespace RunicPower {
 			return rune;
 		}
 
-		public static StatusEffect CreateStatusEffect(string name, Player caster) {
-			Debug.Log("CreateStatusEffect " + name + " " + caster);
+		public static StatusEffect CreateStatusEffect(string name, Player caster, string dsbuffs) {
+			Debug.Log("CreateStatusEffect " + name + " " + dsbuffs);
 
 			var data = runesData.Find(r => r.recipe.item == name);
 			if (data == null) {
@@ -125,6 +125,7 @@ namespace RunicPower {
 
 			var rune = new Rune(data, caster);
 			rune.CreateEffect();
+			rune.ParseBuffs(dsbuffs);
 
 			Debug.Log("rune = " + rune);
 			return rune.statusEffect;

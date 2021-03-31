@@ -33,6 +33,21 @@ namespace RunicPower.Core {
 		public static RuneVFX genericVFX = new RuneVFX().SetName("vfx_Potion_stamina_medium");
 		public static RuneVFX genericSFX = new RuneVFX().SetName("sfx_bowl_AddItem");
 
+		public static List<HitData.DamageType> elTypes = new List<HitData.DamageType> {
+			HitData.DamageType.Fire,
+			HitData.DamageType.Frost,
+			HitData.DamageType.Lightning,
+			HitData.DamageType.Poison,
+			HitData.DamageType.Spirit
+		};
+
+		public static List<HitData.DamageType> phTypes = new List<HitData.DamageType> {
+			HitData.DamageType.Slash,
+			HitData.DamageType.Pierce,
+			HitData.DamageType.Blunt
+		};
+
+
 		public string fxcustom;
 		public RuneEffect effect;
 		public RuneProjectile projectile;

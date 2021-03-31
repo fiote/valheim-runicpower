@@ -24,8 +24,8 @@ namespace RunicPower.Patches {
 
             return list;
         }
-        public static void AddRunicEffect(this SEMan __instance, string name, Player caster, bool resetTime) {
-            Debug.Log("AddRunicEffect " + __instance + " " + name+" "+caster);
+        public static void AddRunicEffect(this SEMan __instance, string name, Player caster, string dsbuffs, bool resetTime) {
+            Debug.Log("AddRunicEffect " + __instance + " " + name+" "+ caster+ " "+ dsbuffs);
             // if the seman already have this effect
             StatusEffect statusEffect = __instance.GetStatusEffect(name);
             if (statusEffect != null) {
@@ -36,7 +36,7 @@ namespace RunicPower.Patches {
                 return;
             }
             // otherwise let's crete a new effect and add it to the target
-            StatusEffect statusEffect2 = RunicPower.CreateStatusEffect(name, caster);
+            StatusEffect statusEffect2 = RunicPower.CreateStatusEffect(name, caster, dsbuffs);
             if (statusEffect2 != null) __instance.AddStatusEffect(statusEffect2);
         }
     }

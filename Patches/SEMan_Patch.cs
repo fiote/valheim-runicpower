@@ -31,12 +31,13 @@ namespace RunicPower.Patches {
 
             var effectName = parts[1];
             var effectCaster = Player.GetAllPlayers().Find(p => p.GetZDOID().ToString() == parts[2]);
-            __instance.AddRunicEffect(effectName, effectCaster, resetTime);
+            var effectBuffs = parts[3];
+            __instance.AddRunicEffect(effectName, effectCaster, effectBuffs, resetTime);
             return false;
         }
     }
 
 
-    
+
 
 }

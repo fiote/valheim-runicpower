@@ -22,6 +22,7 @@ namespace RuneStones.Core {
 			this.data = data;
 			this.caster = caster;
 			this.data.Config();
+			CreateEffect();
 		}
 
 		public static Array dmgTypes = Enum.GetValues(typeof(HitData.DamageType));
@@ -50,6 +51,69 @@ namespace RuneStones.Core {
 			statusEffect.m_cooldown = 0f;
 			statusEffect.m_icon = data.itemDrop.m_itemData.m_shared.m_icons[0];
 			statusEffect.SetRune(this);
+		}
+
+		public void ParseBuffs(string dsbuffs) {
+			Debug.Log("PARSE BUFFS " + dsbuffs);
+		}
+
+		public string GetEffectString() {
+			var buffs = new List<string>();
+			GetEffectStringPart(ref buffs, "hpRegen", getHealthRegen());
+			GetEffectStringPart(ref buffs, "stRegen", getStaminaRegen());
+			GetEffectStringPart(ref buffs, "movement", GetMovementBonus());
+			GetEffectStringPart(ref buffs, "ignore", data.effect?.ignoreFallDamage);
+			GetEffectStringPart(ref buffs, "stealth", GetStealhiness());
+			GetEffectStringPart(ref buffs, "exposed", GetExpose());
+			GetEffectStringPart(ref buffs, "hpSteam", GetHealthSteal());
+
+			if (data.effect.doPower.IsValued()) {
+				if (data.effect.doPower.IsElemental()) {
+					GetEffectStringPart(ref buffs, "power.Elemental", GetPower(HitData.DamageType.Fire));
+				} else {
+					foreach (var dmgType in RuneData.elTypes) GetEffectStringPart(ref buffs, "power."+dmgType, GetPower(dmgType));
+				}
+				if (data.effect.doPower.IsPhysical()) {
+						GetEffectStringPart(ref buffs, "power.Slash", GetPower(HitData.DamageType.Physical));
+				} else {
+					foreach (var dmgType in RuneData.phTypes) GetEffectStringPart(ref buffs, "power." + dmgType, GetPower(dmgType));
+				}
+			}
+
+			if (data.effect.doResist.IsValued()) {
+				if (data.effect.doResist.IsElemental()) {
+					GetEffectStringPart(ref buffs, "resist.Elemental", GetResist(HitData.DamageType.Fire));
+				} else {
+					foreach (var dmgType in RuneData.elTypes) GetEffectStringPart(ref buffs, "resist." + dmgType, GetResist(dmgType));
+				}
+				if (data.effect.doResist.IsPhysical()) {
+					GetEffectStringPart(ref buffs, "resist.Slash", GetResist(HitData.DamageType.Physical));
+				} else {
+					foreach (var dmgType in RuneData.phTypes) GetEffectStringPart(ref buffs, "resist." + dmgType, GetResist(dmgType));
+				}
+			}
+
+			var parts = new List<string>();
+			parts.Add("RUNICPOWER");
+			parts.Add(data.recipe.item);
+			parts.Add(string.Join(";", buffs));
+
+			return string.Join("|", parts);
+		}
+
+		public void GetEffectStringPart(ref List<string> parts, string key, float value) {
+			if (value == 0) return;
+			parts.Add(key+"="+value.ToString());
+		}
+
+		public void GetEffectStringPart(ref List<string> parts, string key, bool? value = false) {
+			if (value == true) parts.Add(key + "=1");
+		}
+
+
+		public class RuneBuff {
+			public string code;
+			public float value;
 		}
 
 		// ================================================================
@@ -99,8 +163,8 @@ namespace RuneStones.Core {
 				if (complete) text.Append("\n-----------------------");
 
 				// REGEN
-				if (fx.healthRegen != 0) text.AppendFormat("\nHealth regen <color=orange>+{0}%</color>", fx.healthRegen * 100);
-				if (fx.staminaRegen != 0) text.AppendFormat("\nStamina regen <color=orange>+{0}%</color>", fx.staminaRegen * 100);
+				if (fx.healthRegen != 0) text.AppendFormat("\nHealth regen <color=orange>+{0}%</color>", getHealthRegen());
+				if (fx.staminaRegen != 0) text.AppendFormat("\nStamina regen <color=orange>+{0}%</color>", getStaminaRegen());
 
 				// MOVEMENT
 				if (fx.movementBonus != 0) text.AppendFormat("\nMovement speed <color=orange>+{0}%</color>", GetMovementBonus());
@@ -114,27 +178,14 @@ namespace RuneStones.Core {
 					if (stamina != 0) text.AppendFormat("\nRecovers <color=orange>{0}</color> Stamina (<color=orange>{1}</color>)", stamina, dmgType);
 					if (damage != 0) text.AppendFormat("\nDeals <color=orange>{0}</color> Damage (<color=orange>{1}</color>)", damage, dmgType);
 				}
-
-				var elTypes = new List<HitData.DamageType>();
-				elTypes.Add(HitData.DamageType.Fire);
-				elTypes.Add(HitData.DamageType.Frost);
-				elTypes.Add(HitData.DamageType.Lightning);
-				elTypes.Add(HitData.DamageType.Poison);
-				elTypes.Add(HitData.DamageType.Spirit);
-
-				var phTypes = new List<HitData.DamageType>();
-				phTypes.Add(HitData.DamageType.Slash);
-				phTypes.Add(HitData.DamageType.Pierce);
-				phTypes.Add(HitData.DamageType.Blunt);
-
 				if (fx.doPower.IsValued()) {
-					if (fx.doPower.IsElemental()) TooltipAppendPower(ref text, HitData.DamageType.Fire, "Elemental"); else foreach (var dmgType in elTypes) TooltipAppendPower(ref text, dmgType);
-					if (fx.doPower.IsPhysical()) TooltipAppendPower(ref text, HitData.DamageType.Slash, "Physical"); else foreach (var dmgType in phTypes) TooltipAppendPower(ref text, dmgType);
+					if (fx.doPower.IsElemental()) TooltipAppendPower(ref text, HitData.DamageType.Fire, "Elemental"); else foreach (var dmgType in RuneData.elTypes) TooltipAppendPower(ref text, dmgType);
+					if (fx.doPower.IsPhysical()) TooltipAppendPower(ref text, HitData.DamageType.Slash, "Physical"); else foreach (var dmgType in RuneData.phTypes) TooltipAppendPower(ref text, dmgType);
 				}
 
 				if (fx.doResist.IsValued()) {
-					if (fx.doResist.IsElemental()) TooltipAppendResist(ref text, HitData.DamageType.Fire, "Elemental"); else foreach (var dmgType in elTypes) TooltipAppendResist(ref text, dmgType);
-					if (fx.doResist.IsPhysical()) TooltipAppendResist(ref text, HitData.DamageType.Slash, "Physical"); else foreach (var dmgType in phTypes) TooltipAppendResist(ref text, dmgType);
+					if (fx.doResist.IsElemental()) TooltipAppendResist(ref text, HitData.DamageType.Fire, "Elemental"); else foreach (var dmgType in RuneData.elTypes) TooltipAppendResist(ref text, dmgType);
+					if (fx.doResist.IsPhysical()) TooltipAppendResist(ref text, HitData.DamageType.Slash, "Physical"); else foreach (var dmgType in RuneData.phTypes) TooltipAppendResist(ref text, dmgType);
 				}
 
 				// RANDOM EFFECTS
@@ -202,6 +253,7 @@ namespace RuneStones.Core {
 		}
 
 		public void UpdateCaster() {
+			if (caster == null) return;
 			var dmg = caster.GetCurrentWeapon().GetDamage();
 			var runes = caster.GetRunes();
 			casterWeaponDmg = dmg.GetTotalElementalDamage() + dmg.GetTotalPhysicalDamage();
@@ -214,6 +266,8 @@ namespace RuneStones.Core {
 		// ================================================================
 
 		public float GetSkill() {
+			if (caster == null) return 1;
+
 			float skill = caster.GetSkillFactor(data.skillType) * 100f;
 			if (skill < 1) skill = 1;
 			return skill;
@@ -224,11 +278,6 @@ namespace RuneStones.Core {
 			int skill = (int)GetSkill() - 1;
 			var multi = (100f + skill * 2) / 100f;
 			return Mathf.RoundToInt(value * multi);
-		}
-
-		public string GetEffectString() {
-			var parts = new string[] { "RUNICPOWER", data.recipe.item, caster.GetZDOID().ToString() };
-			return string.Join("|", parts);
 		}
 
 		public int GetHealingHP() {
@@ -362,6 +411,16 @@ namespace RuneStones.Core {
 			return data.resistanceModifiers;
 		}
 
+		public float getHealthRegen() {
+			if (data.effect == null) return 0;
+			return data.effect.healthRegen * 100;
+		}
+
+		public float getStaminaRegen() {
+			if (data.effect == null) return 0;
+			return data.effect.staminaRegen * 100;
+		}
+
 		// ================================================================
 		// MODIFY
 		// ================================================================
@@ -444,8 +503,6 @@ namespace RuneStones.Core {
 
 			Debug.Log("==================================");
 			Debug.Log("ApplyEffectOn " + target);
-			var weaponDmg = caster.GetCurrentWeapon().GetDamage().GetTotalDamage();
-			var damageModifiers = caster.GetDamageModifiers();
 
 			// ===== RESTORING HEALTH ========================================
 
@@ -544,7 +601,9 @@ namespace RuneStones.Core {
 			// if there is a duration, it means it'a buff. So let's apply it to targets
 			if (data.effect.duration > 0) {
 				Debug.Log("RUNE IS ADDING SOME (DE)BUFF TO " + target.name);
-				target.m_seman.AddStatusEffect(GetEffectString(), true);
+				var fxString = GetEffectString();
+				Debug.Log("fxString = " + fxString);
+				target.m_seman.AddStatusEffect(fxString, true);
 			}
 		}
 
