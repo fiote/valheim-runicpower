@@ -47,7 +47,7 @@ namespace RuneStones.Core {
 			if (data.effect == null || data.effect.duration == 0) return;
 			statusEffect = ScriptableObject.CreateInstance<StatusEffect>();
 			statusEffect.m_ttl = GetDuration();
-			statusEffect.name = data.name;
+			statusEffect.name = data.recipe.item;
 			statusEffect.m_name = data.name;
 			statusEffect.m_category = data.name;
 			statusEffect.m_cooldown = 0f;
