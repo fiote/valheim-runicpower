@@ -162,7 +162,7 @@ namespace RuneStones.Core {
 			var fx = data.effect;
 
 			if (fx != null) {
-				if (complete) text.Append("\n-----------------------\n");
+				if (complete) text.AppendFormat("\n------ <color=orange>Level {0}</color> -------\n", Mathf.FloorToInt(GetSkill()));
 
 				// REGEN
 				if (fx.healthRegen != 0) text.AppendFormat("Health regen <color=orange>+{0}%</color>\n", GetHealthRegen()*100f);
@@ -176,9 +176,9 @@ namespace RuneStones.Core {
 					var health = GetHealHP(dmgType);
 					var stamina = GetHealST(dmgType);
 					var damage = GetDamage(dmgType);
-					if (health != 0) text.AppendFormat("Recovers <color=orange>{0}</color> Health (<color=orange>{1}</color>)\n", health, dmgType);
-					if (stamina != 0) text.AppendFormat("Recovers <color=orange>{0}</color> Stamina (<color=orange>{1}</color>)\n", stamina, dmgType);
-					if (damage != 0) text.AppendFormat("Deals <color=orange>{0}</color> Damage (<color=orange>{1}</color>)\n", damage, dmgType);
+					if (health != 0) text.AppendFormat("Recovers <color=orange>{0}</color> Health (<color=orange>{1}</color>)\n", Mathf.RoundToInt(health), dmgType);
+					if (stamina != 0) text.AppendFormat("Recovers <color=orange>{0}</color> Stamina (<color=orange>{1}</color>)\n", Mathf.RoundToInt(stamina), dmgType);
+					if (damage != 0) text.AppendFormat("Deals <color=orange>{0}</color> Damage (<color=orange>{1}</color>)\n", Mathf.RoundToInt(damage), dmgType);
 				}
 				if (fx.doPower.IsValued()) {
 					if (fx.doPower.IsElemental()) TooltipAppendPower(ref text, HitData.DamageType.Fire, "Elemental"); else foreach (var dmgType in RuneData.elTypes) TooltipAppendPower(ref text, dmgType);
@@ -200,7 +200,7 @@ namespace RuneStones.Core {
 				if (fx.slow) text.AppendFormat("<color=orange>Slows</color> the target\n");
 				if (fx.cripple) text.AppendFormat("<color=orange>Cripples</color> the target\n");
 
-				if (fx.stealthiness != 0) text.AppendFormat("Becomes invisible to foes within <color=orange>{0} meters</color>\n", GetStealhiness());
+				if (fx.stealthiness != 0) text.AppendFormat("Becomes invisible to foes within <color=orange>{0} meters</color>\n", Mathf.RoundToInt(GetStealhiness()));
 				if (fx.expose != 0) text.AppendFormat("Increases damage taken by <color=orange>{0}%</color>\n", GetExpose());
 				if (fx.healthBack != 0) text.AppendFormat("Recovers <color=orange>{0}%</color> of each attack as <color=orange>HP</color>\n", GetHealthSteal());
 
@@ -212,7 +212,7 @@ namespace RuneStones.Core {
 				}
 
 				if (complete) {
-					text.Append("\n-----------------------\n");
+					text.Append("-----------------------\n\n");
 
 					var duration = GetDuration();
 					var texttime = (duration == 0) ? "Instant" : duration + "s";
