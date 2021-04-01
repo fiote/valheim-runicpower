@@ -537,17 +537,12 @@ namespace RuneStones.Core {
 			try { destructable = target; } catch (Exception) { }
 			try { player = (Player)target; } catch (Exception) { }
 
-
-			Debug.Log("==================================");
-			Debug.Log("ApplyEffectOn " + target);
-
 			// ===== RESTORING HEALTH ========================================
 
 			float healHP = 0;
 			foreach (HitData.DamageType dmgType in dmgTypes) healHP += GetHealHP(dmgType);
 
 			if (healHP != 0) {
-				Debug.Log("RUNE IS RECOVERING HEALTH");
 				target.Heal(healHP, true);
 			}
 
@@ -557,7 +552,6 @@ namespace RuneStones.Core {
 			foreach (HitData.DamageType dmgType in dmgTypes) healST += GetHealST(dmgType);
 
 			if (healST != 0) {
-				Debug.Log("RUNE IS RECOVERING STAMINA");
 				player?.UseStamina(healST * -1);
 			}
 
@@ -566,7 +560,6 @@ namespace RuneStones.Core {
 			var hitDamage = new HitData();
 
 			if (data.effect.DoDamage()) {
-				Debug.Log("RUNE IS DOING DAMAGE");
 				hitDamage.m_damage.m_blunt = GetDamage(HitData.DamageType.Blunt);
 				hitDamage.m_damage.m_pierce = GetDamage(HitData.DamageType.Pierce);
 				hitDamage.m_damage.m_slash = GetDamage(HitData.DamageType.Slash);
@@ -581,7 +574,6 @@ namespace RuneStones.Core {
 			// ===== APPLYING ELEMENTAL EFFECTS =====================
 
 			if (data.effect.burn) {
-				Debug.Log("RUNE IS APPLYING BURN");
 				var burning = ObjectDB.instance.m_StatusEffects.Find(x => x.name == "Burning").Clone() as SE_Burning;
 				burning.m_ttl = GetDuration();
 				burning.m_damageInterval = 1f;
@@ -592,7 +584,6 @@ namespace RuneStones.Core {
 			}
 
 			if (data.effect.slow) {
-				Debug.Log("RUNE IS APPLYING SLOW");
 				var frost = ObjectDB.instance.m_StatusEffects.Find(x => x.name == "Frost").Clone() as SE_Frost;
 				frost.m_ttl = GetDuration();
 				// no damage, just slow
@@ -602,7 +593,6 @@ namespace RuneStones.Core {
 			}
 
 			if (data.effect.poison) {
-				Debug.Log("RUNE IS APPLYING POISON");
 				var poison = ObjectDB.instance.m_StatusEffects.Find(x => x.name == "Poison").Clone() as SE_Poison;
 				poison.m_ttl = GetDuration();
 				poison.m_damageInterval = 1f;
@@ -615,7 +605,6 @@ namespace RuneStones.Core {
 			// ===== STAGGER ========================================
 
 			if (data.effect.stagger == true) {
-				Debug.Log("RUNE IS STAGGERING");
 				var staggerDir = -caster.m_lookDir;
 				target.Stagger(staggerDir);
 			}
@@ -623,7 +612,6 @@ namespace RuneStones.Core {
 			// ===== PUSH BACK ======================================
 
 			if (data.effect.pushback == true) {
-				Debug.Log("RUNE IS PUSHING BACK");
 				var hitPushback = new HitData();
 				hitPushback.m_pushForce = 500f;
 				var from = caster.gameObject.transform.position;
@@ -637,9 +625,7 @@ namespace RuneStones.Core {
 
 			// if there is a duration, it means it'a buff. So let's apply it to targets
 			if (data.effect.duration > 0) {
-				Debug.Log("RUNE IS ADDING SOME (DE)BUFF TO " + target.name);
 				var fxString = GetEffectString();
-				Debug.Log("fxString = " + fxString);
 				target.m_seman.AddStatusEffect(fxString, true);
 			}
 		}

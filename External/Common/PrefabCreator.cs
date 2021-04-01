@@ -57,7 +57,7 @@ namespace Common {
                 Assembly assembly = typeof(RunicPower.RunicPower).Assembly;
                 assetFileName = Path.Combine(Path.GetDirectoryName(assembly.Location), assetName);
                 if (!File.Exists(assetFileName)) {
-                    Debug.LogError($"Could not find asset ({assetName})");
+                    Debug.LogError($"[PrefabCreator] Could not find asset ({assetName})");
                     return null;
                 }
             }
@@ -81,7 +81,7 @@ namespace Common {
                 Texture2D texture2D = LoadTexture(filepath);
                 return Sprite.Create(texture2D, new Rect(0f, 0f, 32f, 32f), Vector2.zero);
             } else {
-                Debug.LogError("Unable to load skill icon! Make sure you place the "+name+".png file in the plugins directory!");
+                Debug.LogError("[PrefabCreator] Unable to load skill icon! Make sure you place the " + name+".png file in the plugins directory!");
                 return null;
             }
         }

@@ -28,7 +28,6 @@ namespace RunicPower.Patches {
 		}
 
 		public static void UpdateSpellBars(this Player __instance) {
-			// Debug.Log("UpdateSpellBars");
 			var inv = __instance?.GetSpellsBarInventory();
 			var invGui = InventoryGui.instance;
 			if (inv != null && invGui != null) {
@@ -36,13 +35,11 @@ namespace RunicPower.Patches {
 					SpellsBar.invBarGrid?.UpdateInventory(inv, __instance, invGui?.m_dragItem);
 				} catch (Exception e) {
 					Debug.Log("SpellsBar.invBarGrid failed " + e.Message);
-					Debug.Log(e.StackTrace);
 				}
 				try {
 					SpellsBar.hotkeysGrid?.UpdateInventory(inv, __instance, invGui?.m_dragItem);
 				} catch (Exception e) {
 					Debug.Log("SpellsBar.hotkeysGrid failed " + e.Message);
-					Debug.Log(e.StackTrace);
 				}
 			}
 		}

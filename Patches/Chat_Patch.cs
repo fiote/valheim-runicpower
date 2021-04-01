@@ -29,9 +29,6 @@ namespace RunicPower {
 			}
 
 			if (text.Contains("vfx") || text.Contains("sfx")) {
-				Debug.Log("=========================================");
-				Debug.Log(text);
-
 				var parts2 = Regex.Matches(text, @"[\""].+?[\""]|[^ ]+").Cast<Match>().Select(m => m.Value).ToList();
 
 				var vfxPrefab = ZNetScene.instance?.GetPrefab(parts2[0]);

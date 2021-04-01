@@ -52,7 +52,6 @@ namespace RunicPower {
 			foreach (var cskill in classesConfig.classes) {
 				if (cskill.implemented) {
 					listofCSkills.Add(cskill);
-					Debug.Log("ClassSkill " + cskill.id + " " + cskill.name);
 					SkillInjector.RegisterNewSkill(cskill.id, cskill.name, cskill.description, 1.0f, PrefabCreator.LoadCustomTexture(cskill.icon), Skills.SkillType.Unarmed);
 				}
 			}
@@ -115,19 +114,13 @@ namespace RunicPower {
 		}
 
 		public static StatusEffect CreateStatusEffect(string name, Player caster, string dsbuffs) {
-			Debug.Log("CreateStatusEffect " + name + " " + dsbuffs);
-
 			var data = runesData.Find(r => r.recipe.item == name);
-			if (data == null) {
-				Debug.Log("no data found in " + runesData.Count + " datas");
-				return null;
-			}
+			if (data == null) return null;
 
 			var rune = new Rune(data, caster);
 			rune.ParseBuffs(dsbuffs);
 			rune.CreateEffect();
 
-			Debug.Log("rune = " + rune);
 			return rune.statusEffect;
 		}
 
