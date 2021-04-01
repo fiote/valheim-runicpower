@@ -6,6 +6,12 @@ using System.IO;
 using System.Reflection;
 using UnityEngine;
 
+/**
+ *
+ *  THIS CLASS WAS ORIGINALLLY CREATED BY https://github.com/RandyKnapp - ALL CREDIT TO HIM, HE'S AMAZING!
+ *  I JUST EXTENDED IT A BIT TO FIT MY NEEDS
+ */
+
 namespace Common {
     public static class PrefabCreator {
         public static Dictionary<string, CraftingStation> CraftingStations;
