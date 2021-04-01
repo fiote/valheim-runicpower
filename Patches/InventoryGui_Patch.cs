@@ -27,6 +27,29 @@ namespace RuneStones.Patches {
         }
     }
 
+    [HarmonyPatch(typeof(InventoryGui), "OnSelectedItem")]
+    public static class InventoryGui_OnSelectedItem_Patch {
+        public static bool Prefix(InventoryGui __instance, InventoryGrid grid, ItemDrop.ItemData item, Vector2i pos, InventoryGrid.Modifier mod) {
+            // if we're not moving from the spellbars, do nothing (normal flow)
+            if (__instance.m_dragInventory?.m_name != "spellsBarInventory") return true;
+            // if we moving TO the spellsbars, do nothing (normal flow)
+            if (grid.m_inventory?.m_name == "spellsBarInventory") return true;
+            // so if we're moving from the spellsbar to another inventory
+            ItemDrop.ItemData itemAt = grid.GetInventory().GetItemAt(pos.x, pos.y);
+            if (itemAt != null) {
+                // and there is an item at the destination
+                var runeData = itemAt.GetRuneData();
+                // and its not a rune
+                if (runeData == null) {
+                    // we cant swap that!
+                    Player.m_localPlayer.Message(MessageHud.MessageType.Center, "You can't swap a rune for a non-rune item.");
+                    return false;
+				}
+			}
+            return true;
+        }
+    }
+
     [HarmonyPatch(typeof(InventoryGui), "UpdateRecipe")]
     public static class InventoryGui_UpdateRecipe_Patch {
 

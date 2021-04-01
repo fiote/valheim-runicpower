@@ -181,16 +181,16 @@ namespace RunicPower.Core {
         public static Action<InventoryGrid, ItemDrop.ItemData, Vector2i, InventoryGrid.Modifier> OnSelected(InventoryGui inventoryGui) {
             return (InventoryGrid inventoryGrid, ItemDrop.ItemData item, Vector2i pos, InventoryGrid.Modifier mod) => {
                 var ext = Player.m_localPlayer.ExtendedPlayer();
+                var ok = true;
                 ext.isSelectingItemSpellsBar = true;
-
-                var current = (item != null) ? item : inventoryGui.m_dragItem;
-                var rune = current?.GetRuneData();
-                if (rune != null) {
-                    inventoryGui.OnSelectedItem(inventoryGrid, item, pos, mod);
-                } else {
-                    Player.m_localPlayer.Message(MessageHud.MessageType.Center, "You can't put a non-rune item on this slot.");
+                if (inventoryGui.m_dragItem != null) {
+                    var rune = inventoryGui.m_dragItem?.GetRuneData();
+                    if (rune == null) {
+                        Player.m_localPlayer.Message(MessageHud.MessageType.Center, "You can't put a non-rune item on this slot.");
+                        ok = false;
+                    }
                 }
-
+                if (ok) inventoryGui.OnSelectedItem(inventoryGrid, item, pos, mod);
                 ext.isSelectingItemSpellsBar = false;
             };
         }
