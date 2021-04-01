@@ -12,6 +12,16 @@ using System.IO;
 using System.Reflection;
 using UnityEngine;
 
+// TODO: don't consider other players as allies if PVP is enabled.
+// TODO: recipes sometime wont load (requeriment item not found)
+// TODO: CONFIG: cast: shout/talk/none
+// TODO: CONFIG: hotbar enabled
+// TODO: CONFIG: hotbar scale
+// TODO: CONFIG: hotbar modifier
+// TODO: check how equip wheel works.
+// TODO: check new runes if inventory is full.
+// TODO: check if ghost mode is really broken.
+
 namespace RunicPower {
 	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "1.0.3")]
 	[BepInDependency("com.pipakin.SkillInjectorMod")]
@@ -69,26 +79,59 @@ namespace RunicPower {
 		}
 
 		public static void TryRegisterItems() {
-			if (ObjectDB.instance == null || ObjectDB.instance.m_items.Count == 0) return;
+			foreach (var data in runesData) {
+				data.itemDrop = data.prefab.GetComponent<ItemDrop>();
+				if (data.itemDrop == null) {
+					Debug.Log("Failed to register item " + data.name + ". ItemDrop not found.");
+					continue;
+				}
+				if (ObjectDB.instance.GetItemPrefab(data.prefab.name.GetStableHashCode()) != null) {
+					Debug.Log("Failed to register item " + data.name + ". Prefab already exists.");
+					continue;
+				}
 
-			foreach (var runeConfig in runesData) {
-				runeConfig.itemDrop = runeConfig.prefab.GetComponent<ItemDrop>();
-				if (runeConfig.itemDrop == null) continue;
-				if (ObjectDB.instance.GetItemPrefab(runeConfig.prefab.name.GetStableHashCode()) != null) continue;
-				RegisterRuneConfig(runeConfig);
+				var itemDrop = data.itemDrop;
+				itemDrop.SetRuneData(data);
+				ObjectDB.instance.m_items.Add(data.prefab);
 			}
 		}
 
-		private static void RegisterRuneConfig(RuneData data) {
-			var itemDrop = data.itemDrop;
-			itemDrop.SetRuneData(data);
-			ObjectDB.instance.m_items.Add(data.prefab);
-
-		}
+		static bool tryAgain = false;
+		static float tryAgainTime = 0f;
+		static float tryAgainDuration = 0.25f;
 
 		public static void TryRegisterRecipes() {
-			if (ObjectDB.instance == null || ObjectDB.instance.m_items.Count == 0) return;
+			if (ObjectDB.instance == null) return;
+
+			Debug.Log("TryRegisterRecipes ("+ObjectDB.instance?.m_items?.Count+" items in the database).");
+
+			var resources = new List<string>();
+			foreach (var data in runesData) {
+				foreach(var req in data.recipe.resources) {
+					if (!resources.Contains(req.item)) resources.Add(req.item);
+				}
+			}
+
+			var missing = new List<string>();
+
+			foreach(var item in resources) {
+				var pref = ObjectDB.instance.GetItemPrefab(item);
+				if (pref == null) missing.Add(item);
+			}
+
+			if (missing.Count > 0) {
+				Debug.Log("Some requeriments are not ready yet ("+string.Join(", ",missing)+"). Let's try again in few miliseconds...");
+				tryAgain = true;
+				tryAgainTime = 0f;
+				return;
+			} else {
+				Debug.Log("All requeriments are ready!");
+			}
+
+			TryRegisterItems();
+
 			PrefabCreator.Reset();
+
 			foreach (var data in runesData) {
 				if (data.recipe.amount == 0) data.recipe.amount = runesConfig.defRecipes.amount;
 				if (data.recipe.craftingStation == "") data.recipe.craftingStation = runesConfig.defRecipes.craftingStation;
@@ -102,7 +145,6 @@ namespace RunicPower {
 				data.itemDrop.m_itemData.m_shared.m_weight = 0.1f;
 
 				PrefabCreator.AddNewRuneRecipe(data);
-
 				var rune = new Rune(data, null);
 				runes.Add(rune);
 			}
@@ -125,10 +167,15 @@ namespace RunicPower {
 		}
 
 		private void Update() {
-			var player = Player.m_localPlayer;
-			if (player != null && player.TakeInput()) {
-				SpellsBar.CheckInputs();
+			if (tryAgain) {
+				tryAgainTime += Time.deltaTime;
+				if (tryAgainTime >= tryAgainDuration) {
+					tryAgain = false;
+					TryRegisterRecipes();
+				}
 			}
+			var player = Player.m_localPlayer;
+			if (player != null && player.TakeInput()) SpellsBar.CheckInputs();
 		}
 	}
 }
