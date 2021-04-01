@@ -67,7 +67,7 @@
             "implemented": false
         },
         {
-            "name": "Frail Trees",
+            "name": "Fragile Trees",
             "type": "Spell",
             "archetype": "Buff",
             "description": "Trees will fall with a single attack.",
@@ -76,7 +76,7 @@
         */
         // ===== WARRIOR ============================================
         {
-            "name": "Bladestorm",
+            "name": "Blade Storm",
             "type": "Spell",
             "archetype": "Warrior",
             "description": "You spin your weapon around with great speed slashing all enemies fool enough to get close to you.",
@@ -84,7 +84,7 @@
             "recipe": {
                 "name": "Recipe_Warrior_Bladestorm",
                 "item": "Warrior_Bladestorm",
-                "amount":  2,
+                "amount": 2,
                 "resources": [
                     {
                         "item": "Flint",
@@ -137,12 +137,12 @@
             "name": "Stone Rune",
             "type": "Buff",
             "archetype": "Warrior",
-            "description": "You call upon the powers of the stone, hardering your skin against physical damage.",
+            "description": "You call upon the powers of the stone, hardening your skin against physical damage.",
             "implemented": true,
             "recipe": {
                 "name": "Recipe_Warrior_Stone",
                 "item": "Warrior_Stone",
-                "amount":  3,
+                "amount": 3,
                 "resources": [
                     {
                         "item": "Crystal",
@@ -164,12 +164,12 @@
             "name": "Blood Rune",
             "type": "Buff",
             "archetype": "Warrior",
-            "description": "You atune yourself to the blood of your foes, stealing a portion of their suffering when you attack them.",
+            "description": "You attune yourself to the blood of your foes, stealing a portion of their suffering when you attack them.",
             "implemented": true,
             "recipe": {
                 "name": "Recipe_Warrior_Blood",
                 "item": "Warrior_Blood",
-                "amount":  1,
+                "amount": 1,
                 "resources": [
                     {
                         "item": "Bloodbag",
@@ -189,12 +189,12 @@
             "name": "Poisonous Shiv",
             "type": "Spell",
             "archetype": "Rogue",
-            "description": "You throw innumerous daggers in every direction, all them coated with deadly poison.",
+            "description": "You throw uncountable daggers in every direction, all them coated with deadly poison.",
             "implemented": true,
             "recipe": {
                 "name": "Recipe_Rogue_PoisonousShiv",
                 "item": "Rogue_PoisonousShiv",
-                "amount":  2,
+                "amount": 2,
                 "resources": [
                     {
                         "item": "MushroomYellow",
@@ -224,7 +224,7 @@
             "recipe": {
                 "name": "Recipe_Rogue_ExposeWeakness",
                 "item": "Rogue_ExposeWeakness",
-                "amount":  2,
+                "amount": 2,
                 "resources": [
                     {
                         "item": "Ooze",
@@ -249,12 +249,12 @@
             "name": "Swift Rune",
             "type": "Buff",
             "archetype": "Rogue",
-            "description": "You call upon the power of the wind, blessing your party with lightfoot movement.",
+            "description": "You call upon the power of the wind, blessing your party with light-foot movement.",
             "implemented": true,
             "recipe": {
                 "name": "Recipe_Rogue_Swift",
                 "item": "Rogue_Swift",
-                "amount":  1,
+                "amount": 1,
                 "resources": [
                     {
                         "item": "NeckTail",
@@ -278,7 +278,7 @@
             "recipe": {
                 "name": "Recipe_Rogue_Night",
                 "item": "Rogue_Night",
-                "amount":  3,
+                "amount": 3,
                 "resources": [
                     {
                         "item": "WolfFang",
@@ -297,12 +297,12 @@
             "name": "Healing Circle",
             "type": "Spell",
             "archetype": "Cleric",
-            "description": "You chant forgetten words, calling spirits to mend the injuries of your party.",
+            "description": "You chant forgotten words, calling spirits to mend the injuries of your party.",
             "implemented": true,
             "recipe": {
                 "name": "Recipe_Cleric_HealingCircle",
                 "item": "Cleric_HealingCircle",
-                "amount":  1,
+                "amount": 1,
                 "resources": [
                     {
                         "item": "Dandelion",
@@ -327,12 +327,12 @@
             "name": "Shield Slam",
             "type": "Spell",
             "archetype": "Cleric",
-            "description": "You slam your shield in the ground. The impact reverbs, incapicating your foes.",
+            "description": "You slam your shield in the ground. The impact reverb, incapacitating your foes.",
             "implemented": true,
             "recipe": {
                 "name": "Recipe_Cleric_ShieldSlam",
                 "item": "Cleric_ShieldSlam",
-                "amount":  3,
+                "amount": 3,
                 "resources": [
                     {
                         "item": "WolfPelt",
@@ -364,7 +364,7 @@
             "recipe": {
                 "name": "Recipe_Cleric_Light",
                 "item": "Cleric_Light",
-                "amount":  2,
+                "amount": 2,
                 "resources": [
                     {
                         "item": "Entrails",
@@ -387,7 +387,7 @@
             "recipe": {
                 "name": "Recipe_Cleric_Vigor",
                 "item": "Cleric_Vigor",
-                "amount":  2,
+                "amount": 2,
                 "resources": [
                     {
                         "item": "Blueberries",
@@ -483,7 +483,7 @@
             "recipe": {
                 "name": "Recipe_Wizard_Ward",
                 "item": "Wizard_Ward",
-                "amount":  1,
+                "amount": 1,
                 "resources": [
                     {
                         "item": "ElderBark",
@@ -512,7 +512,7 @@
             "recipe": {
                 "name": "Recipe_Wizard_Mind",
                 "item": "Wizard_Mind",
-                "amount":  1,
+                "amount": 1,
                 "resources": [
                     {
                         "item": "Thistle",
