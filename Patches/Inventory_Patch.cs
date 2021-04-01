@@ -59,6 +59,12 @@ namespace RuneStones.Patches {
 			while (item.m_stack > 0) {
 				// checking if this item already exists in the inventory (with free stack space)
 				ItemDrop.ItemData itemData = inv.FindFreeStackItem(item.m_shared.m_name, item.m_quality);
+
+				if (itemData == item) {
+					// [Equipment and Quick Slot] is making 'AddItem' be called twice, so lets stop here
+					return false;
+				}
+
 				// if it does
 				if (itemData != null) {
 					// get the free space

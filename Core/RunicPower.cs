@@ -13,7 +13,7 @@ using System.Reflection;
 using UnityEngine;
 
 namespace RunicPower {
-	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "1.0.2")]
+	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "1.0.3")]
 	[BepInDependency("com.pipakin.SkillInjectorMod")]
 	[BepInDependency("randyknapp.mods.extendeditemdataframework")]
 
