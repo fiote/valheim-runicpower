@@ -82,11 +82,11 @@ namespace RunicPower {
 			foreach (var data in runesData) {
 				data.itemDrop = data.prefab.GetComponent<ItemDrop>();
 				if (data.itemDrop == null) {
-					Debug.Log("Failed to register item " + data.name + ". ItemDrop not found.");
+					Log("Failed to register item " + data.name + ". ItemDrop not found.");
 					continue;
 				}
 				if (ObjectDB.instance.GetItemPrefab(data.prefab.name.GetStableHashCode()) != null) {
-					Debug.Log("Failed to register item " + data.name + ". Prefab already exists.");
+					Log("Failed to register item " + data.name + ". Prefab already exists.");
 					continue;
 				}
 
@@ -103,7 +103,9 @@ namespace RunicPower {
 		public static void TryRegisterRecipes() {
 			if (ObjectDB.instance == null) return;
 
-			Debug.Log("TryRegisterRecipes ("+ObjectDB.instance?.m_items?.Count+" items in the database).");
+			var wrongTime = (ObjectDB.instance?.m_items?.Count == 0);
+
+			if (!wrongTime) Log("TryRegisterRecipes (" + ObjectDB.instance?.m_items?.Count+" items in the database).");
 
 			var resources = new List<string>();
 			foreach (var data in runesData) {
@@ -120,12 +122,12 @@ namespace RunicPower {
 			}
 
 			if (missing.Count > 0) {
-				Debug.Log("Some requeriments are not ready yet ("+string.Join(", ",missing)+"). Let's try again in few miliseconds...");
+				if (!wrongTime) Log("Some requeriments are not ready yet ("+string.Join(", ",missing)+"). Let's try again in few miliseconds...");
 				tryAgain = true;
 				tryAgainTime = 0f;
 				return;
 			} else {
-				Debug.Log("All requeriments are ready!");
+				Log("All requeriments are ready!");
 			}
 
 			TryRegisterItems();
@@ -176,6 +178,10 @@ namespace RunicPower {
 			}
 			var player = Player.m_localPlayer;
 			if (player != null && player.TakeInput()) SpellsBar.CheckInputs();
+		}
+
+		private static void Log(string message) {
+			Debug.Log("[RunicPower] "+message);
 		}
 	}
 }
