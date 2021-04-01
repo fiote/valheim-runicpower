@@ -19,7 +19,7 @@ namespace RuneStones.Patches {
         public static void Postfix(Hud __instance) {
             var parent = __instance.m_rootObject;
             var inventoryGui = InventoryGui.instance;
-            var position = new Vector2(0, 0);
+            var position = new Vector2(-SpellsBar.barSize.x/2 + 54  , SpellsBar.barSize.y);
             SpellsBar.hotkeysRect = SpellsBar.CreateGameObject(ref SpellsBar.hotkeysGrid, inventoryGui, parent, SpellsBar.spellsBarHotkeysName, position, "hotkeys", SpellsBar.barSize);
         }
     }

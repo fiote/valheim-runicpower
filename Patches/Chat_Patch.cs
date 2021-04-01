@@ -13,10 +13,13 @@ namespace RunicPower {
 	[HarmonyPatch(typeof(Chat), "InputText")]
 	public static class Chat_InputText_Patch {
 
-		public static Dictionary<string, float> vars = new Dictionary<string, float>();
+		public static Dictionary<string, float> vars = new Dictionary<string, float> {
+			{"x", 0 },
+		};
 
 		static void Postfix(Chat __instance) {
 			string text = __instance.m_input.text;
+
 
 			var parts = text.Split('=');
 			if (parts.Count() == 2) {
@@ -24,7 +27,7 @@ namespace RunicPower {
 				var value = float.Parse(parts[1]);
 				vars[key] = value;
 			}
-			
+
 			if (text.Contains("vfx") || text.Contains("sfx")) {
 				Debug.Log("=========================================");
 				Debug.Log(text);

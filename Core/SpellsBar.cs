@@ -90,7 +90,6 @@ namespace RunicPower.Core {
 
         public static void UpdateVisibility() {
             if (hotkeysRect == null) return;
-            hotkeysRect.position = new Vector2(950, 70);
 
             var active = true;
             if (Hud.instance.m_buildHud.activeSelf) active = false;
@@ -100,6 +99,11 @@ namespace RunicPower.Core {
         }
 
         public static RectTransform CreateGameObject(ref InventoryGrid grid, InventoryGui inventoryGui, GameObject parent, string name, Vector2 position, string type, Vector2 size) {
+            if (grid != null) {
+                Object.Destroy(grid.gameObject);
+                grid = null;
+            }
+
             // go
             var go = new GameObject(name, typeof(RectTransform));
             go.transform.SetParent(parent.transform, false);
@@ -162,10 +166,14 @@ namespace RunicPower.Core {
 
             // rect
             var goRect = go.transform as RectTransform;
-            if (type == "hotkeys") {
-                goRect.sizeDelta = size;
-            }
             goRect.anchoredPosition = position;
+
+            if (type == "hotkeys") {
+                goRect.anchorMin = new Vector2(0.5f, 0f);
+                goRect.anchorMax = new Vector2(0.5f, 0f);
+                goRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x + 2);
+                goRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y + 2);
+            }
 
             return goRect;
         }
@@ -193,6 +201,5 @@ namespace RunicPower.Core {
                 player?.UseRuneFromSpellBar(item);
             };
         }
-
-    }
+	}
 }
