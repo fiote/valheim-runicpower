@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using RuneStones.Core;
 
 namespace RunicPower.Patches {
     public static class SEMan_Prototype {

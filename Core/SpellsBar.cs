@@ -37,11 +37,19 @@ namespace RunicPower.Core {
         public static RectTransform invBarRect;
         public static RectTransform hotkeysRect;
 
-        public static void RegisterKeybinds(ConfigFile config) {
+        public static Dictionary<RunicPower.KeyModifiers, KeyCode> mod2key = new Dictionary<RunicPower.KeyModifiers, KeyCode> {
+            { RunicPower.KeyModifiers.ALT, KeyCode.LeftAlt },
+            { RunicPower.KeyModifiers.CTRL, KeyCode.LeftControl },
+            { RunicPower.KeyModifiers.SHIFT, KeyCode.LeftShift },
+        };
+
+        public static void RegisterKeybinds() {
+            shortcuts.Clear();
+            var mod = mod2key[RunicPower.configHotkeysModifier.Value];
             for (var i = 0; i < slotCount; i++) {
                 var knumber = "Alpha" + (i == slotCount - 1 ? 0 : i + 1);
                 var key = (KeyCode)System.Enum.Parse(typeof(KeyCode), knumber.ToString());
-                shortcuts[i] = new SpellShortcut(KeyCode.LeftShift, key);
+                shortcuts[i] = new SpellShortcut(mod, key);
             }
         }
 
@@ -98,11 +106,36 @@ namespace RunicPower.Core {
             hotkeysRect.gameObject.SetActive(active);
         }
 
-        public static RectTransform CreateGameObject(ref InventoryGrid grid, InventoryGui inventoryGui, GameObject parent, string name, Vector2 position, string type, Vector2 size) {
+        public static void CreateHotkeysBar(Hud hud) {
+            if (hud == null) hud = Hud.instance;
+            var parent = hud.m_rootObject;
+            var inventoryGui = InventoryGui.instance;
+            var position = new Vector2(RunicPower.configHotkeysOffsetX.Value, RunicPower.configHotkeysOffsetY.Value);
+            hotkeysRect = CreateGameObject(ref hotkeysGrid, inventoryGui, parent, spellsBarHotkeysName, position, GOTypes.HOTKEYS, barSize);
+        }
+
+        public static void CreateInventoryBar(InventoryGui gui) {
+            if (gui == null) gui = InventoryGui.instance;
+            var parent = gui.m_player.gameObject;
+            var name = spellsBarGridName;
+            var position = new Vector2(1000, 103);
+            invBarRect = CreateGameObject(ref invBarGrid, gui, parent, name, position, GOTypes.INVENTORY, barSize);
+        }
+
+        public enum GOTypes {
+            INVENTORY,
+            HOTKEYS
+		}
+
+        public static RectTransform CreateGameObject(ref InventoryGrid grid, InventoryGui inventoryGui, GameObject parent, string name, Vector2 position, GOTypes type, Vector2 size) {
             if (grid != null) {
                 Object.Destroy(grid.gameObject);
                 grid = null;
             }
+
+            if (type == GOTypes.HOTKEYS) {
+                if (!RunicPower.configHotkeysEnabled.Value) return null;
+			}
 
             // go
             var go = new GameObject(name, typeof(RectTransform));
@@ -111,7 +144,7 @@ namespace RunicPower.Core {
             // hightlight
             var highlight = new GameObject("SelectedFrame", typeof(RectTransform));
 
-            if (type == "inventory") {
+            if (type == GOTypes.INVENTORY) {
                 highlight.transform.SetParent(go.transform, false);
                 // highlight.AddComponent<Image>().color = Color.yellow;
                 var highlightRT = highlight.transform as RectTransform;
@@ -119,10 +152,8 @@ namespace RunicPower.Core {
                 highlightRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x + 2);
                 highlightRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y + 2);
                 highlightRT.localScale = new Vector3(1, 1, 1);
-            }
 
-            // background
-            if (type == "inventory") {
+                // background
                 var bkg = inventoryGui.m_player.Find("Bkg").gameObject;
                 var background = Object.Instantiate(bkg, go.transform);
                 background.name = name + "Bkg";
@@ -144,12 +175,10 @@ namespace RunicPower.Core {
             grid.m_elementSpace = inventoryGui.m_playerGrid.m_elementSpace;
             grid.ResetView();
 
-            if (type == "inventory") {
+            if (type == GOTypes.INVENTORY) {
                 grid.m_onSelected = OnSelected(inventoryGui);
                 grid.m_onRightClick = OnRightClicked(inventoryGui);
-            }
-
-            if (type == "hotkeys") {
+            } else { 
                 grid.m_onSelected = null;
                 grid.m_onRightClick = null;
             }
@@ -167,31 +196,21 @@ namespace RunicPower.Core {
             // rect
             var goRect = go.transform as RectTransform;
 
-			if (type == "hotkeys") {
+
+            if (type == GOTypes.HOTKEYS) {
                 var cfgScale = RunicPower.configHotkeysScale.Value / 100f;
                 var scale = new Vector3(cfgScale, cfgScale, cfgScale);
                 goRect.localScale = scale;
 
-                var px = position.x;
-                var py = position.y;
-
-                var sx = scale.x - 1;
-                var sy = scale.y - 1;
-
-                px -= (size.x * sx) / 2;
-                py -= (size.y * sy) / 2;
-
-                position = new Vector2(px, py);
+                goRect.anchorMin = new Vector2(0.5f, 0);
+                goRect.anchorMax = new Vector2(0.5f, 0);
+                goRect.pivot = new Vector2(0.5f, 0);
+                goRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x);
+                goRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y);
+                position.x -= ((size.x - 107) / 2) * cfgScale;
             }
 
             goRect.anchoredPosition = position;
-
-            if (type == "hotkeys") {
-                goRect.anchorMin = new Vector2(0.5f, 0f);
-                goRect.anchorMax = new Vector2(0.5f, 0f);
-                goRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x);
-                goRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y);
-            }
 
             return goRect;
         }

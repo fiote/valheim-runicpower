@@ -13,10 +13,7 @@ namespace RuneStones.Patches {
     [HarmonyPatch(typeof(InventoryGui), "Awake")]
     public static class InventoryGui_Awake_Patch {
         public static void Postfix(InventoryGui __instance) {
-            var parent = __instance.m_player.gameObject;
-            var name = SpellsBar.spellsBarGridName;
-            var position = new Vector2(1000, 103);
-            SpellsBar.invBarRect = SpellsBar.CreateGameObject(ref SpellsBar.invBarGrid, __instance, parent, name, position, "inventory", SpellsBar.barSize);
+            SpellsBar.CreateInventoryBar(__instance);
         }
     }
 

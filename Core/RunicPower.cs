@@ -4,7 +4,6 @@ using Common;
 using HarmonyLib;
 using LitJson;
 using Pipakin.SkillInjectorMod;
-using RuneStones.Core;
 using RunicPower.Core;
 using RunicPower.Patches;
 using System;
@@ -14,11 +13,16 @@ using System.Reflection;
 using UnityEngine;
 using Description = System.ComponentModel.DescriptionAttribute;
 
-// TODO: recipes sometime wont load (requeriment item not found)
+// TODO [DONE]: recipes sometime wont load (requeriment item not found)
+// TODO [DONE]: CONFIG: hotbar scale
+// TODO [DONE]: CONFIG: hotbar enabled
+// TODO [DONE]: CONFIG: hotbar modifier
+// TODO [DONE]: CONFIG: cast: shout/talk/none
 
 // TODO: check how equip wheel works.
 // TODO: check new runes if inventory is full.
 // TODO: check if ghost mode is really broken.
+// TODO: check performance issues (fps drop)
 
 namespace RunicPower {
 	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "1.0.3")]
@@ -33,11 +37,14 @@ namespace RunicPower {
 		public static List<RuneData> runesData = new List<RuneData>();
 		public static List<ClassSkill> listofCSkills = new List<ClassSkill>();
 
+		public static ConfigFile configFile;
+
 		private void Awake() {
 			LoadRunes();
 			LoadClasses();
 			SetupConfig();
-			SpellsBar.RegisterKeybinds(Config);
+			configFile = Config;
+			SpellsBar.RegisterKeybinds();
 		}
 
 		private void LoadRunes() {
@@ -89,17 +96,13 @@ namespace RunicPower {
 
 		private void SetupConfig() {
 			Config.Bind("General", "NexusID", 840, "NexusMods ID for updates.");
-			// TODO: CONFIG: cast: shout/talk/none
 			configCastingMessage = Config.Bind("Casting", "Message", CastingMessage.NORMAL, "Define where the casting message should appear.");
 			// TODO: don't consider other players as allies if PVP is enabled.
 			configPvpEnabled = Config.Bind("PVP", "Enabled", true, "If enabled, this will count pvp-flagged players as enemies.");
-			// TODO: CONFIG: hotbar enabled
 			configHotkeysEnabled = Config.Bind("HotkeysBar", "Enabled", true, "Enables the hotkey's bar (the one the bottom of the screen).");
-			// TODO: CONFIG: hotbar scale
 			configHotkeysScale = Config.Bind("HotkeysBar", "Scale", 100, "Adjusts the hotkey's bar size.");
 			configHotkeysOffsetX = Config.Bind("HotkeysBar", "OffsetX", 0, "Adjust the hotkey's bar horizontal position (left/right).");
 			configHotkeysOffsetY = Config.Bind("HotkeysBar", "OffsetY", 0, "Adjust the hotkey's bar vertical position (down/up).");
-			// TODO: CONFIG: hotbar modifier
 			configHotkeysModifier = Config.Bind<KeyModifiers>("HotkeysBar", "Modifier", KeyModifiers.SHIFT, "Key modifier to use the runes.");
 		}
 
@@ -216,7 +219,7 @@ namespace RunicPower {
 			if (player != null && player.TakeInput()) SpellsBar.CheckInputs();
 		}
 
-		private static void Log(string message) {
+		public static void Log(string message) {
 			Debug.Log("[RunicPower] "+message);
 		}
 	}

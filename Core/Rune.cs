@@ -1,6 +1,4 @@
-﻿using RunicPower;
-using RunicPower.Core;
-using RunicPower.Patches;
+﻿using RunicPower.Patches;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace RuneStones.Core {
+namespace RunicPower.Core {
 	public class Rune {
 		public RuneData data;
 		public Player caster;
@@ -750,7 +748,13 @@ namespace RuneStones.Core {
 		public void Cast() {
 			Debug.Log("============================================");
 			// letting everyone knows the caster used the rune power
-			Chat.instance.SendText(Talker.Type.Shout, data.name + "!");
+
+			var cfgMessage = RunicPower.configCastingMessage.Value;
+			var message = data.name + "!";
+
+			if (cfgMessage == RunicPower.CastingMessage.GLOBAL) Chat.instance.SendText(Talker.Type.Shout, message);
+			if (cfgMessage == RunicPower.CastingMessage.NORMAL) Chat.instance.SendText(Talker.Type.Normal, message);
+			if (cfgMessage == RunicPower.CastingMessage.SELF) Chat.instance.AddInworldText(caster.gameObject, caster.GetPlayerID(), caster.GetHeadPoint(), Talker.Type.Normal, caster.name, message);
 
 			// get the effects
 			var custom = data.fxcustom;

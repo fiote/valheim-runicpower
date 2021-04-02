@@ -15,12 +15,8 @@ namespace RuneStones.Patches {
 
     [HarmonyPatch(typeof(Hud), "Awake")]
     public static class Hud_Awake_Patch {
-
         public static void Postfix(Hud __instance) {
-            var parent = __instance.m_rootObject;
-            var inventoryGui = InventoryGui.instance;
-            var position = new Vector2(-SpellsBar.barSize.x/2 + 54  , SpellsBar.barSize.y);
-            SpellsBar.hotkeysRect = SpellsBar.CreateGameObject(ref SpellsBar.hotkeysGrid, inventoryGui, parent, SpellsBar.spellsBarHotkeysName, position, "hotkeys", SpellsBar.barSize);
+            SpellsBar.CreateHotkeysBar(__instance);
         }
     }
 
