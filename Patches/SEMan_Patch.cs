@@ -14,6 +14,7 @@ namespace RunicPower.Patches {
     [HarmonyPatch(typeof(SEMan), "OnDamaged")]
     public static class Character_OnDamaged_Patch {
         static void Prefix(SEMan __instance, ref HitData hit, Character attacker) {
+            RunicPower.Debug("Character_OnDamaged_Patch Prefix");
             if (hit == null) return;
             if (attacker == null) return;
             var runes = attacker.GetRunes();
@@ -24,6 +25,7 @@ namespace RunicPower.Patches {
     [HarmonyPatch(typeof(SEMan), "Internal_AddStatusEffect")]
     public static class Character_Internal_AddStatusEffect_Patch {
         static bool Prefix(SEMan __instance, string name, bool resetTime) {
+            RunicPower.Debug("Internal_AddStatusEffect Prefix");
             var parts = name.Split('|');
             if (parts[0] != "RUNICPOWER") return true;
 

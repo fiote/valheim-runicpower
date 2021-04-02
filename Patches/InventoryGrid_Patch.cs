@@ -7,11 +7,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
-namespace RuneStones.Patches {
+namespace RunicPower.Patches {
 
     [HarmonyPatch(typeof(InventoryGrid), "GetElement", typeof(int), typeof(int), typeof(int))]
     public static class InventoryGrid_GetElement_Patch {
         private static bool Prefix(InventoryGrid __instance, ref InventoryGrid.Element __result, int x, int y, int width) {
+            RunicPower.Debug("InventoryGrid_GetElement_Patch Prefix");
             if (!__instance.IsRunic()) return true;
             var index = y * width + x;
             __result = (index < 0 || index >= __instance.m_elements.Count) ? null : __instance.m_elements[index];
@@ -22,6 +23,7 @@ namespace RuneStones.Patches {
     [HarmonyPatch(typeof(InventoryGrid), "UpdateGui", typeof(Player), typeof(ItemDrop.ItemData))]
     public static class InventoryGrid_UpdateGui_Patch {
         private static void Postfix(InventoryGrid __instance, Player player, ItemDrop.ItemData dragItem) {
+            RunicPower.Debug("InventoryGrid_UpdateGui_Patch Postfix");
             if (!__instance.IsRunic()) return;
 
             for (var i = 0; i < SpellsBar.slotCount; ++i) {

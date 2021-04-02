@@ -8,11 +8,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
-namespace RuneStones.Patches {
+namespace RunicPower.Patches {
 
     [HarmonyPatch(typeof(InventoryGui), "Awake")]
     public static class InventoryGui_Awake_Patch {
         public static void Postfix(InventoryGui __instance) {
+            RunicPower.Debug("InventoryGui_Awake_Patch Postfix");
             SpellsBar.CreateInventoryBar(__instance);
         }
     }
@@ -20,6 +21,7 @@ namespace RuneStones.Patches {
     [HarmonyPatch(typeof(InventoryGui), "UpdateInventory")]
     public static class InventoryGui_UpdateInventory_Patch {
         public static void Postfix(InventoryGui __instance, Player player) {
+            RunicPower.Debug("InventoryGui_UpdateInventory_Patch Postfix");
             player.UpdateSpellBars();
         }
     }
@@ -27,6 +29,7 @@ namespace RuneStones.Patches {
     [HarmonyPatch(typeof(InventoryGui), "OnSelectedItem")]
     public static class InventoryGui_OnSelectedItem_Patch {
         public static bool Prefix(InventoryGui __instance, InventoryGrid grid, ItemDrop.ItemData item, Vector2i pos, InventoryGrid.Modifier mod) {
+            RunicPower.Debug("InventoryGui_OnSelectedItem_Patch Prefix");
             // if we're not moving from the spellbars, do nothing (normal flow)
             if (__instance.m_dragInventory?.m_name != "spellsBarInventory") return true;
             // if we moving TO the spellsbars, do nothing (normal flow)
@@ -54,6 +57,7 @@ namespace RuneStones.Patches {
         static float m_craftDuration_runes = 0.5f;
 
         public static void Prefix(InventoryGui __instance, Player player, float dt) {
+            RunicPower.Debug("InventoryGui_UpdateRecipe_Patch Prefix");
             if (m_craftDuration_original == 0) m_craftDuration_original = __instance.m_craftDuration;
             var recipe = __instance.m_selectedRecipe.Key;
             if (recipe == null) return;
@@ -65,6 +69,7 @@ namespace RuneStones.Patches {
         }
 
         public static void Postfix(InventoryGui __instance, Player player, float dt) {
+            RunicPower.Debug("InventoryGui_UpdateRecipe_Patch Postfix");
             __instance.m_craftDuration = m_craftDuration_original;
             player.ExtendedPlayer().craftingRuneItem = null;
         }

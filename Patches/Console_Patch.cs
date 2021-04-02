@@ -1,6 +1,5 @@
 ﻿using Common;
 using HarmonyLib;
-using RuneStones.Patches;
 using RunicPower.Core;
 using RunicPower.Patches;
 using System.Collections.Generic;
@@ -14,6 +13,7 @@ namespace RunicPower {
 	public static class Console_InputText_Patch {
 
 		static bool Prefix(Console __instance) {
+			RunicPower.Debug("Console_InputText_Patch Prefix");
 			string text = __instance.m_input.text;
 			var parts = text.Split('=');
 

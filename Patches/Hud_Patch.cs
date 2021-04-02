@@ -11,11 +11,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
-namespace RuneStones.Patches {
+namespace RunicPower.Patches {
 
     [HarmonyPatch(typeof(Hud), "Awake")]
     public static class Hud_Awake_Patch {
         public static void Postfix(Hud __instance) {
+            RunicPower.Debug("Hud_Awake_Patch Postfix");
             SpellsBar.CreateHotkeysBar(__instance);
         }
     }
@@ -24,6 +25,7 @@ namespace RuneStones.Patches {
     public static class Hud_SetVisible_Patch {
 
         public static void Postfix(Hud __instance) {
+            RunicPower.Debug("Hud_SetVisible_Patch Postfix");
             SpellsBar.UpdateVisibility();
         }
     }
@@ -32,6 +34,7 @@ namespace RuneStones.Patches {
     public static class Hud_UpdateBuild_Patch {
 
         public static void Postfix(Hud __instance) {
+            RunicPower.Debug("Hud_UpdateBuild_Patch Postfix");
             SpellsBar.UpdateVisibility();            
         }
     }

@@ -10,11 +10,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
-namespace RuneStones.Patches {
+namespace RunicPower.Patches {
 
     [HarmonyPatch(typeof(HotkeyBar), "UpdateIcons")]
-    public static class UpdateIcons_Patch {
+    public static class HotkeyBar_UpdateIcons_Patch {
         public static void Postfix(HotkeyBar __instance, Player player) {
+			RunicPower.Debug("HotkeyBar_UpdateIcons_Patch Postfix");
             player?.UpdateSpellBars();
         }
     }

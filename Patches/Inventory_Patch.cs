@@ -8,12 +8,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
-namespace RuneStones.Patches {
+namespace RunicPower.Patches {
 
 
 	[HarmonyPatch(typeof(Inventory), "HaveEmptySlot")]
 	public static class Inventory_HaveEmptySlot_Patch {
 		public static bool Prefix(Inventory __instance, ref bool __result) {
+			RunicPower.Debug("Inventory_HaveEmptySlot_Patch Prefix");
 			// if we're not crating a rune, return true so it goes as normal
 			var item = Player.m_localPlayer.ExtendedPlayer().craftingRuneItem;
 			if (item == null) return true;
@@ -48,6 +49,7 @@ namespace RuneStones.Patches {
 	[HarmonyPatch(typeof(Inventory), "AddItem", typeof(ItemDrop.ItemData))]
 	public static class Inventory_AddItem_Patch {
 		public static bool Prefix(Inventory __instance, ref ItemDrop.ItemData item, ref bool __result) {
+			RunicPower.Debug("Inventory_AddItem_Patch Prefix");
 			// if we're not crafting/looting a rune, ignore this flow
 			var ext = Player.m_localPlayer?.ExtendedPlayer();
 			if (ext == null || (ext.craftingRuneItem == null && ext.lootingRuneItem == null)) return true;

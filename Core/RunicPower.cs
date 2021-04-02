@@ -46,6 +46,7 @@ namespace RunicPower {
 
 	public class RunicPower : BaseUnityPlugin {
 		private Harmony _harmony;
+		private static bool debug = true;
 
 		public static RunesConfig runesConfig;
 		public static List<Rune> runes = new List<Rune>();
@@ -234,7 +235,11 @@ namespace RunicPower {
 		}
 
 		public static void Log(string message) {
-			Debug.Log("[RunicPower] "+message);
+			UnityEngine.Debug.Log("[RunicPower] "+message);
+		}
+
+		public static void Debug(string message) {
+			if (debug) Log(message);
 		}
 	}
 }
