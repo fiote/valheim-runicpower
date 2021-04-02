@@ -33,11 +33,12 @@ namespace RunicPower {
 			var rune = itemDrop.m_itemData.GetRuneData();
 			if (rune == null) return;
 
-			Player.m_localPlayer.ExtendedPlayer().lootingRuneItem = itemDrop.m_itemData;
+			Player.m_localPlayer?.ExtendedPlayer()?.SetLootingRuneItem(itemDrop.m_itemData);
 		}
+
 		static void Postfix(Humanoid __instance, GameObject go) {
 			if (!__instance.IsPlayer()) return;
-			Player.m_localPlayer.ExtendedPlayer().lootingRuneItem = null;
+			Player.m_localPlayer?.ExtendedPlayer()?.SetLootingRuneItem(null);
 		}
 	}
 

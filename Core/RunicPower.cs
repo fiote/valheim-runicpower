@@ -13,16 +13,31 @@ using System.Reflection;
 using UnityEngine;
 using Description = System.ComponentModel.DescriptionAttribute;
 
-// TODO [DONE]: recipes sometime wont load (requeriment item not found)
-// TODO [DONE]: CONFIG: hotbar scale
-// TODO [DONE]: CONFIG: hotbar enabled
-// TODO [DONE]: CONFIG: hotbar modifier
-// TODO [DONE]: CONFIG: cast: shout/talk/none
+// TODO [1.1]: recipes sometime wont load (requeriment item not found)
+// TODO [1.1]: CONFIG: hotbar scale
+// TODO [1.1]: CONFIG: hotbar enabled
+// TODO [1.1]: CONFIG: hotbar modifier
+// TODO [1.1]: CONFIG: cast: shout/talk/none
+// TODO [1.1]: don't consider other players as allies if PVP is enabled.
+// TODO [1.1]: check error when creating a new character
+
+// TODO: check performance issues (fps drop)
 
 // TODO: check how equip wheel works.
 // TODO: check new runes if inventory is full.
-// TODO: check if ghost mode is really broken.
-// TODO: check performance issues (fps drop)
+// TODO: add cooldown to rune-casting (mainly the spells)
+// TODO: CONFIG: inventorybar position (right or bottom)
+// TODO: CONFLICT? "crafting with containers" characters run on the spot like gliding over the terrain
+// TODO: check looted-items message not showing
+// TODO: add a 'craft all' button below the craft button
+
+// TODO: CONFLICT? check hotkey bar not updating when using runes
+// TODO: CONFLICT? check if ghost mode is really broken.
+
+// MAYBE: change how crafting works. Instead of different items, just use a single 'currency' that would be the result of desenchanting items or something like that.
+// MAYBE: change how crafting works. Rune material would increase as the rune get stronger.
+// MAYBE: change how casting works. Instead of consuming runes, use of kind of MANA resource.
+// MAYBE: ranks for recall rune. Better recalls allow to teleport with better ores.
 
 namespace RunicPower {
 	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "1.0.3")]
@@ -97,7 +112,6 @@ namespace RunicPower {
 		private void SetupConfig() {
 			Config.Bind("General", "NexusID", 840, "NexusMods ID for updates.");
 			configCastingMessage = Config.Bind("Casting", "Message", CastingMessage.NORMAL, "Define where the casting message should appear.");
-			// TODO: don't consider other players as allies if PVP is enabled.
 			configPvpEnabled = Config.Bind("PVP", "Enabled", true, "If enabled, this will count pvp-flagged players as enemies.");
 			configHotkeysEnabled = Config.Bind("HotkeysBar", "Enabled", true, "Enables the hotkey's bar (the one the bottom of the screen).");
 			configHotkeysScale = Config.Bind("HotkeysBar", "Scale", 100, "Adjusts the hotkey's bar size.");

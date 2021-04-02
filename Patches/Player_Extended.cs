@@ -29,6 +29,10 @@ namespace RunicPower.Patches {
 			spellsBarInventory.m_onChanged += OnInventoryChanged;
 		}
 
+		public void SetLootingRuneItem(ItemDrop.ItemData item) {
+			lootingRuneItem = item;
+		}
+
 		public void Save() {
 			var pkg = new ZPackage();
 			spellsBarInventory.Save(pkg);
