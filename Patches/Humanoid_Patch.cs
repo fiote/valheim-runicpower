@@ -46,8 +46,8 @@ namespace RunicPower {
 		public static bool Prefix(Humanoid __instance, ref Inventory __result) {
 			if (!__instance.IsPlayer()) return true;
 
-			var ext = Player.m_localPlayer.ExtendedPlayer();
-			if (!ext.isSelectingItemSpellsBar) return true;
+			var ext = Player.m_localPlayer?.ExtendedPlayer();
+			if (ext == null || !ext.isSelectingItemSpellsBar) return true;
 
 			__result = ext.spellsBarInventory;
 			return false;
