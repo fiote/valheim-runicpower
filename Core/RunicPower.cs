@@ -11,13 +11,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using UnityEngine;
+using Description = System.ComponentModel.DescriptionAttribute;
 
-// TODO: don't consider other players as allies if PVP is enabled.
 // TODO: recipes sometime wont load (requeriment item not found)
-// TODO: CONFIG: cast: shout/talk/none
-// TODO: CONFIG: hotbar enabled
-// TODO: CONFIG: hotbar scale
-// TODO: CONFIG: hotbar modifier
+
 // TODO: check how equip wheel works.
 // TODO: check new runes if inventory is full.
 // TODO: check if ghost mode is really broken.
@@ -38,6 +35,7 @@ namespace RunicPower {
 		private void Awake() {
 			LoadRunes();
 			LoadClasses();
+			SetupConfig();
 			SpellsBar.RegisterKeybinds(Config);
 		}
 
@@ -65,6 +63,35 @@ namespace RunicPower {
 					SkillInjector.RegisterNewSkill(cskill.id, cskill.name, cskill.description, 1.0f, PrefabCreator.LoadCustomTexture(cskill.icon), Skills.SkillType.Unarmed);
 				}
 			}
+		}
+
+		public enum KeyModifiers {
+			SHIFT,
+			CTRL,
+			ALT
+		}
+
+		public enum CastingMessage {
+			GLOBAL,
+			NORMAL,
+			SELF,
+			NONE
+		}
+
+		private void SetupConfig() {
+			Config.Bind<int>("General", "NexusID", 840, "NexusMods ID for updates.");
+			// TODO: CONFIG: cast: shout/talk/none
+			Config.Bind<CastingMessage>("Casting", "Message", CastingMessage.NORMAL, "Define where the casting message should appear.");
+			// TODO: don't consider other players as allies if PVP is enabled.
+			Config.Bind<bool>("PVP", "Enabled", true, "If enabled, this will count pvp-flagged players as enemies.");
+			// TODO: CONFIG: hotbar enabled
+			Config.Bind<bool>("HotkeysBar", "Enabled", true, "Enables the hotkey's bar (the one the bottom/center of the screen)");
+			// TODO: CONFIG: hotbar scale
+			Config.Bind<int>("HotkeysBar", "Scale", 100, "Adjusts the hotkey's bar size.");
+			Config.Bind<int>("HotkeysBar", "OffsetX", 0, "Adjust the hotkey's bar horizontal position (left/right).");
+			Config.Bind<int>("HotkeysBar", "OffsetY", 0, "Adjust the hotkey's bar vertical position (down/up)."); 
+			// TODO: CONFIG: hotbar modifier
+			Config.Bind<KeyModifiers>("HotkeysBar", "Modifier", KeyModifiers.SHIFT, "Key modifier to use the runes.");
 		}
 
 		private void OnDestroy() {
