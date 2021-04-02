@@ -131,7 +131,7 @@ namespace RunicPower.Core {
                 backgroundRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x);
                 backgroundRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y);
                 backgroundRT.localScale = new Vector3(1, 1, 1);
-            }
+			}
 
             // grid
             grid = go.AddComponent<InventoryGrid>();
@@ -166,13 +166,31 @@ namespace RunicPower.Core {
 
             // rect
             var goRect = go.transform as RectTransform;
+
+			if (type == "hotkeys") {
+                var cfgScale = RunicPower.configHotkeysScale.Value / 100f;
+                var scale = new Vector3(cfgScale, cfgScale, cfgScale);
+                goRect.localScale = scale;
+
+                var px = position.x;
+                var py = position.y;
+
+                var sx = scale.x - 1;
+                var sy = scale.y - 1;
+
+                px -= (size.x * sx) / 2;
+                py -= (size.y * sy) / 2;
+
+                position = new Vector2(px, py);
+            }
+
             goRect.anchoredPosition = position;
 
             if (type == "hotkeys") {
                 goRect.anchorMin = new Vector2(0.5f, 0f);
                 goRect.anchorMax = new Vector2(0.5f, 0f);
-                goRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x + 2);
-                goRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y + 2);
+                goRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x);
+                goRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y);
             }
 
             return goRect;
