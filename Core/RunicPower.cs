@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using BepInEx.Configuration;
 using Common;
 using HarmonyLib;
 using LitJson;
@@ -78,20 +79,28 @@ namespace RunicPower {
 			NONE
 		}
 
+		public static ConfigEntry<CastingMessage> configCastingMessage;
+		public static ConfigEntry<bool> configPvpEnabled;
+		public static ConfigEntry<bool> configHotkeysEnabled;
+		public static ConfigEntry<int> configHotkeysScale;
+		public static ConfigEntry<int> configHotkeysOffsetX;
+		public static ConfigEntry<int> configHotkeysOffsetY;
+		public static ConfigEntry<KeyModifiers> configHotkeysModifier;
+
 		private void SetupConfig() {
-			Config.Bind<int>("General", "NexusID", 840, "NexusMods ID for updates.");
+			Config.Bind("General", "NexusID", 840, "NexusMods ID for updates.");
 			// TODO: CONFIG: cast: shout/talk/none
-			Config.Bind<CastingMessage>("Casting", "Message", CastingMessage.NORMAL, "Define where the casting message should appear.");
+			configCastingMessage = Config.Bind("Casting", "Message", CastingMessage.NORMAL, "Define where the casting message should appear.");
 			// TODO: don't consider other players as allies if PVP is enabled.
-			Config.Bind<bool>("PVP", "Enabled", true, "If enabled, this will count pvp-flagged players as enemies.");
+			configPvpEnabled = Config.Bind("PVP", "Enabled", true, "If enabled, this will count pvp-flagged players as enemies.");
 			// TODO: CONFIG: hotbar enabled
-			Config.Bind<bool>("HotkeysBar", "Enabled", true, "Enables the hotkey's bar (the one the bottom/center of the screen)");
+			configHotkeysEnabled = Config.Bind("HotkeysBar", "Enabled", true, "Enables the hotkey's bar (the one the bottom of the screen).");
 			// TODO: CONFIG: hotbar scale
-			Config.Bind<int>("HotkeysBar", "Scale", 100, "Adjusts the hotkey's bar size.");
-			Config.Bind<int>("HotkeysBar", "OffsetX", 0, "Adjust the hotkey's bar horizontal position (left/right).");
-			Config.Bind<int>("HotkeysBar", "OffsetY", 0, "Adjust the hotkey's bar vertical position (down/up)."); 
+			configHotkeysScale = Config.Bind("HotkeysBar", "Scale", 100, "Adjusts the hotkey's bar size.");
+			configHotkeysOffsetX = Config.Bind("HotkeysBar", "OffsetX", 0, "Adjust the hotkey's bar horizontal position (left/right).");
+			configHotkeysOffsetY = Config.Bind("HotkeysBar", "OffsetY", 0, "Adjust the hotkey's bar vertical position (down/up).");
 			// TODO: CONFIG: hotbar modifier
-			Config.Bind<KeyModifiers>("HotkeysBar", "Modifier", KeyModifiers.SHIFT, "Key modifier to use the runes.");
+			configHotkeysModifier = Config.Bind<KeyModifiers>("HotkeysBar", "Modifier", KeyModifiers.SHIFT, "Key modifier to use the runes.");
 		}
 
 		private void OnDestroy() {
