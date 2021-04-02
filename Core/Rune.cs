@@ -690,24 +690,13 @@ namespace RunicPower.Core {
 		}
 
 		public List<SEMan> GetFoesAround(Vector3 center, float range) {
-			var characters = new List<Character>();
-
-			foreach (Character character in Character.GetAllCharacters()) {
-				var enemy = character.IsMonsterFaction() || character.IsBoss();
-				if (character.IsTamed()) enemy = false;
-				if (enemy) characters.Add(character);
-			}
-
-			return GetInRange(characters, center, range);
+			var list = Character.GetAllCharacters().FindAll(other => caster.CanHarmWithRunes(other));
+			return GetInRange(list, center, range);
 		}
 
 		public List<SEMan> GetAlliesAround(Vector3 center, float range) {
-			var players = new List<Player>();
-			Player.GetPlayersInRange(center, range, players);
-
-			var targets = new List<SEMan>();
-			foreach (var p in players) targets.Add(p.m_seman);
-			return targets;
+			var list = Character.GetAllCharacters().FindAll(other => caster.CanHelpWithRunes(other));
+			return GetInRange(list, center, range);
 		}
 
 		public List<SEMan> GetInRange(List<Character> characters, Vector3 center, float range) {

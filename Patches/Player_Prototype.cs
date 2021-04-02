@@ -56,5 +56,20 @@ namespace RunicPower.Patches {
 			var inv = __instance.GetSpellsBarInventory();
 			__instance.UseItem(inv, item, true);
 		}
+
+		public static bool CanHarmWithRunes(this Player __instance, Character other) {
+			// if the other is a monster of a boss, it CAN be harmed
+			if (other.IsMonsterFaction() || other.IsBoss()) return true;
+			// if the player is not flagged as pvp, it CAN NOT harm others players
+			if (!__instance.IsPVPEnabled()) return false;
+			// if the pvp config is not enabled, it CAN NOT harm others players
+			if (!RunicPower.configPvpEnabled.Value) return false;
+			// then the other player can only be harmed if its pvp is enabled
+			return other.IsPVPEnabled();
+		}
+
+		public static bool CanHelpWithRunes(this Player __instance, Character other) {
+			return !__instance.CanHarmWithRunes(other);
+		}
 	}
 }

@@ -103,7 +103,7 @@ namespace RunicPower {
 			configHotkeysScale = Config.Bind("HotkeysBar", "Scale", 100, "Adjusts the hotkey's bar size.");
 			configHotkeysOffsetX = Config.Bind("HotkeysBar", "OffsetX", 0, "Adjust the hotkey's bar horizontal position (left/right).");
 			configHotkeysOffsetY = Config.Bind("HotkeysBar", "OffsetY", 0, "Adjust the hotkey's bar vertical position (down/up).");
-			configHotkeysModifier = Config.Bind<KeyModifiers>("HotkeysBar", "Modifier", KeyModifiers.SHIFT, "Key modifier to use the runes.");
+			configHotkeysModifier = Config.Bind("HotkeysBar", "Modifier", KeyModifiers.SHIFT, "Key modifier to use the runes.");
 		}
 
 		private void OnDestroy() {
