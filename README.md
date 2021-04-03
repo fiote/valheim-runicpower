@@ -16,7 +16,7 @@
 ### Default value:
 - true
 
-### Accetable values:
+### Acceptable values:
 - true/on/1
 - false/off/0
 
@@ -26,7 +26,7 @@
 ### Default value:
 - 100
 
-### Accetable values:
+### Acceptable values:
 - any positive number (although values between 50 and 150 should be enough)
 
 
@@ -36,8 +36,8 @@
 ### Default value:
 - 0
 
-### Accetable values:
-- any number (negatives values to move it left. positives to move it right)
+### Acceptable values:
+- any number (negatives values = left. positives values = right)
 
 # Adjust the hotkey's bar vertical position (down/up).
 ``rp.offsety=value``
@@ -45,8 +45,8 @@
 ### Default value:
 - 0
 
-### Accetable values:
-- any number (negatives values to move it to down. positives to move it up)
+### Acceptable values:
+- any number (negatives values = down. positives = up)
 
 # Key modifier to use the runes.
 ``rp.modifier=value``
@@ -54,7 +54,7 @@
 ### Default value:
 - shift
 
-### Accetable values:
+### Acceptable values:
 - shift
 - ctrl/control
 - alt
@@ -65,6 +65,6 @@
 ### Default value:
 true
 
-### Accetable values:
+### Acceptable values:
 - true/on/1
 - false/off/0
