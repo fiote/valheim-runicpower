@@ -155,16 +155,14 @@ namespace RunicPower.Core {
             if (hud == null) hud = Hud.instance;
             var parent = hud.m_rootObject;
             var inventoryGui = InventoryGui.instance;
-            var position = new Vector2(RunicPower.configHotkeysOffsetX.Value, RunicPower.configHotkeysOffsetY.Value);
-            hotkeysRect = CreateGameObject(ref hotkeysGrid, inventoryGui, parent, spellsBarHotkeysName, position, GOTypes.HOTKEYS, barSize);
+            hotkeysRect = CreateGameObject(ref hotkeysGrid, inventoryGui, parent, spellsBarHotkeysName, GOTypes.HOTKEYS, barSize);
         }
 
         public static void CreateInventoryBar(InventoryGui gui) {
             if (gui == null) gui = InventoryGui.instance;
-            var parent = gui.m_player.gameObject;
+            var parent = gui?.m_player?.gameObject;
             var name = spellsBarGridName;
-            var position = new Vector2(1000, 103);
-            invBarRect = CreateGameObject(ref invBarGrid, gui, parent, name, position, GOTypes.INVENTORY, barSize);
+            invBarRect = CreateGameObject(ref invBarGrid, gui, parent, name, GOTypes.INVENTORY, barSize);
         }
 
         public enum GOTypes {
@@ -172,7 +170,7 @@ namespace RunicPower.Core {
             HOTKEYS
 		}
 
-        public static RectTransform CreateGameObject(ref InventoryGrid grid, InventoryGui inventoryGui, GameObject parent, string name, Vector2 position, GOTypes type, Vector2 size) {
+        public static RectTransform CreateGameObject(ref InventoryGrid grid, InventoryGui inventoryGui, GameObject parent, string name, GOTypes type, Vector2 size) {
             if (grid != null) {
                 Object.Destroy(grid.gameObject);
                 grid = null;
@@ -243,6 +241,7 @@ namespace RunicPower.Core {
 
 
             if (type == GOTypes.HOTKEYS) {
+                var position = new Vector2(RunicPower.configHotkeysOffsetX.Value, RunicPower.configHotkeysOffsetY.Value);
                 var cfgScale = RunicPower.configHotkeysScale.Value / 100f;
                 var scale = new Vector3(cfgScale, cfgScale, cfgScale);
                 goRect.localScale = scale;
@@ -252,10 +251,38 @@ namespace RunicPower.Core {
                 goRect.pivot = new Vector2(0.5f, 0);
                 goRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x);
                 goRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y);
-                position.x -= ((size.x - 107) / 2) * cfgScale;
-            }
 
-            goRect.anchoredPosition = position;
+                position.x -= ((size.x - 107) / 2) * cfgScale;
+                goRect.anchoredPosition = position;
+            } else {
+                if (RunicPower.configInvBarPosition.Value == RunicPower.InvBarPosition.TOP) {
+                    var position = new Vector2(1000, 103);
+                    goRect.anchoredPosition = position;
+                }
+
+                if (RunicPower.configInvBarPosition.Value == RunicPower.InvBarPosition.BOTTOM) {
+                    var cfgScale = RunicPower.configHotkeysScale.Value / 100f;
+                    var scale = new Vector3(cfgScale, cfgScale, cfgScale);
+                    goRect.localScale = scale;
+
+                    var vars = Console_InputText_Patch.vars;
+
+                    goRect.anchorMin = new Vector2(0.5f, 0f);
+                    goRect.anchorMax = new Vector2(0.5f, 0f);
+                    goRect.pivot = new Vector2(0.5f, 0f);
+
+                    var sizex = 643f;
+                    var sizey = 88f;
+                    var guiscale = GuiScaler.m_largeGuiScale;
+
+                    var x = GuiScaler.m_minWidth/guiscale/2 - sizex/2;
+                    var y = (GuiScaler.m_minHeight/guiscale + sizey - 410)*-1;
+
+                    var position = new Vector2(x, y);
+
+                    goRect.anchoredPosition = position;
+                }
+            }
 
             return goRect;
         }

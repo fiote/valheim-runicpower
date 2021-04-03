@@ -18,18 +18,16 @@ using Object = UnityEngine.Object;
 /* [1.x.x]
  * - Fixing bug when picking up runes from the ground.
  * - Adding a "Craft All" button below the "Craft" button.
- *
- *
+ * - You should now be able to craft runes if the spellsbar is 'full' but with free stacks.
+ * - Fixed bug where crafting could grant extra runes when stacks were at 99.
+ * - Adding CONFIG to configure where the inventory spellsbar should appear.
 */
 
+
 // TODO: check why fireball isnt doing the basic damage. maybe is resist?
-// TODO: check new runes if inventory is full.
-// TODO: check crafting runes if hotbar is full.
 // TODO: add cooldown to rune-casting (mainly the spells)
-// TODO: CONFIG: inventorybar position (right or bottom)
 // TODO: check integration with equip wheel.
 // TODO: CONFLICT? "crafting with containers" characters run on the spot like gliding over the terrain
-
 
 // TODO: CONFLICT? check hotkey bar not updating when using runes
 // TODO: CONFLICT? check if ghost mode is really broken.
@@ -47,7 +45,7 @@ namespace RunicPower {
 
 	public class RunicPower : BaseUnityPlugin {
 		private Harmony _harmony;
-		public static bool debug = true;
+		public static bool debug = false;
 
 		public static RunesConfig runesConfig;
 		public static List<Rune> runes = new List<Rune>();
@@ -96,6 +94,12 @@ namespace RunicPower {
 			ALT
 		}
 
+		public enum InvBarPosition {
+			TOP,
+			BOTTOM,
+			AUTO
+		}
+
 		public enum CastingMessage {
 			GLOBAL,
 			NORMAL,
@@ -110,11 +114,16 @@ namespace RunicPower {
 		public static ConfigEntry<int> configHotkeysOffsetX;
 		public static ConfigEntry<int> configHotkeysOffsetY;
 		public static ConfigEntry<KeyModifiers> configHotkeysModifier;
-
+		public static ConfigEntry<InvBarPosition> configInvBarPosition;
 		private void SetupConfig() {
 			Config.Bind("General", "NexusID", 840, "NexusMods ID for updates.");
+
 			configCastingMessage = Config.Bind("Casting", "Message", CastingMessage.NORMAL, "Define where the casting message should appear.");
+
 			configPvpEnabled = Config.Bind("PVP", "Enabled", true, "If enabled, this will count pvp-flagged players as enemies.");
+
+			configInvBarPosition = Config.Bind("SpellsBar", "Position", InvBarPosition.AUTO, "Defines where the inventory spells' bar should appear.");
+
 			configHotkeysEnabled = Config.Bind("HotkeysBar", "Enabled", true, "Enables the hotkey's bar (the one the bottom of the screen).");
 			configHotkeysScale = Config.Bind("HotkeysBar", "Scale", 100, "Adjusts the hotkey's bar size.");
 			configHotkeysOffsetX = Config.Bind("HotkeysBar", "OffsetX", 0, "Adjust the hotkey's bar horizontal position (left/right).");
@@ -236,7 +245,7 @@ namespace RunicPower {
 				}
 			}
 			if (Player.m_localPlayer?.TakeInput() == true) SpellsBar.CheckInputs();
-			SpellsBar.UpdateVisibility();
+			// SpellsBar.UpdateVisibility();
 		}
 
 		public static void Log(string message) {
