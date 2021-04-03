@@ -19,7 +19,7 @@ namespace RunicPower {
 			public bool boolvalue;
 
 			public ConsoleValue(string value) {
-				this.value = value.ToLower(); 
+				this.value = value.ToLower();
 				var floated = float.TryParse(value, out floatvalue);
 				intvalue = floated ? Mathf.RoundToInt(floatvalue) : 0;
 				boolvalue = (value == "1" || value == "yes" || value == "on");
@@ -28,10 +28,14 @@ namespace RunicPower {
 
 		public static Dictionary<string, ConsoleValue> vars = new Dictionary<string, ConsoleValue>() {
 			{  "x" , new ConsoleValue("0") },
-			{  "y" , new ConsoleValue("-60") },
-			{  "w" , new ConsoleValue("-150") },
-			{  "h" , new ConsoleValue("-10") },
-			{  "s" , new ConsoleValue("20") }
+			{  "y" , new ConsoleValue("0") },
+			{  "ax" , new ConsoleValue("0,5") },
+			{  "ay" , new ConsoleValue("0") },
+			{  "px" , new ConsoleValue("0,5") },
+			{  "py" , new ConsoleValue("0") },
+			{  "s" , new ConsoleValue("100") },
+			{  "w" , new ConsoleValue("643") },
+			{  "h" , new ConsoleValue("88") },
 		};
 
 		static bool Prefix(Console __instance) {
@@ -41,19 +45,26 @@ namespace RunicPower {
 
 			if (parts.Length == 2) {
 				var key = parts[0];
-				
+
 				var value = parts[1];
 				var cvalue = new ConsoleValue(value);
-
-
 				var keyparts = key.Split('.');
 
 				if (keyparts[0] != "rp") {
 					vars[key] = cvalue;
-					RunicPower.CreateCraftAllButton(null);
+					/*
+					GuiScaler.SetScale(vars["s"].floatvalue/100f);
+					var minWidth = GuiScaler.m_minWidth;
+					var minHeight = GuiScaler.m_minHeight;
+					RunicPower.Debug("m_largeGuiScale=" + GuiScaler.m_largeGuiScale+" minWidth=" + minWidth + " minHeight=" + minHeight);
+
+					SpellsBar.CreateHotkeysBar(null);
+					SpellsBar.CreateInventoryBar(null);
+					SpellsBar.UpdateInventory();
+					*/
 					return true;
 				}
-				
+
 				var cmd = keyparts[1];
 
 				if (cmd == "hotkey") {
@@ -72,6 +83,7 @@ namespace RunicPower {
 					RunicPower.configHotkeysOffsetY.Value = cvalue.intvalue;
 					RunicPower.Log("HOTKEY.OFFSETY config changed to " + cvalue.intvalue);
 				}
+
 				if (cmd == "pvp") {
 					RunicPower.configPvpEnabled.Value = cvalue.boolvalue;
 					RunicPower.Log("PVP.ENABLED config changed to " + cvalue.boolvalue);
@@ -80,6 +92,19 @@ namespace RunicPower {
 				if (cmd == "debug") {
 					RunicPower.debug = cvalue.boolvalue;
 					RunicPower.Log("DEBUG config changed to " + cvalue.boolvalue);
+				}
+
+				if (cmd == "pos") {
+					RunicPower.InvBarPosition pos;
+					if (cvalue.value == "top") pos = RunicPower.InvBarPosition.TOP;
+					else if (cvalue.value == "bottom") pos = RunicPower.InvBarPosition.BOTTOM;
+					else {
+						RunicPower.Log("INVBAR.POS failed to change. Acceptable values are: top, bottom");
+						return true;
+
+					}
+					RunicPower.configInvBarPosition.Value = pos;
+					RunicPower.Log("INVBAR.POS config changed to " + cvalue.value);
 				}
 
 				if (cmd == "message") {
@@ -111,7 +136,10 @@ namespace RunicPower {
 
 				RunicPower.configFile.Save();
 				SpellsBar.RegisterKeybinds();
+
 				SpellsBar.CreateHotkeysBar(null);
+				SpellsBar.CreateInventoryBar(null);
+				SpellsBar.UpdateInventory();
 				return false;
 			}
 
