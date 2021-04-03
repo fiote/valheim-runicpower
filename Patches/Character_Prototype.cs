@@ -54,7 +54,7 @@ namespace RunicPower {
 			}
 			if (__instance.IsPlayer() && num > 4f) {
 				var prevented = __instance.ExtendedCharacter()?.runicIgnoreFallDamage ?? false;
-				if (prevented) {
+				if (!prevented) {
 					HitData hitData = new HitData();
 					hitData.m_damage.m_damage = Mathf.Clamp01((num - 4f) / 16f) * 100f;
 					hitData.m_point = __instance.m_lastGroundPoint;
