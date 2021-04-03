@@ -20,22 +20,4 @@ namespace RunicPower.Patches {
             SpellsBar.CreateHotkeysBar(__instance);
         }
     }
-
-    [HarmonyPatch(typeof(Hud), "SetVisible")]
-    public static class Hud_SetVisible_Patch {
-
-        public static void Postfix(Hud __instance) {
-            RunicPower.Debug("Hud_SetVisible_Patch Postfix");
-            SpellsBar.UpdateVisibility();
-        }
-    }
-
-    [HarmonyPatch(typeof(Hud), "UpdateBuild")]
-    public static class Hud_UpdateBuild_Patch {
-
-        public static void Postfix(Hud __instance) {
-            RunicPower.Debug("Hud_UpdateBuild_Patch Postfix");
-            SpellsBar.UpdateVisibility();            
-        }
-    }
 }

@@ -20,19 +20,21 @@ using Description = System.ComponentModel.DescriptionAttribute;
 // TODO [1.1]: CONFIG: cast: shout/talk/none
 // TODO [1.1]: don't consider other players as allies if PVP is enabled.
 // TODO [1.1]: check error when creating a new character
+// TODO [1.1]: move powerMods check into onhit - right now its only being applied to runes
+// TODO [1.1]: check performance issues (fps drop)
 
-// TODO: check performance issues (fps drop)
-
-// TODO: check how equip wheel works.
+// TODO: check why fireball isnt doing the basic damage. maybe is resist?
+// TODO: check bug when picking up runes from the group (possibly related to equipslots fix?)
 // TODO: check new runes if inventory is full.
 // TODO: add cooldown to rune-casting (mainly the spells)
 // TODO: CONFIG: inventorybar position (right or bottom)
+// TODO: check integration with equip wheel.
 // TODO: CONFLICT? "crafting with containers" characters run on the spot like gliding over the terrain
-// TODO: check looted-items message not showing
 // TODO: add a 'craft all' button below the craft button
 
 // TODO: CONFLICT? check hotkey bar not updating when using runes
 // TODO: CONFLICT? check if ghost mode is really broken.
+// TODO: CONFLICT? check looted-items message not showing
 
 // MAYBE: change how crafting works. Instead of different items, just use a single 'currency' that would be the result of desenchanting items or something like that.
 // MAYBE: change how crafting works. Rune material would increase as the rune get stronger.
@@ -40,13 +42,13 @@ using Description = System.ComponentModel.DescriptionAttribute;
 // MAYBE: ranks for recall rune. Better recalls allow to teleport with better ores.
 
 namespace RunicPower {
-	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "1.0.3")]
+	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "1.1")]
 	[BepInDependency("com.pipakin.SkillInjectorMod")]
 	[BepInDependency("randyknapp.mods.extendeditemdataframework")]
 
 	public class RunicPower : BaseUnityPlugin {
 		private Harmony _harmony;
-		private static bool debug = true;
+		public static bool debug = false;
 
 		public static RunesConfig runesConfig;
 		public static List<Rune> runes = new List<Rune>();
@@ -163,14 +165,14 @@ namespace RunicPower {
 
 			var resources = new List<string>();
 			foreach (var data in runesData) {
-				foreach(var req in data.recipe.resources) {
+				foreach (var req in data.recipe.resources) {
 					if (!resources.Contains(req.item)) resources.Add(req.item);
 				}
 			}
 
 			var missing = new List<string>();
 
-			foreach(var item in resources) {
+			foreach (var item in resources) {
 				var pref = ObjectDB.instance.GetItemPrefab(item);
 				if (pref == null) missing.Add(item);
 			}
@@ -211,6 +213,10 @@ namespace RunicPower {
 			return rune;
 		}
 
+		public static void ClearCache() {
+			runes.ForEach(rune => rune.ClearCache());
+		}
+
 		public static StatusEffect CreateStatusEffect(string name, Player caster, string dsbuffs) {
 			var data = runesData.Find(r => r.recipe.item == name);
 			if (data == null) return null;
@@ -230,8 +236,8 @@ namespace RunicPower {
 					TryRegisterRecipes();
 				}
 			}
-			var player = Player.m_localPlayer;
-			if (player != null && player.TakeInput()) SpellsBar.CheckInputs();
+			if (Player.m_localPlayer?.TakeInput() == true) SpellsBar.CheckInputs();
+			SpellsBar.UpdateVisibility();
 		}
 
 		public static void Log(string message) {

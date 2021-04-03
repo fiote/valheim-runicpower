@@ -59,7 +59,7 @@ namespace RunicPower.Core {
 			fixedValues = new Dictionary<string, float>();
 			var buffs = dsbuffs.Split(';');
 
-			foreach(var buff in buffs) {
+			foreach (var buff in buffs) {
 				var parts = buff.Split('=');
 				var key = parts[0];
 				var value = float.Parse(parts[1]);
@@ -139,7 +139,24 @@ namespace RunicPower.Core {
 			return resist != 0;
 		}
 
+		string cachedTooltip;
+		ItemDrop.ItemData cachedItem;
+
+		public void ClearCache() {
+			cachedTooltip = null;
+			cachedItem = null;
+		}
+
 		public string GetTooltip(ItemDrop.ItemData item) {
+			if (item != null && item != cachedItem) {
+				cachedTooltip = null;
+				cachedItem = item;
+			}
+
+			if (item != null && cachedTooltip != null) return cachedTooltip;
+
+			RunicPower.Debug("Rune.GetTooltip " + item.m_shared.m_name ?? data.name);
+
 			StringBuilder text = new StringBuilder(256);
 			UpdateCaster();
 
@@ -160,7 +177,11 @@ namespace RunicPower.Core {
 			var fx = data.effect;
 
 			if (fx != null) {
-				if (complete) text.AppendFormat("\n------ <color=orange>Level {0}</color> -------\n", Mathf.FloorToInt(GetSkill()));
+				if (complete) {
+					var level = Mathf.FloorToInt(GetSkill());
+					var extra = (level < 10) ? "-" : "";
+					text.AppendFormat("\n------ <color=orange>Level {0}</color> -------{1}\n", level, extra);
+				}
 
 				// REGEN
 				if (fx.healthRegen != 0) text.AppendFormat("Health regen <color=orange>+{0}%</color>\n", GetHealthRegen()*100f);
@@ -202,13 +223,6 @@ namespace RunicPower.Core {
 				if (fx.expose != 0) text.AppendFormat("Increases damage taken by <color=orange>{0}%</color>\n", GetExpose());
 				if (fx.healthBack != 0) text.AppendFormat("Recovers <color=orange>{0}%</color> of each attack as <color=orange>HP</color>\n", GetHealthSteal());
 
-				var runeMods = GetResistanceModifiers();
-
-				if (runeMods.Count > 0) {
-					string runeModsToString = SE_Stats.GetDamageModifiersTooltipString(runeMods);
-					text.Append(runeModsToString);
-				}
-
 				if (complete) {
 					text.Append("-----------------------\n\n");
 
@@ -235,7 +249,8 @@ namespace RunicPower.Core {
 				}
 			}
 
-			return text.ToString();
+			cachedTooltip = text.ToString();
+			return cachedTooltip;
 		}
 
 		public string GetEffectTooltip() {
@@ -254,10 +269,8 @@ namespace RunicPower.Core {
 		public void UpdateCaster() {
 			if (caster == null) return;
 			var dmg = caster.GetCurrentWeapon().GetDamage();
-			var runes = caster.GetRunes();
 			casterWeaponDmg = dmg.GetTotalElementalDamage() + dmg.GetTotalPhysicalDamage();
-			casterPowerMods = new DamageTypeValues();
-			foreach (var rune in runes) rune.AppendPower(ref casterPowerMods);
+			casterPowerMods = caster.ExtendedCharacter()?.runicPowerModifier;
 		}
 
 		// ================================================================
@@ -282,18 +295,6 @@ namespace RunicPower.Core {
 			return Mathf.RoundToInt(value * multi);
 		}
 
-		public int GetHealingHP() {
-			var heal = (float)data.effect?.healthRecover;
-			var value = (heal / 100) * casterWeaponDmg;
-			return (int)value;
-		}
-
-		public int GetHealingStamina() {
-			var heal = (float)data.effect?.staminaRecover;
-			var value = (heal / 100) * casterWeaponDmg;
-			return (int)value;
-		}
-
 		public float GetSkilledTypedValue(DamageTypeValues source, HitData.DamageType dmgType, float skillMultiplier, float weaponMultiplier, float? capValue = null) {
 			float skill = GetSkill();
 			var value = source.GetByType(dmgType) / 100f;
@@ -304,13 +305,10 @@ namespace RunicPower.Core {
 			var weapon = casterWeaponDmg * skill * weaponMultiplier / 100f;
 			// getting the total base value
 			var total = skilled + weapon;
-			// applying power modifiers
-			var modifier = casterPowerMods.GetByType(dmgType);
-			var modified = total * (100 + modifier) / 100f;
 			// checking for cap values
-			if (capValue != null && modified > capValue) modified = (float)capValue;
+			if (capValue != null && total > capValue) total = (float)capValue;
 			// returning a rounded value
-			return modified;
+			return total;
 		}
 
 		public float GetSkilledValue(float value, float skillMultiplier, float? capValue = null) {
@@ -346,14 +344,18 @@ namespace RunicPower.Core {
 			// level 1: 7f + 2% of weapon
 			// level 10: 70f + 20% of weapon
 			// level 100: 700f + 200% of weapon
-			return GetSkilledTypedValue(data.effect.doHealHP, dmgType, 6f, 1f);
+			var heal = GetSkilledTypedValue(data.effect.doHealHP, dmgType, 6f, 1f);
+			ApplyModifierToFloat(casterPowerMods, dmgType, ref heal);
+			return heal;
 		}
 
 		private float GetHealST(HitData.DamageType dmgType) {
 			// level 1: 7f + 2% of weapon
 			// level 10: 70f + 20% of weapon
 			// level 100: 700f + 200% of weapon
-			return GetSkilledTypedValue(data.effect.doHealST, dmgType, 6f, 1f);
+			var heal = GetSkilledTypedValue(data.effect.doHealST, dmgType, 6f, 1f);
+			ApplyModifierToFloat(casterPowerMods, dmgType, ref heal);
+			return heal;
 		}
 
 		private float GetPower(HitData.DamageType dmgType) {
@@ -435,20 +437,6 @@ namespace RunicPower.Core {
 			return GetSkilledValue((float)data.effect.stealthiness / 100f, 1f, 100f);
 		}
 
-		public List<HitData.DamageModPair> GetResistanceModifiers() {
-			if (data.resistanceModifiers == null) {
-				data.resistanceModifiers = new List<HitData.DamageModPair>();
-				GetResistanceModifier(HitData.DamageType.Blunt, data.effect?.physicalResitance);
-				GetResistanceModifier(HitData.DamageType.Pierce, data.effect?.physicalResitance);
-				GetResistanceModifier(HitData.DamageType.Slash, data.effect?.physicalResitance);
-				GetResistanceModifier(HitData.DamageType.Fire, data.effect?.elementalResistance);
-				GetResistanceModifier(HitData.DamageType.Frost, data.effect?.elementalResistance);
-				GetResistanceModifier(HitData.DamageType.Lightning, data.effect?.elementalResistance);
-				GetResistanceModifier(HitData.DamageType.Poison, data.effect?.elementalResistance);
-				GetResistanceModifier(HitData.DamageType.Spirit, data.effect?.elementalResistance);
-			}
-			return data.resistanceModifiers;
-		}
 		// ================================================================
 		// MODIFY
 		// ================================================================
@@ -470,7 +458,39 @@ namespace RunicPower.Core {
 			equipmentMovement += GetMovementBonus() / 100f;
 		}
 
-		public void AppendPower(ref DamageTypeValues power) {
+		public void ModifyInvisibilityRange(ref float invisibilityRange) {
+			if (data.effect == null) return;
+			invisibilityRange += GetStealhiness();
+		}
+
+		public void ModifyHealthSteal(ref float healthSteal) {
+			if (data.effect == null) return;
+			healthSteal += GetHealthSteal();
+		}
+
+		public void ModifyResist(ref DamageTypeValues mod) {
+			if (data.effect == null) return;
+			foreach (HitData.DamageType dmgType in dmgTypes) {
+				var resist = GetResist(dmgType);
+				var expose = GetExpose();
+				mod.AddByType(dmgType, resist - expose);
+			}
+		}
+
+		public void ModifyPower(ref DamageTypeValues mod) {
+			if (data.effect == null) return;
+			foreach (HitData.DamageType dmgType in dmgTypes) {
+				var power = GetPower(dmgType);
+				mod.AddByType(dmgType, power);
+			}
+		}
+
+		public void ModifyIgnoreFallDamage(ref bool ignoreFallDamage) {
+			var ignore = GetIgnoreFallDamage();
+			if (ignore) ignoreFallDamage = true;
+		}
+
+		public void AppendPower(ref DamageTypeValues power) { // TODO: stop using this, use ModifyPower
 			if (data.effect == null) return;
 			// MULTIPLIERS
 			foreach (HitData.DamageType dmgType in dmgTypes) {
@@ -479,47 +499,20 @@ namespace RunicPower.Core {
 			}
 		}
 
-		public void ModifyAppliedDamage(ref HitData hitData) {
-			ModifyAppliedDamageByType(HitData.DamageType.Blunt, ref hitData.m_damage.m_blunt);
-			ModifyAppliedDamageByType(HitData.DamageType.Pierce, ref hitData.m_damage.m_pierce);
-			ModifyAppliedDamageByType(HitData.DamageType.Slash, ref hitData.m_damage.m_slash);
-			ModifyAppliedDamageByType(HitData.DamageType.Fire, ref hitData.m_damage.m_fire);
-			ModifyAppliedDamageByType(HitData.DamageType.Frost, ref hitData.m_damage.m_frost);
-			ModifyAppliedDamageByType(HitData.DamageType.Lightning, ref hitData.m_damage.m_lightning);
-			ModifyAppliedDamageByType(HitData.DamageType.Poison, ref hitData.m_damage.m_poison);
-			ModifyAppliedDamageByType(HitData.DamageType.Spirit, ref hitData.m_damage.m_spirit);
+		public static void ApplyModifierToHit(DamageTypeValues modifier, ref HitData hit) {
+			ApplyModifierToFloat(modifier, HitData.DamageType.Blunt, ref hit.m_damage.m_blunt);
+			ApplyModifierToFloat(modifier, HitData.DamageType.Pierce, ref hit.m_damage.m_pierce);
+			ApplyModifierToFloat(modifier, HitData.DamageType.Slash, ref hit.m_damage.m_slash);
+			ApplyModifierToFloat(modifier, HitData.DamageType.Fire, ref hit.m_damage.m_fire);
+			ApplyModifierToFloat(modifier, HitData.DamageType.Frost, ref hit.m_damage.m_frost);
+			ApplyModifierToFloat(modifier, HitData.DamageType.Lightning, ref hit.m_damage.m_lightning);
+			ApplyModifierToFloat(modifier, HitData.DamageType.Poison, ref hit.m_damage.m_poison);
+			ApplyModifierToFloat(modifier, HitData.DamageType.Spirit, ref hit.m_damage.m_spirit);
 		}
 
-		public void ApplyHealthSteal(HitData hit, Character attacker) {
-			var steal = GetHealthSteal();
-			if (steal != 0) {
-				var totalf = hit.GetTotalDamage();
-				var back = totalf * steal / 100f;
-				attacker.Heal(back);
-			}
-		}
-
-		public void ModifyAppliedDamageByType(HitData.DamageType type, ref float damage) {
-			var resist = GetResist(type);
-			var expose = GetExpose();
-
-			var original = damage;
-
-			if (resist != 0) {
-				damage = original * (100f - resist) / 100f;
-				Debug.Log("damage " + type + " resistance reduced " + original + " to " + damage + "(-" + resist + "%)");
-			}
-
-			if (expose != 0) {
-				damage = damage * (100f + expose) / 100f;
-				Debug.Log("damage " + type + " expose increased " + original + " to " + damage + "(+" + expose + "%)");
-			}
-		}
-
-		public void GetResistanceModifier(HitData.DamageType type, String value) {
-			if (value == null || value == "") return;
-			if (!mapDamageModifier.ContainsKey(value)) return;
-			data.resistanceModifiers.Add(new HitData.DamageModPair() { m_type = type, m_modifier = mapDamageModifier[value] });
+		public static void ApplyModifierToFloat(DamageTypeValues modifier, HitData.DamageType dmgType, ref float damage) {
+			var resist = modifier.GetByType(dmgType);
+			if (resist != 0) damage -= damage * (resist / 100f);
 		}
 
 		// ================================================================
@@ -558,6 +551,7 @@ namespace RunicPower.Core {
 			var hitDamage = new HitData();
 
 			if (data.effect.DoDamage()) {
+				RunicPower.Debug("doDamage " + data.effect.doDamage.ToString());
 				hitDamage.m_damage.m_blunt = GetDamage(HitData.DamageType.Blunt);
 				hitDamage.m_damage.m_pierce = GetDamage(HitData.DamageType.Pierce);
 				hitDamage.m_damage.m_slash = GetDamage(HitData.DamageType.Slash);
@@ -566,6 +560,9 @@ namespace RunicPower.Core {
 				hitDamage.m_damage.m_lightning = GetDamage(HitData.DamageType.Lightning);
 				hitDamage.m_damage.m_poison = GetDamage(HitData.DamageType.Poison);
 				hitDamage.m_damage.m_spirit = GetDamage(HitData.DamageType.Spirit);
+
+				RunicPower.Debug("doDamage hitData.physical" + hitDamage.GetTotalPhysicalDamage());
+				RunicPower.Debug("doDamage hitData.elemental" + hitDamage.GetTotalElementalDamage());
 				destructable.Damage(hitDamage);
 			}
 
@@ -759,7 +756,10 @@ namespace RunicPower.Core {
 			// casting RECALL
 
 			// getting the archetype skill Id and adding experience to it
-			if (data.archetype != "Generic") caster.RaiseSkill(data.skillType, 1f);
+			if (data.archetype != "Generic") {
+				caster.RaiseSkill(data.skillType, 1f);
+				RunicPower.ClearCache();
+			}
 
 			// casting RECALL
 			if (custom == "recall") {

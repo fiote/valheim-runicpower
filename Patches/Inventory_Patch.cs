@@ -14,11 +14,9 @@ namespace RunicPower.Patches {
 	[HarmonyPatch(typeof(Inventory), "HaveEmptySlot")]
 	public static class Inventory_HaveEmptySlot_Patch {
 		public static bool Prefix(Inventory __instance, ref bool __result) {
-			RunicPower.Debug("Inventory_HaveEmptySlot_Patch Prefix");
 			// if we're not crating a rune, return true so it goes as normal
-			var item = Player.m_localPlayer.ExtendedPlayer().craftingRuneItem;
+			var item = Player.m_localPlayer?.ExtendedPlayer()?.craftingRuneItem;
 			if (item == null) return true;
-
 			// getting hte spell inventory
 			var inv = SpellsBar.invBarGrid.m_inventory;
 			// checking if this item already exists in the inventory (with free stack space)
@@ -49,7 +47,6 @@ namespace RunicPower.Patches {
 	[HarmonyPatch(typeof(Inventory), "AddItem", typeof(ItemDrop.ItemData))]
 	public static class Inventory_AddItem_Patch {
 		public static bool Prefix(Inventory __instance, ref ItemDrop.ItemData item, ref bool __result) {
-			RunicPower.Debug("Inventory_AddItem_Patch Prefix");
 			// if we're not crafting/looting a rune, ignore this flow
 			var ext = Player.m_localPlayer?.ExtendedPlayer();
 			if (ext == null || (ext.craftingRuneItem == null && ext.lootingRuneItem == null)) return true;
@@ -58,27 +55,21 @@ namespace RunicPower.Patches {
 
 			var inv = SpellsBar.invBarGrid.m_inventory;
 
-			while (item.m_stack > 0) {
+			var qtyStack = item.m_stack;
+
+			while (qtyStack > 0) {
 				// checking if this item already exists in the inventory (with free stack space)
 				ItemDrop.ItemData itemData = inv.FindFreeStackItem(item.m_shared.m_name, item.m_quality);
-
-				if (itemData == item) {
-					// [Equipment and Quick Slot] is making 'AddItem' be called twice, so lets stop here
-					return false;
-				}
-
 				// if it does
 				if (itemData != null) {
 					// get the free space
 					var freeStack = itemData.m_shared.m_maxStackSize - itemData.m_stack;
 					// get how much can we add to it
-					var toAdd = (item.m_stack >= freeStack) ? freeStack : item.m_stack;
+					var toAdd = (qtyStack >= freeStack) ? freeStack : qtyStack;
 					// add that to it
 					itemData.m_stack += toAdd;
 					// subs that much of the item stack
-					item.m_stack -= toAdd;
-					// iv was changed
-					inv.Changed();
+					qtyStack -= toAdd;
 				} else {
 					// if the item does not exist, check for a empty slot
 					Vector2i invPos = inv.FindEmptySlot(inv.TopFirst(item));
@@ -98,9 +89,20 @@ namespace RunicPower.Patches {
 					}
 				}
 			}
-
+			// iv was changed
+			inv.Changed();
+			// we're done, stop here
 			__result = true;
 			return false;
+		}
+
+		[HarmonyPatch(typeof(Inventory), "Changed")]
+		public static class Inventory_Changed_Patch {
+			public static void Postfix(Inventory __instance) {
+				if (__instance.m_name != "spellsBarInventory") return;
+				RunicPower.Debug("Inventory_Changed_Patch Postfix " + __instance.m_name);
+				SpellsBar.UpdateInventory();
+			}
 		}
 	}
 }

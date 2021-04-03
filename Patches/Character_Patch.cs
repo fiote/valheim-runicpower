@@ -12,28 +12,20 @@ namespace RunicPower {
 
 	[HarmonyPatch(typeof(Character), "UpdateGroundContact")]
 	public static class Character_UpdateGroundContact_Patch {
-		static void Prefix(Character __instance, float dt) {
-			if (!__instance.IsPlayer()) return;
-			var player = __instance as Player;
-			var ext = player.ExtendedCharacter();
-			var runes = player.GetRunes();
-			var prevented = runes?.Find(rune => rune.GetIgnoreFallDamage());
-			if (prevented != null) ext.isNotAPlayerRightNow = true;
-		}
-
-		static void Postfix(Character __instance, float dt) {
-			if (!__instance.IsPlayer()) return;
-			var player = __instance as Player;
-			var ext = player.ExtendedCharacter();
-			ext.isNotAPlayerRightNow = false;
+		static bool Prefix(Character __instance, float dt) {
+			__instance.UpdateGroundContact_RP(dt);
+			return false;
 		}
 	}
 
 	[HarmonyPatch(typeof(Character), "ApplyDamage")]
 	public static class Character_ApplyDamage_Patch {
 		static void Prefix(Character __instance, ref HitData hit, bool showDamageText, bool triggerEffects, HitData.DamageModifier mod = HitData.DamageModifier.Normal) {
-			var runes = __instance.GetRunes();
-			foreach (var rune in runes) rune.ModifyAppliedDamage(ref hit);
+			RunicPower.Debug("Character_ApplyDamage_Patch " + __instance.name + " " + hit.GetTotalDamage());
+			hit.GetAttacker()?.ExtendedCharacter()?.ApplyPowerModifiersToHit(ref hit);
+			RunicPower.Debug("ApplyPowerModifiersToHit -> "+hit.GetTotalDamage());
+			__instance?.ExtendedCharacter()?.ApplyResistModifiersToHit(ref hit);
+			RunicPower.Debug("ApplyResistModifiersToHit -> " + hit.GetTotalDamage());
 		}
 	}
 }

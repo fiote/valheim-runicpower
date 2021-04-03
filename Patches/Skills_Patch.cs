@@ -10,9 +10,8 @@ namespace RunicPower {
 		public static void Postfix(Skills __instance, ref List<Skill> __result) {
 			RunicPower.Debug("Skills_GetSkillList_Patch Postfix");
 			var ids = new List<Skills.SkillType>();
-			foreach (var cskill in RunicPower.listofCSkills) ids.Add(cskill.GetSkillType());
+			RunicPower.listofCSkills.ForEach(cskill => ids.Add(cskill.GetSkillType()));
 			__result = __result.OrderBy(o => o.m_info != null && ids.Contains(o.m_info.m_skill)).ThenBy(o => o.m_info != null ? o.m_info.m_description : "").ToList();
-
 		}
 	}
 }

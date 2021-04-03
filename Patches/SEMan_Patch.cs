@@ -17,15 +17,19 @@ namespace RunicPower.Patches {
             RunicPower.Debug("Character_OnDamaged_Patch Prefix");
             if (hit == null) return;
             if (attacker == null) return;
-            var runes = attacker.GetRunes();
-            foreach (var rune in runes) rune.ApplyHealthSteal(hit, attacker);
+
+            var prSteal = attacker.ExtendedCharacter()?.runicLifeSteal ?? 0;
+            if (prSteal <= 0) return;
+
+            var totalf = hit.GetTotalDamage();
+            var back = totalf * prSteal/ 100f;
+            attacker.Heal(back);
         }
     }
 
     [HarmonyPatch(typeof(SEMan), "Internal_AddStatusEffect")]
     public static class Character_Internal_AddStatusEffect_Patch {
         static bool Prefix(SEMan __instance, string name, bool resetTime) {
-            RunicPower.Debug("Internal_AddStatusEffect Prefix");
             var parts = name.Split('|');
             if (parts[0] != "RUNICPOWER") return true;
 
@@ -38,7 +42,20 @@ namespace RunicPower.Patches {
         }
     }
 
+    [HarmonyPatch(typeof(SEMan), "AddStatusEffect", typeof(StatusEffect), typeof(bool))]
+    public static class SEMan_AddStatusEffect_Patch {
+        static void Postfix(SEMan __instance, StatusEffect statusEffect, bool resetTime) {
+            var rune = statusEffect.GetRune();
+            if (rune == null) return;
+            __instance.m_character?.ExtendedCharacter()?.AddRune(rune);
+        }
+    }
 
-
-
+    [HarmonyPatch(typeof(SEMan), "RemoveStatusEffect", typeof(string), typeof(bool))]
+    public static class SEMan_RemoveStatusEffect_Patch {
+        static void Prefix(SEMan __instance, string name, bool quiet) {
+            var rune = __instance.GetStatusEffect(name)?.GetRune();
+            __instance?.m_character?.ExtendedCharacter()?.RemoveRune(rune);
+        }
+    }
 }

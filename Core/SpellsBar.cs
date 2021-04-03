@@ -95,17 +95,62 @@ namespace RunicPower.Core {
             if (item != null) player.UseRuneFromSpellBar(item);
         }
 
+        public static bool isVisible = false;
+
         public static void UpdateVisibility() {
             if (hotkeysRect == null) return;
 
-            var active = true;
-            if (Hud.instance.m_buildHud.activeSelf) active = false;
-            if (Player.m_localPlayer.IsFlying()) active = false;
+            var visible = true;
+            if (visible && Hud.instance?.m_buildHud?.activeSelf == true) visible = false;
+            if (visible && Hud.instance?.IsVisible() == false) visible = false;
 
-            hotkeysRect.gameObject.SetActive(active);
+            if (visible != isVisible) {
+                isVisible = visible;
+                hotkeysRect.gameObject.SetActive(isVisible);
+            }
         }
 
+        public static void UpdateInventory() {
+            UpdateGrid(invBarGrid);
+            UpdateGrid(hotkeysGrid);
+        }
+
+        public static Dictionary<string, Text> mapBindingText = new Dictionary<string, Text>();
+
+        public static void UpdateGrid(InventoryGrid grid) {
+            var player = Player.m_localPlayer;
+            if (player == null) return;
+
+            var inv = player?.GetSpellsBarInventory();
+            var invGui = InventoryGui.instance;
+            if (inv == null || invGui == null) return;
+
+            try {
+                grid?.UpdateInventory(inv, player, invGui?.m_dragItem);
+                for (var i = 0; i < slotCount; ++i) {
+                    var key = grid.name + ":" + i;
+
+                    Text bindingText;
+
+                    if (mapBindingText.ContainsKey(key)) {
+                        bindingText = mapBindingText[key];
+                    } else {
+                        bindingText = grid.m_elements[i].m_go.transform.Find("binding").GetComponent<Text>();
+                        bindingText.enabled = true;
+                        bindingText.horizontalOverflow = HorizontalWrapMode.Overflow;
+                        bindingText.fontSize = 15;
+                        mapBindingText[key] = bindingText;
+                    }
+
+                    bindingText.text = GetBindingLabel(i);
+                }
+            } catch (Exception) {
+
+            }
+		}
+
         public static void CreateHotkeysBar(Hud hud) {
+            mapBindingText.Clear();
             if (hud == null) hud = Hud.instance;
             var parent = hud.m_rootObject;
             var inventoryGui = InventoryGui.instance;
@@ -177,7 +222,7 @@ namespace RunicPower.Core {
             if (type == GOTypes.INVENTORY) {
                 grid.m_onSelected = OnSelected(inventoryGui);
                 grid.m_onRightClick = OnRightClicked(inventoryGui);
-            } else { 
+            } else {
                 grid.m_onSelected = null;
                 grid.m_onRightClick = null;
             }
@@ -216,9 +261,11 @@ namespace RunicPower.Core {
 
         public static Action<InventoryGrid, ItemDrop.ItemData, Vector2i, InventoryGrid.Modifier> OnSelected(InventoryGui inventoryGui) {
             return (InventoryGrid inventoryGrid, ItemDrop.ItemData item, Vector2i pos, InventoryGrid.Modifier mod) => {
+                if (mod == InventoryGrid.Modifier.Move) return;
+
                 var ext = Player.m_localPlayer.ExtendedPlayer();
                 var ok = true;
-                ext.isSelectingItemSpellsBar = true;
+                ext.SetSelectingRuneItem(item);
                 if (inventoryGui.m_dragItem != null) {
                     var rune = inventoryGui.m_dragItem?.GetRuneData();
                     if (rune == null) {
@@ -227,7 +274,7 @@ namespace RunicPower.Core {
                     }
                 }
                 if (ok) inventoryGui.OnSelectedItem(inventoryGrid, item, pos, mod);
-                ext.isSelectingItemSpellsBar = false;
+                ext.SetSelectingRuneItem(null);
             };
         }
 

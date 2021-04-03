@@ -44,17 +44,4 @@ namespace RunicPower {
 		}
 	}
 
-	[HarmonyPatch(typeof(Humanoid), "GetInventory")]
-	public static class Humanoid_GetInventory_Patch {
-		public static bool Prefix(Humanoid __instance, ref Inventory __result) {
-			RunicPower.Debug("Humanoid_GetInventory_Patch Prefix");
-			if (!__instance.IsPlayer()) return true;
-
-			var ext = Player.m_localPlayer?.ExtendedPlayer();
-			if (ext == null || !ext.isSelectingItemSpellsBar) return true;
-
-			__result = ext.spellsBarInventory;
-			return false;
-		}
-	}
 }

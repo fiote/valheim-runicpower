@@ -52,6 +52,11 @@ namespace RunicPower {
 					RunicPower.Log("PVP.ENABLED config changed to " + boolvalue);
 				}
 
+				if (cmd == "debug") {
+					RunicPower.debug = boolvalue;
+					RunicPower.Log("DEBUG config changed to " + boolvalue);
+				}
+
 				if (cmd == "message") {
 					RunicPower.CastingMessage message;
 					if (lower == "global") message = RunicPower.CastingMessage.GLOBAL;

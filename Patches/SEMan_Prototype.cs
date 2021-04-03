@@ -12,17 +12,6 @@ using UnityEngine;
 namespace RunicPower.Patches {
     public static class SEMan_Prototype {
 
-        public static List<Rune> GetRunes(this SEMan __instance) {
-            var list = new List<Rune>();
-
-            foreach (var statusEffect in __instance.m_statusEffects) {
-                var rune = statusEffect.GetRune();
-                if (rune == null) continue;
-                list.Add(rune);
-            }
-
-            return list;
-        }
         public static void AddRunicEffect(this SEMan __instance, string name, Player caster, string dsbuffs, bool resetTime) {
             // if the seman already have this effect
             StatusEffect statusEffect = __instance.GetStatusEffect(name);
