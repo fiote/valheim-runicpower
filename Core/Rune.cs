@@ -155,8 +155,6 @@ namespace RunicPower.Core {
 
 			if (item != null && cachedTooltip != null) return cachedTooltip;
 
-			RunicPower.Debug("Rune.GetTooltip " + item.m_shared.m_name ?? data.name);
-
 			StringBuilder text = new StringBuilder(256);
 			UpdateCaster();
 

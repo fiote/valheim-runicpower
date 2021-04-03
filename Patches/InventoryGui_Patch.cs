@@ -15,6 +15,7 @@ namespace RunicPower.Patches {
         public static void Postfix(InventoryGui __instance) {
             RunicPower.Debug("InventoryGui_Awake_Patch Postfix");
             SpellsBar.CreateInventoryBar(__instance);
+            RunicPower.CreateCraftAllButton(__instance);
         }
     }
 
@@ -23,14 +24,21 @@ namespace RunicPower.Patches {
         public static bool Prefix(InventoryGui __instance, Player player) {
             // if it's not a rune, do the normal flow
             var data = __instance.m_craftRecipe?.m_item?.m_itemData?.GetRuneData();
-            if (data == null) return true;
+            if (data == null) {
+                RunicPower.StopCraftingAll(false);
+                return true;
+            }
             // if the player does not have the requeriments, do the normal flow
             var qualityLevel = 1;
-            if (!player.HaveRequirements(__instance.m_craftRecipe, discover: false, qualityLevel) && !player.NoCostCheat()) return true;
+            if (!player.HaveRequirements(__instance.m_craftRecipe, discover: false, qualityLevel) && !player.NoCostCheat()) {
+                RunicPower.StopCraftingAll(false);
+                return true;
+            }
             // getting hte spell inventory
             var inv = SpellsBar.invBarGrid.m_inventory;
             // if there is not an 'empty' slot, do the normal flow
             if (!inv.HaveEmptySlot()) {
+                RunicPower.StopCraftingAll(false);
                 return true;
             }
             // trying to craft the item
@@ -55,6 +63,31 @@ namespace RunicPower.Patches {
         }
     }
 
+    [HarmonyPatch(typeof(InventoryGui), "UpdateRecipe")]
+    public static class InventoryGui_UpdateRecipe_Patch {
+        public static void Postfix(InventoryGui __instance, Player player, float dt) {
+            if (__instance.m_craftTimer == -1f && __instance.m_craftRecipe != null) {
+                __instance.m_craftTimer = -0.5f;
+                RunicPower.TryCraftingMore();
+			}
+        }
+    }
+
+    [HarmonyPatch(typeof(InventoryGui), "OnCraftCancelPressed")]
+    public static class InventoryGui_OnCraftCancelPressed_Patch {
+        public static void Prefix(InventoryGui __instance) {
+            RunicPower.Debug("InventoryGui_OnCraftCancelPressed_Patch Postfix");
+            RunicPower.StopCraftingAll(false);
+        }
+    }
+
+    [HarmonyPatch(typeof(InventoryGui), "OnCraftPressed")]
+    public static class InventoryGui_OnCraftPressed_Patch {
+        public static void Postfix(InventoryGui __instance) {
+            RunicPower.Debug("InventoryGui_OnCraftPressed_Patch Postfix");
+            if (__instance.m_craftRecipe == null) RunicPower.StopCraftingAll(false);
+        }
+    }
 
 
     [HarmonyPatch(typeof(InventoryGui), "SetRecipe")]

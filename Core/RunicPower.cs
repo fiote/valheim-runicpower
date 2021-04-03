@@ -11,26 +11,25 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.UI;
 using Description = System.ComponentModel.DescriptionAttribute;
+using Object = UnityEngine.Object;
 
-// TODO [1.1]: recipes sometime wont load (requeriment item not found)
-// TODO [1.1]: CONFIG: hotbar scale
-// TODO [1.1]: CONFIG: hotbar enabled
-// TODO [1.1]: CONFIG: hotbar modifier
-// TODO [1.1]: CONFIG: cast: shout/talk/none
-// TODO [1.1]: don't consider other players as allies if PVP is enabled.
-// TODO [1.1]: check error when creating a new character
-// TODO [1.1]: move powerMods check into onhit - right now its only being applied to runes
-// TODO [1.1]: check performance issues (fps drop)
+/* [1.x.x]
+ * - Fixing bug when picking up runes from the ground.
+ * - Adding a "Craft All" button below the "Craft" button.
+ *
+ *
+*/
 
 // TODO: check why fireball isnt doing the basic damage. maybe is resist?
-// TODO: check bug when picking up runes from the group (possibly related to equipslots fix?)
 // TODO: check new runes if inventory is full.
+// TODO: check crafting runes if hotbar is full.
 // TODO: add cooldown to rune-casting (mainly the spells)
 // TODO: CONFIG: inventorybar position (right or bottom)
 // TODO: check integration with equip wheel.
 // TODO: CONFLICT? "crafting with containers" characters run on the spot like gliding over the terrain
-// TODO: add a 'craft all' button below the craft button
+
 
 // TODO: CONFLICT? check hotkey bar not updating when using runes
 // TODO: CONFLICT? check if ghost mode is really broken.
@@ -48,7 +47,7 @@ namespace RunicPower {
 
 	public class RunicPower : BaseUnityPlugin {
 		private Harmony _harmony;
-		public static bool debug = false;
+		public static bool debug = true;
 
 		public static RunesConfig runesConfig;
 		public static List<Rune> runes = new List<Rune>();
@@ -246,6 +245,79 @@ namespace RunicPower {
 
 		public static void Debug(string message) {
 			if (debug) Log(message);
+		}
+
+		public static GameObject craftAllgo;
+		public static Button craftAllButton;
+		public static Text craftAllText;
+		public static bool isCraftingAll = false;
+
+		public static void CreateCraftAllButton(InventoryGui gui) {
+			if (gui == null) gui = InventoryGui.instance;
+			var craftButton = gui.m_craftButton.gameObject;
+			var name = "runicPowerCraftAllButton";
+
+			if (craftAllgo != null) {
+				Destroy(craftAllgo);
+			}
+
+			// var comps2 = craftButton.GetComponentsInChildren(typeof(Component));
+			// foreach (var comp in comps2) RunicPower.Debug("children.comp -> " + comp);
+
+			craftAllgo = Instantiate(craftButton);
+			craftAllgo.transform.SetParent(craftButton.transform.parent, false);
+			craftAllgo.name = name;
+
+			var vars = Console_InputText_Patch.vars;
+
+			var position = craftAllgo.transform.position;
+			position.x += 0f;
+			position.y += -60f;
+			craftAllgo.transform.position = position;
+
+			var rect = craftAllgo.GetComponent<RectTransform>();
+			var size = rect.sizeDelta;
+			size.x += -150;
+			size.y += -10;
+			rect.sizeDelta = size;
+
+			craftAllButton = craftAllgo.GetComponentInChildren<Button>();
+			craftAllButton.interactable = true;
+			craftAllButton.onClick.AddListener(OnClickCraftButton);
+
+			craftAllText = craftAllgo.GetComponentInChildren<Text>();
+			craftAllText.text = "Craft All";
+			craftAllText.resizeTextForBestFit = false;
+			craftAllText.fontSize = 20;
+
+			craftAllgo.GetComponent<UITooltip>().m_text = "";
+		}
+
+		public static void OnClickCraftButton() {
+			RunicPower.Debug("OnClickCraftButton");
+			if (isCraftingAll) {
+				StopCraftingAll(true);
+			} else {
+				StartCraftingAll();
+			}
+		}
+
+		public static void StartCraftingAll() {
+			isCraftingAll = true;
+			craftAllText.text = "Stop Crafting";
+			InventoryGui.instance.OnCraftPressed();
+		}
+
+		public static void StopCraftingAll(bool triggerCancel) {
+			isCraftingAll = false;
+			craftAllText.text = "Craft All";
+			if (triggerCancel) InventoryGui.instance.OnCraftCancelPressed();
+		}
+
+		public static void TryCraftingMore() {
+			RunicPower.Debug("TryCraftingMore");
+			if (!isCraftingAll) return;
+			InventoryGui.instance.OnCraftPressed();
 		}
 	}
 }
