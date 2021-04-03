@@ -49,9 +49,13 @@ namespace RunicPower.Patches {
 		public static bool Prefix(Inventory __instance, ref ItemDrop.ItemData item, ref bool __result) {
 			// if we're not crafting/looting a rune, ignore this flow
 			var ext = Player.m_localPlayer?.ExtendedPlayer();
-			if (ext == null || (ext.craftingRuneItem == null && ext.lootingRuneItem == null)) return true;
+			if (ext == null || (ext.craftingRuneItem == null && ext.lootingRuneItem == null)) {
+				return true;
+			}
 			var rune = item.GetRuneData();
-			if (rune == null) return true;
+			if (rune == null) {
+				return true;
+			}
 
 			var inv = SpellsBar.invBarGrid.m_inventory;
 
@@ -71,6 +75,8 @@ namespace RunicPower.Patches {
 					// subs that much of the item stack
 					qtyStack -= toAdd;
 				} else {
+					// updating its quantity
+					item.m_stack = qtyStack;
 					// if the item does not exist, check for a empty slot
 					Vector2i invPos = inv.FindEmptySlot(inv.TopFirst(item));
 					// if there is one
