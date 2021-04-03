@@ -19,6 +19,26 @@ namespace RunicPower.Patches {
         }
     }
 
+    [HarmonyPatch(typeof(InventoryGui), "Show")]
+    public static class InventoryGui_Show_Patch {
+        public static void Prefix(InventoryGui __instance, Container container) {
+            if (!__instance.m_animator.GetBool("visible")) {
+                RunicPower.Debug("InventoryGui_Show_Patch Postfix");
+                SpellsBar.UpdateVisibility();
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(InventoryGui), "Hide")]
+    public static class InventoryGui_Hide_Patch {
+        public static void Prefix(InventoryGui __instance) {
+            if (__instance.m_animator.GetBool("visible")) {
+                RunicPower.Debug("InventoryGui_Hide_Patch Postfix");
+                SpellsBar.UpdateVisibility();
+            }
+        }
+    }
+
     [HarmonyPatch(typeof(InventoryGui), "DoCrafting")]
     public static class InventoryGui_DoCrafting_Patch {
         public static bool Prefix(InventoryGui __instance, Player player) {
@@ -41,11 +61,20 @@ namespace RunicPower.Patches {
                 RunicPower.StopCraftingAll(false);
                 return true;
             }
-            // trying to craft the item
-            long playerID = player.GetPlayerID();
-            string playerName = player.GetPlayerName();
-            var crafted = inv.AddItem(__instance.m_craftRecipe.m_item.gameObject.name, __instance.m_craftRecipe.m_amount, qualityLevel, __instance.m_craftVariant, playerID, playerName);
-            if (crafted != null) {
+
+            var craftItem = __instance.m_craftRecipe.m_item;
+            GameObject go = Object.Instantiate(craftItem.gameObject);
+            ItemDrop item = go.GetComponent<ItemDrop>();
+            item.m_itemData.m_stack = __instance.m_craftRecipe.m_amount;
+            item.m_itemData.m_quality = qualityLevel;
+            item.m_itemData.m_variant = __instance.m_craftVariant;
+            item.m_itemData.m_durability = item.m_itemData.GetMaxDurability();
+            item.m_itemData.m_crafterID = player.GetPlayerID();
+            item.m_itemData.m_crafterName = player.GetPlayerName();
+
+            var crafted = inv.AddItem(item.m_itemData);
+
+            if (crafted) {
                 if (!player.NoCostCheat()) {
                     player.ConsumeResources(__instance.m_craftRecipe.m_resources, qualityLevel);
                 }
