@@ -13,6 +13,10 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
 
+/* [1.2.1]
+ * - Removing use of AUTO for SpellsBar.position (not using that)
+*/
+
 /* [1.2]
  * - Fixed bug when picking up runes from the ground.
  * - Added "Craft All" button below the "Craft" button. When you click this, it'll start crafting the rune while there are materials available. Click again to stop.

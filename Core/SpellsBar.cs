@@ -347,11 +347,6 @@ namespace RunicPower.Core {
                 position.x -= ((size.x - 107) / 2) * cfgScale;
                 goRect.anchoredPosition = position;
             } else {
-                if (RunicPower.configInvBarPosition.Value == RunicPower.InvBarPosition.TOP) {
-                    var position = new Vector2(1000, 103);
-                    goRect.anchoredPosition = position;
-                }
-
                 if (RunicPower.configInvBarPosition.Value == RunicPower.InvBarPosition.BOTTOM) {
                     var cfgScale = RunicPower.configHotkeysScale.Value / 100f;
                     var scale = new Vector3(cfgScale, cfgScale, cfgScale);
@@ -373,6 +368,10 @@ namespace RunicPower.Core {
                     var position = new Vector2(x, y);
 
                     goRect.anchoredPosition = position;
+                } else {
+                    var position = new Vector2(1000, 103);
+                    goRect.anchoredPosition = position;
+
                 }
             }
 
