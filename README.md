@@ -31,7 +31,7 @@
 
 
 # Adjust the hotkey's bar horizontal position (left/right).
-``rp.offsetx=value``
+``rp.x=value``
 
 ### Default value:
 - 0
@@ -40,7 +40,7 @@
 - any number (negatives values = left. positives values = right)
 
 # Adjust the hotkey's bar vertical position (down/up).
-``rp.offsety=value``
+``rp.y=value``
 
 ### Default value:
 - 0
