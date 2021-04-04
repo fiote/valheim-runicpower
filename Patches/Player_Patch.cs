@@ -13,7 +13,6 @@ namespace RunicPower.Patches {
 	[HarmonyPatch(typeof(Player), "Load")]
 	public static class Player_Load_Patch {
 		public static void Postfix(Player __instance) {
-			RunicPower.Debug("Player_Load_Patch Postfix");
 			__instance.ExtendedPlayer().Load();
 		}
 	}
@@ -21,7 +20,6 @@ namespace RunicPower.Patches {
 	[HarmonyPatch(typeof(Player), "Save")]
 	public static class Player_Save_Patch {
 		public static void Prefix(Player __instance) {
-			RunicPower.Debug("Player_Save_Patch Prefix");
 			try { 
 				__instance.ExtendedPlayer().Save();
 				RunicPower.Log("Spellsbar saved!");
@@ -34,7 +32,6 @@ namespace RunicPower.Patches {
 	[HarmonyPatch(typeof(Player), "Awake")]
 	public static class Player_Awake_Patch {
 		public static void Postfix(Player __instance) {
-			RunicPower.Debug("Player_Awake_Patch Postfix");
 			SpellsBar.UpdateInventory();
 		}
 	}

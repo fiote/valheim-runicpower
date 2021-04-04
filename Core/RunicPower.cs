@@ -16,22 +16,22 @@ using Description = System.ComponentModel.DescriptionAttribute;
 using Object = UnityEngine.Object;
 
 /* [1.x.x]
- * - Fixing bug when picking up runes from the ground.
- * - Adding a "Craft All" button below the "Craft" button.
+ * - Fixed bug when picking up runes from the ground.
+ * - Addea "Craft All" button below the "Craft" button.
  * - You should now be able to craft runes if the spellsbar is 'full' but with free stacks.
  * - Fixed bug where crafting could grant extra runes when stacks were at 99.
- * - Adding CONFIG to configure where the inventory spellsbar should appear.
+ * - Added CONFIG to configure where the inventory spellsbar should appear.
+ * - Fixed elemental damage not being applied right away with runes.
 */
 
-
-// TODO: check why fireball isnt doing the basic damage. maybe is resist?
 // TODO: add cooldown to rune-casting (mainly the spells)
-// TODO: check integration with equip wheel.
-// TODO: CONFLICT? "crafting with containers" characters run on the spot like gliding over the terrain
 
+// TODO: CONFLICT? "crafting with containers" characters run on the spot like gliding over the terrain
 // TODO: CONFLICT? check hotkey bar not updating when using runes
 // TODO: CONFLICT? check if ghost mode is really broken.
 // TODO: CONFLICT? check looted-items message not showing
+
+// TODO: INTEGRATION? equip wheel considering runes as consumables (which they are)
 
 // MAYBE: change how crafting works. Instead of different items, just use a single 'currency' that would be the result of desenchanting items or something like that.
 // MAYBE: change how crafting works. Rune material would increase as the rune get stronger.

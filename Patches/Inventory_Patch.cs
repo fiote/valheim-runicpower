@@ -106,7 +106,6 @@ namespace RunicPower.Patches {
 		public static class Inventory_Changed_Patch {
 			public static void Postfix(Inventory __instance) {
 				if (__instance.m_name != "spellsBarInventory") return;
-				RunicPower.Debug("Inventory_Changed_Patch Postfix " + __instance.m_name);
 				SpellsBar.UpdateInventory();
 			}
 		}

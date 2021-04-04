@@ -14,7 +14,6 @@ namespace RunicPower.Patches {
     [HarmonyPatch(typeof(SEMan), "OnDamaged")]
     public static class Character_OnDamaged_Patch {
         static void Prefix(SEMan __instance, ref HitData hit, Character attacker) {
-            RunicPower.Debug("Character_OnDamaged_Patch Prefix");
             if (hit == null) return;
             if (attacker == null) return;
 

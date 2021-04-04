@@ -16,7 +16,6 @@ namespace RunicPower.Patches {
     [HarmonyPatch(typeof(Hud), "Awake")]
     public static class Hud_Awake_Patch {
         public static void Postfix(Hud __instance) {
-            RunicPower.Debug("Hud_Awake_Patch Postfix");
             SpellsBar.CreateHotkeysBar(__instance);
         }
     }

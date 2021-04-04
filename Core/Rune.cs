@@ -550,6 +550,7 @@ namespace RunicPower.Core {
 
 			if (data.effect.DoDamage()) {
 				RunicPower.Debug("doDamage " + data.effect.doDamage.ToString());
+
 				hitDamage.m_damage.m_blunt = GetDamage(HitData.DamageType.Blunt);
 				hitDamage.m_damage.m_pierce = GetDamage(HitData.DamageType.Pierce);
 				hitDamage.m_damage.m_slash = GetDamage(HitData.DamageType.Slash);
@@ -558,10 +559,8 @@ namespace RunicPower.Core {
 				hitDamage.m_damage.m_lightning = GetDamage(HitData.DamageType.Lightning);
 				hitDamage.m_damage.m_poison = GetDamage(HitData.DamageType.Poison);
 				hitDamage.m_damage.m_spirit = GetDamage(HitData.DamageType.Spirit);
-
-				RunicPower.Debug("doDamage hitData.physical" + hitDamage.GetTotalPhysicalDamage());
-				RunicPower.Debug("doDamage hitData.elemental" + hitDamage.GetTotalElementalDamage());
-				destructable.Damage(hitDamage);
+				hitDamage.m_statusEffect = "applyRaw";
+				target.Damage(hitDamage);
 			}
 
 			// ===== APPLYING ELEMENTAL EFFECTS =====================

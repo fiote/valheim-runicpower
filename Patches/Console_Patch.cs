@@ -39,7 +39,6 @@ namespace RunicPower {
 		};
 
 		static bool Prefix(Console __instance) {
-			RunicPower.Debug("Console_InputText_Patch Prefix");
 			string text = __instance.m_input.text;
 			var parts = text.Split('=');
 

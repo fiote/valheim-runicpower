@@ -29,6 +29,51 @@ namespace RunicPower {
 			return (dist < range);
 		}
 
+		public static void RPC_Damage_RP(this Character __instance, long sender, HitData hit) {
+			if (__instance.IsDebugFlying() || !__instance.m_nview.IsOwner() || __instance.GetHealth() <= 0f || __instance.IsDead() || __instance.IsTeleporting() || __instance.InCutscene() || (hit.m_dodgeable && __instance.IsDodgeInvincible())) {
+				return;
+			}
+			Character attacker = hit.GetAttacker();
+			if ((hit.HaveAttacker() && attacker == null) || (__instance.IsPlayer() && !__instance.IsPVPEnabled() && attacker != null && attacker.IsPlayer())) {
+				return;
+			}
+			if (attacker != null && !attacker.IsPlayer()) {
+				float difficultyDamageScale = Game.instance.GetDifficultyDamageScale(__instance.transform.position);
+				hit.ApplyModifier(difficultyDamageScale);
+			}
+			__instance.m_seman.OnDamaged(hit, attacker);
+			if (__instance.m_baseAI != null && !__instance.m_baseAI.IsAlerted() && hit.m_backstabBonus > 1f && Time.time - __instance.m_backstabTime > 300f) {
+				__instance.m_backstabTime = Time.time;
+				hit.ApplyModifier(hit.m_backstabBonus);
+				__instance.m_backstabHitEffects.Create(hit.m_point, Quaternion.identity, __instance.transform);
+			}
+			if (__instance.IsStaggering() && !__instance.IsPlayer()) {
+				hit.ApplyModifier(2f);
+				__instance.m_critHitEffects.Create(hit.m_point, Quaternion.identity, __instance.transform);
+			}
+			if (hit.m_blockable && __instance.IsBlocking()) {
+				__instance.BlockAttack(hit, attacker);
+			}
+			__instance.ApplyPushback(hit);
+			if (!string.IsNullOrEmpty(hit.m_statusEffect)) {
+				StatusEffect statusEffect = __instance.m_seman.GetStatusEffect(hit.m_statusEffect);
+				if (statusEffect == null) {
+					statusEffect = __instance.m_seman.AddStatusEffect(hit.m_statusEffect);
+				}
+				if (statusEffect != null && attacker != null) {
+					statusEffect.SetAttacker(attacker);
+				}
+			}
+			HitData.DamageModifiers damageModifiers = __instance.GetDamageModifiers();
+			hit.ApplyResistance(damageModifiers, out var significantModifier);
+			if (__instance.IsPlayer()) {
+				float bodyArmor = __instance.GetBodyArmor();
+				hit.ApplyArmor(bodyArmor);
+				__instance.DamageArmorDurability(hit);
+			}
+			__instance.ApplyDamage(hit, showDamageText: true, triggerEffects: true, significantModifier);
+		}
+
 		public static void UpdateGroundContact_RP(this Character __instance, float dt) {
 			if (!__instance.m_groundContact) {
 				return;
@@ -66,5 +111,8 @@ namespace RunicPower {
 			__instance.m_lastGroundTouch = 0f;
 			__instance.m_maxAirAltitude = __instance.transform.position.y;
 		}
+
+
+
 	}
 }

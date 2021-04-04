@@ -13,7 +13,6 @@ namespace RunicPower.Patches {
     [HarmonyPatch(typeof(InventoryGui), "Awake")]
     public static class InventoryGui_Awake_Patch {
         public static void Postfix(InventoryGui __instance) {
-            RunicPower.Debug("InventoryGui_Awake_Patch Postfix");
             SpellsBar.CreateInventoryBar(__instance);
             RunicPower.CreateCraftAllButton(__instance);
         }
@@ -23,7 +22,6 @@ namespace RunicPower.Patches {
     public static class InventoryGui_Show_Patch {
         public static void Prefix(InventoryGui __instance, Container container) {
             if (!__instance.m_animator.GetBool("visible")) {
-                RunicPower.Debug("InventoryGui_Show_Patch Postfix");
                 SpellsBar.UpdateVisibility();
             }
         }
@@ -33,7 +31,6 @@ namespace RunicPower.Patches {
     public static class InventoryGui_Hide_Patch {
         public static void Prefix(InventoryGui __instance) {
             if (__instance.m_animator.GetBool("visible")) {
-                RunicPower.Debug("InventoryGui_Hide_Patch Postfix");
                 SpellsBar.UpdateVisibility();
             }
         }
@@ -105,7 +102,6 @@ namespace RunicPower.Patches {
     [HarmonyPatch(typeof(InventoryGui), "OnCraftCancelPressed")]
     public static class InventoryGui_OnCraftCancelPressed_Patch {
         public static void Prefix(InventoryGui __instance) {
-            RunicPower.Debug("InventoryGui_OnCraftCancelPressed_Patch Postfix");
             RunicPower.StopCraftingAll(false);
         }
     }
@@ -113,7 +109,6 @@ namespace RunicPower.Patches {
     [HarmonyPatch(typeof(InventoryGui), "OnCraftPressed")]
     public static class InventoryGui_OnCraftPressed_Patch {
         public static void Postfix(InventoryGui __instance) {
-            RunicPower.Debug("InventoryGui_OnCraftPressed_Patch Postfix");
             if (__instance.m_craftRecipe == null) RunicPower.StopCraftingAll(false);
         }
     }
@@ -126,12 +121,10 @@ namespace RunicPower.Patches {
         static float m_craftDuration_runes = 0.5f;
 
         public static void Prefix(InventoryGui __instance, int index, bool center) {
-            RunicPower.Debug("InventoryGui_SetRecipe_Patch Prefix");
             RunicPower.ClearCache();
         }
 
         public static void Postfix(InventoryGui __instance, int index, bool center) {
-            RunicPower.Debug("InventoryGui_SetRecipe_Patch Postfix");
             var item = __instance?.m_selectedRecipe.Key?.m_item?.m_itemData;
             var rune = item?.GetRuneData();
             var ext = Player.m_localPlayer?.ExtendedPlayer();
@@ -150,7 +143,6 @@ namespace RunicPower.Patches {
     [HarmonyPatch(typeof(InventoryGui), "OnSelectedItem")]
     public static class InventoryGui_OnSelectedItem_Patch {
         public static bool Prefix(InventoryGui __instance, InventoryGrid grid, ItemDrop.ItemData item, Vector2i pos, InventoryGrid.Modifier mod) {
-            RunicPower.Debug("InventoryGui_OnSelectedItem_Patch Prefix");
             // if we're not moving from the spellbars, do nothing (normal flow)
             if (__instance.m_dragInventory?.m_name != "spellsBarInventory") return true;
             // if we moving TO the spellsbars, do nothing (normal flow)

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using static HitData;
 
 namespace RunicPower {
 
@@ -18,14 +19,12 @@ namespace RunicPower {
 		}
 	}
 
-	[HarmonyPatch(typeof(Character), "ApplyDamage")]
-	public static class Character_ApplyDamage_Patch {
-		static void Prefix(Character __instance, ref HitData hit, bool showDamageText, bool triggerEffects, HitData.DamageModifier mod = HitData.DamageModifier.Normal) {
-			RunicPower.Debug("Character_ApplyDamage_Patch " + __instance.name + " " + hit.GetTotalDamage());
-			hit.GetAttacker()?.ExtendedCharacter()?.ApplyPowerModifiersToHit(ref hit);
-			RunicPower.Debug("ApplyPowerModifiersToHit -> "+hit.GetTotalDamage());
-			__instance?.ExtendedCharacter()?.ApplyResistModifiersToHit(ref hit);
-			RunicPower.Debug("ApplyResistModifiersToHit -> " + hit.GetTotalDamage());
+	[HarmonyPatch(typeof(Character), "RPC_Damage")]
+	public static class Character_RPC_Damage_Patch {
+		static bool Prefix(Character __instance, long sender, HitData hit) {
+			if (hit.m_statusEffect != "applyRaw") return true;
+			__instance.RPC_Damage_RP(sender, hit);
+			return false;
 		}
 	}
 }
