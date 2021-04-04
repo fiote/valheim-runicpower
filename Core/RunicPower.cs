@@ -46,7 +46,7 @@ using UnityEngine.UI;
 // MAYBE: ranks for recall rune. Better recalls allow to teleport with better ores.
 
 namespace RunicPower {
-	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "1.1")]
+	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "1.2")]
 	[BepInDependency("com.pipakin.SkillInjectorMod")]
 	[BepInDependency("randyknapp.mods.extendeditemdataframework")]
 
