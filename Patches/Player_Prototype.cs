@@ -17,7 +17,10 @@ namespace RunicPower.Patches {
 			var key = __instance.GetInstanceID().ToString();
 			if (key == null) return null;
 			var ext = mapping.ContainsKey(key) ? mapping[key] : null;
-			if (ext == null) mapping[key] = ext = new Player_Extended(__instance);
+			if (ext == null) {
+				mapping[key] = ext = new Player_Extended(__instance);
+				RunicPower.Debug("ExtendedPlayer: " + mapping.Count);
+			}
 			// and return it
 			return ext;
 		}

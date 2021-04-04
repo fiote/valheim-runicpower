@@ -26,6 +26,8 @@ namespace RunicPower.Core {
 		public bool implemented;
 		public RecipeConfig recipe;
 
+		public int cooldown;
+
 		public RuneVFX vfx;
 		public RuneVFX sfx;
 

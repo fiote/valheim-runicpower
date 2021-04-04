@@ -16,6 +16,7 @@ namespace RunicPower.Patches {
             if (ext == null) {
                 mapping[key] = ext = new ItemDropData_Extended();
                 if (!key.Contains("(Clone)")) mapping[key + "(Clone)"] = ext;
+                RunicPower.Debug("ExtendedItemDrop: " + mapping.Count);
             }
             ext.rune = data;
         }

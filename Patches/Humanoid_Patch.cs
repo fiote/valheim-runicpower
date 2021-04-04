@@ -13,6 +13,12 @@ namespace RunicPower {
 			var data = item.GetRuneData();
 			if (data == null) return true;
 			if (inventory == null) inventory = __instance.m_inventory;
+
+			if (RunicPower.IsOnCooldown(data)) {
+				Player.m_localPlayer.Message(MessageHud.MessageType.Center, "["+data.name+"] is not ready yet.");
+				return false;
+			}
+
 			if (!__instance.ConsumeItem(inventory, item)) return true;
 
 			var player = __instance as Player;

@@ -14,13 +14,14 @@ namespace RunicPower.Patches {
 	[HarmonyPatch(typeof(Inventory), "HaveEmptySlot")]
 	public static class Inventory_HaveEmptySlot_Patch {
 		public static bool Prefix(Inventory __instance, ref bool __result) {
+			// if there is no invbar grid, return true no normal flow
+			var inv = SpellsBar.invBarGrid?.m_inventory;
+			if (inv == null) return true;
 			// if we're not crating a rune, return true so it goes as normal
 			var item = Player.m_localPlayer?.ExtendedPlayer()?.craftingRuneItem;
 			if (item == null) return true;
-			// getting hte spell inventory
-			var inv = SpellsBar.invBarGrid.m_inventory;
 			// checking if this item already exists in the inventory (with free stack space)
-			ItemDrop.ItemData itemData = inv.FindFreeStackItem(item.m_shared.m_name, item.m_quality);
+			ItemDrop.ItemData itemData = inv.FindFreeStackItem(item.m_shared?.m_name, item.m_quality);
 			// if it does
 			if (itemData != null) {
 				// get the free space
@@ -33,7 +34,7 @@ namespace RunicPower.Patches {
 			}
 			// if the item does not exist, check for a empty slot
 			Vector2i invPos = inv.FindEmptySlot(inv.TopFirst(item));
-			if (invPos.x >= 0) {
+			if (invPos != null && invPos.x >= 0) {
 				// if ther is a empty slot
 				__result = true;
 				return false;

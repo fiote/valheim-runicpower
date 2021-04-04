@@ -17,7 +17,10 @@ namespace RunicPower.Patches {
 			var key = self.GetInstanceID().ToString();
 			if (key == null) return null;
 			var ext = mapping.ContainsKey(key) ? mapping[key] : null;
-			if (ext == null) mapping[key] = ext = new Projectile_Extended();
+			if (ext == null) {
+				mapping[key] = ext = new Projectile_Extended();
+				RunicPower.Debug("ExtendedProjectile: " + mapping.Count);
+			}
 			return ext;
 		}
 

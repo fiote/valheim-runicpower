@@ -14,6 +14,7 @@
             "archetype": "Generic",
             "description": "Returns you back to your resting place.",
             "implemented": true,
+            "cooldown": 300,
             "recipe": {
                 "name": "Recipe_Generic_Recall",
                 "item": "Generic_Recall",
@@ -81,6 +82,7 @@
             "archetype": "Warrior",
             "description": "You spin your weapon around with great speed slashing all enemies fool enough to get close to you.",
             "implemented": true,
+            "cooldown": 15,
             "recipe": {
                 "name": "Recipe_Warrior_Bladestorm",
                 "item": "Warrior_Bladestorm",
@@ -111,6 +113,7 @@
             "archetype": "Warrior",
             "description": "You remind your company about a tale of great warriors from the past, lifting their spirits.",
             "implemented": true,
+            "cooldown": 30,
             "recipe": {
                 "name": "Recipe_Warrior_InspiringShout",
                 "item": "Warrior_InspiringShout",
@@ -139,6 +142,7 @@
             "archetype": "Warrior",
             "description": "You call upon the powers of the stone, hardening your skin against physical damage.",
             "implemented": true,
+            "cooldown":  120,
             "recipe": {
                 "name": "Recipe_Warrior_Stone",
                 "item": "Warrior_Stone",
@@ -166,6 +170,7 @@
             "archetype": "Warrior",
             "description": "You attune yourself to the blood of your foes, stealing a portion of their suffering when you attack them.",
             "implemented": true,
+            "cooldown": 120,
             "recipe": {
                 "name": "Recipe_Warrior_Blood",
                 "item": "Warrior_Blood",
@@ -180,7 +185,7 @@
             "effect": {
                 "healthBack": 100,
                 "target": "self",
-                "duration": 300
+                "duration": 60
             }
         },
         // ===== ROGUE ==============================================
@@ -191,6 +196,7 @@
             "archetype": "Rogue",
             "description": "You throw uncountable daggers in every direction, all them coated with deadly poison.",
             "implemented": true,
+            "cooldown": 15,
             "recipe": {
                 "name": "Recipe_Rogue_PoisonousShiv",
                 "item": "Rogue_PoisonousShiv",
@@ -221,6 +227,7 @@
             "archetype": "Rogue",
             "description": "With sharp eyes almost like an eagle, you can detect the weak points of all foes around you.",
             "implemented": true,
+            "cooldown": 120,
             "recipe": {
                 "name": "Recipe_Rogue_ExposeWeakness",
                 "item": "Rogue_ExposeWeakness",
@@ -251,6 +258,7 @@
             "archetype": "Rogue",
             "description": "You call upon the power of the wind, blessing your party with light-foot movement.",
             "implemented": true,
+            "cooldown": 5,
             "recipe": {
                 "name": "Recipe_Rogue_Swift",
                 "item": "Rogue_Swift",
@@ -275,6 +283,7 @@
             "archetype": "Rogue",
             "description": "The night embraces you, blurring your silhouette in the eyes of enemies.",
             "implemented": true,
+            "cooldown": 120,
             "recipe": {
                 "name": "Recipe_Rogue_Night",
                 "item": "Rogue_Night",
@@ -299,6 +308,7 @@
             "archetype": "Cleric",
             "description": "You chant forgotten words, calling spirits to mend the injuries of your party.",
             "implemented": true,
+            "cooldown": 30,
             "recipe": {
                 "name": "Recipe_Cleric_HealingCircle",
                 "item": "Cleric_HealingCircle",
@@ -329,6 +339,7 @@
             "archetype": "Cleric",
             "description": "You slam your shield in the ground. The impact reverb, incapacitating your foes.",
             "implemented": true,
+            "cooldown": 15,
             "recipe": {
                 "name": "Recipe_Cleric_ShieldSlam",
                 "item": "Cleric_ShieldSlam",
@@ -361,6 +372,7 @@
             "archetype": "Cleric",
             "description": "You call upon the power of the sun's light, its warmth flowing through everyone in your party.",
             "implemented": true,
+            "cooldown": 5,
             "recipe": {
                 "name": "Recipe_Cleric_Light",
                 "item": "Cleric_Light",
@@ -384,6 +396,7 @@
             "archetype": "Cleric",
             "description": "In a trance of sorts, your party becomes incredibly energetic.",
             "implemented": true,
+            "cooldown": 5,
             "recipe": {
                 "name": "Recipe_Cleric_Vigor",
                 "item": "Cleric_Vigor",
@@ -410,6 +423,7 @@
             "archetype": "Wizard",
             "description": "A cold breeze passes through and solidifies at the whim of your thoughts, ready to be cast upon your enemies.",
             "implemented": true,
+            "cooldown": 15,
             "recipe": {
                 "name": "Recipe_Wizard_Iceshard",
                 "item": "Wizard_Iceshard",
@@ -445,6 +459,7 @@
             "archetype": "Wizard",
             "description": "You think of a spark and a flame appears in front of you. It'll fly forward and consume your foes with fire.",
             "implemented": true,
+            "cooldown": 15,
             "recipe": {
                 "name": "Recipe_Wizard_Fireball",
                 "item": "Wizard_Fireball",
@@ -480,6 +495,7 @@
             "archetype": "Wizard",
             "description": "Your focus allow you to cast a barrier of sorts around yourself, protecting you from elemental harm.",
             "implemented": true,
+            "cooldown":  120,
             "recipe": {
                 "name": "Recipe_Wizard_Ward",
                 "item": "Wizard_Ward",
@@ -509,6 +525,7 @@
             "archetype": "Wizard",
             "description": "You clear the mind of your party, allowing them to tap more easily on their elemental powers.",
             "implemented": true,
+            "cooldown": 120,
             "recipe": {
                 "name": "Recipe_Wizard_Mind",
                 "item": "Wizard_Mind",

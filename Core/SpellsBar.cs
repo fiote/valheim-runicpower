@@ -14,13 +14,15 @@ using Object = UnityEngine.Object;
 namespace RunicPower.Core {
 
     public class SpellShortcut {
-        public KeyCode? modifier;
+        public KeyCode modifier;
+        public KeyCode auxmod;
         public KeyCode key;
 
-        public SpellShortcut(KeyCode modifier, KeyCode key) {
+        public SpellShortcut(KeyCode modifier, KeyCode auxmod, KeyCode key) {
             this.modifier = modifier;
+            this.auxmod = auxmod;
             this.key = key;
-		}
+        }
     }
 
 	public class SpellsBar {
@@ -43,13 +45,20 @@ namespace RunicPower.Core {
             { RunicPower.KeyModifiers.SHIFT, KeyCode.LeftShift },
         };
 
+        public static Dictionary<RunicPower.KeyModifiers, KeyCode> mod2aux = new Dictionary<RunicPower.KeyModifiers, KeyCode> {
+            { RunicPower.KeyModifiers.ALT, KeyCode.RightAlt },
+            { RunicPower.KeyModifiers.CTRL, KeyCode.RightControl },
+            { RunicPower.KeyModifiers.SHIFT, KeyCode.RightShift },
+        };
+
         public static void RegisterKeybinds() {
             shortcuts.Clear();
             var mod = mod2key[RunicPower.configHotkeysModifier.Value];
+            var aux = mod2aux[RunicPower.configHotkeysModifier.Value];
             for (var i = 0; i < slotCount; i++) {
                 var knumber = "Alpha" + (i == slotCount - 1 ? 0 : i + 1);
                 var key = (KeyCode)System.Enum.Parse(typeof(KeyCode), knumber.ToString());
-                shortcuts[i] = new SpellShortcut(mod, key);
+                shortcuts[i] = new SpellShortcut(mod, aux, key);
             }
         }
 
@@ -65,7 +74,7 @@ namespace RunicPower.Core {
             var shortcut = shortcuts[index];
             if (shortcut == null) return "??";
 
-            var mod = shortcut.modifier?.ToString();
+            var mod = shortcut.modifier.ToString();
             var key = shortcut.key.ToString();
 
             if (mod == "LeftControl") mod = "Ctrl";
@@ -80,7 +89,7 @@ namespace RunicPower.Core {
         public static bool IsSpellHotkeyPressed(int index, bool? assumeKeyOk = false) {
             var shortcut = shortcuts[index];
             if (shortcut == null) return false;
-            var modOk = shortcut.modifier == null || Input.GetKey((KeyCode)shortcut.modifier);
+            var modOk = Input.GetKey(shortcut.modifier) || Input.GetKey(shortcut.auxmod);
             var keyOk = Input.GetKeyDown(shortcut.key);
             if (assumeKeyOk == true) keyOk = true;
             return modOk && keyOk;
@@ -114,9 +123,71 @@ namespace RunicPower.Core {
         public static void UpdateInventory() {
             UpdateGrid(invBarGrid);
             UpdateGrid(hotkeysGrid);
+            UpdateCooldowns();
+        }
+        
+        public static void ClearBindings() {
+            mapBindingText.Clear();
+            mapCooldownText.Clear();
+		}
+
+        public static void UpdateCooldowns() {
+            for (var i = 0; i < slotCount; ++i) {
+                var spell = invBarGrid?.m_inventory?.GetItemAt(i, 0);
+                var name = spell?.GetRuneData()?.name;
+                var value = 0;
+                var got = (name == null) ? false : RunicPower.activeCooldowns?.TryGetValue(name, out value);
+                if (got != true) value = 0;
+                SetCooldownText(i, value);
+            }
         }
 
         public static Dictionary<string, Text> mapBindingText = new Dictionary<string, Text>();
+        public static Dictionary<string, Text> mapCooldownText = new Dictionary<string, Text>();
+
+        public static void SetCooldownText(int index, int value) {
+            SetCooldownText(hotkeysGrid, index, value);
+            SetCooldownText(invBarGrid, index, value);
+        }
+        public static void SetCooldownText(InventoryGrid grid, int index, int value) {
+            if (grid == null) return;
+            var key = grid.name + ":" + index;
+
+            if (!mapCooldownText.ContainsKey(key)) return;
+            if (!mapBindingText.ContainsKey(key)) return;
+
+            var cooldownText = mapCooldownText[key];
+            var bindingText = mapBindingText[key];
+            if (value > 0) {
+                var dsvalue = value.ToString();
+                var fontSize = 30;
+
+                if (value >= 60) {
+                    var mins = Mathf.Floor(value / 60f);
+                    var secs = value - mins * 60;
+                    var dssecs = secs.ToString();
+                    if (secs < 10) dssecs = '0' + dssecs;
+                    dsvalue = mins.ToString() + ":" + dssecs;
+                    fontSize = 25;
+                }
+
+                cooldownText.gameObject.SetActive(true);
+                cooldownText.text = dsvalue;
+                cooldownText.fontSize = fontSize;
+
+                bindingText.gameObject.SetActive(false);
+            } else {
+                cooldownText.gameObject.SetActive(false);
+                bindingText.gameObject.SetActive(true);
+            }
+        }
+
+        public static void SetCooldownText(string name, int value) {
+            for (var i = 0; i < slotCount; ++i) {
+                var spell = invBarGrid?.m_inventory?.GetItemAt(i, 0);
+                if (spell?.GetRuneData().name == name) SetCooldownText(i, value);
+            }
+        }
 
         public static void UpdateGrid(InventoryGrid grid) {
             var player = Player.m_localPlayer;
@@ -136,11 +207,31 @@ namespace RunicPower.Core {
                     if (mapBindingText.ContainsKey(key)) {
                         bindingText = mapBindingText[key];
                     } else {
-                        bindingText = grid.m_elements[i].m_go.transform.Find("binding").GetComponent<Text>();
+                        var bind = grid.m_elements[i].m_go.transform.Find("binding");
+                        bindingText = bind.GetComponent<Text>();
                         bindingText.enabled = true;
                         bindingText.horizontalOverflow = HorizontalWrapMode.Overflow;
                         bindingText.fontSize = 15;
                         mapBindingText[key] = bindingText;
+
+                        var go = Object.Instantiate(bind);
+                        go.transform.SetParent(bind.parent.transform, false);
+
+                        var vars = Console_InputText_Patch.vars;
+
+                        var cooldownText = go.GetComponent<Text>();
+                        cooldownText.text = "";
+                        cooldownText.fontSize = 25;
+                        cooldownText.alignByGeometry = false;
+                        cooldownText.alignment = TextAnchor.MiddleCenter;
+                        cooldownText.color = Color.red;
+
+                        var pos = go.transform.position;
+                        pos.x += 25;
+                        pos.y += -22;
+                        go.transform.position = pos;
+
+                        mapCooldownText[key] = cooldownText;
                     }
 
                     bindingText.text = GetBindingLabel(i);
@@ -151,7 +242,7 @@ namespace RunicPower.Core {
 		}
 
         public static void CreateHotkeysBar(Hud hud) {
-            mapBindingText.Clear();
+            ClearBindings();
             if (hud == null) hud = Hud.instance;
             var parent = hud.m_rootObject;
             var inventoryGui = InventoryGui.instance;
@@ -159,6 +250,7 @@ namespace RunicPower.Core {
         }
 
         public static void CreateInventoryBar(InventoryGui gui) {
+            ClearBindings();
             if (gui == null) gui = InventoryGui.instance;
             var parent = gui?.m_player?.gameObject;
             var name = spellsBarGridName;

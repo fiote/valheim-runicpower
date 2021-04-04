@@ -17,7 +17,10 @@ namespace RunicPower {
 			var key = __instance.GetInstanceID().ToString();
 			if (key == null) return null;
 			var ext = mapping.ContainsKey(key) ? mapping[key] : null;
-			if (ext == null) mapping[key] = ext = new Character_Extended(__instance);
+			if (ext == null) {
+				mapping[key] = ext = new Character_Extended(__instance);
+				RunicPower.Debug("ExtendedCharacter: " + mapping.Count);
+			}
 			return ext;
 		}
 

@@ -27,13 +27,14 @@ namespace RunicPower {
 		}
 
 		public static Dictionary<string, ConsoleValue> vars = new Dictionary<string, ConsoleValue>() {
-			{  "x" , new ConsoleValue("0") },
-			{  "y" , new ConsoleValue("0") },
+			{  "x" , new ConsoleValue("25") },
+			{  "y" , new ConsoleValue("-22") },
+			{  "t" , new ConsoleValue("15") },
 			{  "ax" , new ConsoleValue("0,5") },
 			{  "ay" , new ConsoleValue("0") },
 			{  "px" , new ConsoleValue("0,5") },
 			{  "py" , new ConsoleValue("0") },
-			{  "s" , new ConsoleValue("100") },
+			{  "s" , new ConsoleValue("20") },
 			{  "w" , new ConsoleValue("643") },
 			{  "h" , new ConsoleValue("88") },
 		};
@@ -51,16 +52,7 @@ namespace RunicPower {
 
 				if (keyparts[0] != "rp") {
 					vars[key] = cvalue;
-					/*
-					GuiScaler.SetScale(vars["s"].floatvalue/100f);
-					var minWidth = GuiScaler.m_minWidth;
-					var minHeight = GuiScaler.m_minHeight;
-					RunicPower.Debug("m_largeGuiScale=" + GuiScaler.m_largeGuiScale+" minWidth=" + minWidth + " minHeight=" + minHeight);
-
-					SpellsBar.CreateHotkeysBar(null);
-					SpellsBar.CreateInventoryBar(null);
-					SpellsBar.UpdateInventory();
-					*/
+					RunicPower.Recreate();
 					return true;
 				}
 
@@ -91,6 +83,16 @@ namespace RunicPower {
 				if (cmd == "debug") {
 					RunicPower.debug = cvalue.boolvalue;
 					RunicPower.Log("DEBUG config changed to " + cvalue.boolvalue);
+				}
+
+				if (cmd == "cooldowns") {
+					RunicPower.configCooldownsEnabled.Value = cvalue.boolvalue;
+					RunicPower.Log("CASTING.COOLDOWNS config changed to " + cvalue.boolvalue);
+				}
+
+				if (cmd == "craftall") {
+					RunicPower.configsCraftAllEnabled.Value = cvalue.boolvalue;
+					RunicPower.Log("INTERFACE.CRAFTALL config changed to " + cvalue.boolvalue);
 				}
 
 				if (cmd == "pos") {
@@ -134,11 +136,7 @@ namespace RunicPower {
 				}
 
 				RunicPower.configFile.Save();
-				SpellsBar.RegisterKeybinds();
-
-				SpellsBar.CreateHotkeysBar(null);
-				SpellsBar.CreateInventoryBar(null);
-				SpellsBar.UpdateInventory();
+				RunicPower.Recreate();
 				return false;
 			}
 

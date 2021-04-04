@@ -54,8 +54,6 @@ namespace RunicPower.Core {
 		}
 
 		public void ParseBuffs(string dsbuffs) {
-			Debug.Log("PARSE BUFFS " + dsbuffs);
-
 			fixedValues = new Dictionary<string, float>();
 			var buffs = dsbuffs.Split(';');
 
@@ -64,7 +62,6 @@ namespace RunicPower.Core {
 				var key = parts[0];
 				var value = float.Parse(parts[1]);
 				fixedValues[key] = value;
-				Debug.Log("key " + key + " value " + value);
 			}
 		}
 
@@ -245,7 +242,12 @@ namespace RunicPower.Core {
 						}
 					}
 				}
+			} else {
+				text.AppendLine();
 			}
+
+			var cd = GetCooldown();
+			if (cd != 0) text.AppendFormat("Cooldown: <color=orange>{0} seconds</color>\n", cd);
 
 			cachedTooltip = text.ToString();
 			return cachedTooltip;
@@ -277,10 +279,13 @@ namespace RunicPower.Core {
 
 		public float GetSkill() {
 			if (caster == null) return 1;
-
-			float skill = caster.GetSkillFactor(data.skillType) * 100f;
+			float skill = GetSkillFactor() * 100f;
 			if (skill < 1) skill = 1;
 			return skill;
+		}
+
+		public float GetSkillFactor() {
+			return caster?.GetSkillFactor(data.skillType) ?? 0;
 		}
 
 		public int GetDuration() {
@@ -366,6 +371,15 @@ namespace RunicPower.Core {
 			// level 50: +100%
 			// level 100: +200%
 			return GetSkilledTypedValue(data.effect.doPower, dmgType, 2f, 0f);
+		}
+
+		private int GetCooldown() {
+			RunicPower.Debug("GetCooldown");
+			var factor = GetSkillFactor();
+			var cooldown = data.cooldown;
+			var value = cooldown * (1 - factor / 2);
+			RunicPower.Debug("factor="+factor+" cooldown="+cooldown+" | value="+value);
+			return Mathf.RoundToInt(value);
 		}
 
 		private float GetResist(HitData.DamageType dmgType) {
@@ -627,24 +641,19 @@ namespace RunicPower.Core {
 		}
 
 		public void ApplyProjectile(Collider collider, Vector3 hitPoint) {
-			Debug.Log("ApplyProjectile");
 			if (data.effect == null) {
-				Debug.Log("effect == null");
 				return;
 			}
 			if (data.projectile == null) {
-				Debug.Log("projectile == null");
 				return;
 			}
 			if (collider == null) {
-				Debug.Log("collider == null");
 				return;
 			}
 
 			GameObject obj = Projectile.FindHitObject(collider);
 			var character = GetGameObjectCharacter(obj);
 			if (character == caster) {
-				Debug.Log("character is player, ignoring projectile hit");
 				return;
 			}
 
@@ -729,8 +738,9 @@ namespace RunicPower.Core {
 		}
 
 		public void Cast() {
-			Debug.Log("============================================");
 			// letting everyone knows the caster used the rune power
+
+			RunicPower.AddCooldown(data.name, GetCooldown());
 
 			var cfgMessage = RunicPower.configCastingMessage.Value;
 			var message = data.name + "!";

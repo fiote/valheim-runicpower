@@ -17,13 +17,15 @@ namespace RunicPower.Patches {
 			var key = __instance.GetInstanceID().ToString();
 			if (key == null) return null;
 			var ext = mapping.ContainsKey(key) ? mapping[key] : null;
-			if (ext == null) mapping[key] = ext = new StatusEffect_Extended();
+			if (ext == null) {
+				mapping[key] = ext = new StatusEffect_Extended();
+				RunicPower.Debug("ExtendedStatusEffect: " + mapping.Count);
+			}
 			return ext;
 		}
 
 		public static void SetRune(this StatusEffect __instance, Rune rune) {
 			var ext = __instance.ExtendedStatusEffect();
-			// rune.statusEffect = __instance;
 			ext.rune = rune; 
 		}
 

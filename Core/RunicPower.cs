@@ -12,19 +12,26 @@ using System.IO;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
-using Description = System.ComponentModel.DescriptionAttribute;
-using Object = UnityEngine.Object;
 
-/* [1.x.x]
+/* [1.2]
  * - Fixed bug when picking up runes from the ground.
- * - Addea "Craft All" button below the "Craft" button.
+ * - Added "Craft All" button below the "Craft" button. When you click this, it'll start crafting the rune while there are materials available. Click again to stop.
+ * - Added CONFIG to remove the "Craft All" button in case it's messing with your UI/other mods.
  * - You should now be able to craft runes if the spellsbar is 'full' but with free stacks.
+ * - You should now be able to cast runes using the right-modifier as well (right-alt, right-ctrl, right-shift).
  * - Fixed bug where crafting could grant extra runes when stacks were at 99.
  * - Added CONFIG to configure where the inventory spellsbar should appear.
  * - Fixed elemental damage not being applied right away with runes.
+ * - Most runes now have cooldowns. The cooldown reduces a bit as you level the class.
+ * -> Offensive Spells: 15 seconds (Bladestorm, Fireball, etc).
+ * -> Recovery Spells: 30 seconds (Inspiring Shout, Healing Circle).
+ * -> Battle (De)Buffs: 120 seconds (Expose Weakness, Stone Rune, Mind Rune, etc).
+ * -> Normal Buffs: 5 seconds (Swift Rune, Light Rune, etc) (just to avoid casting it twice my mistake).
+ * -> Recall: 300 seconds. * 
+ * - Added CONFIG to disable cooldowns if you don't like them (I won't judge!).
 */
 
-// TODO: add cooldown to rune-casting (mainly the spells)
+// TODO: change how extended data is stored (make it into component so it'll die when its object dies?)
 
 // TODO: CONFLICT? "crafting with containers" characters run on the spot like gliding over the terrain
 // TODO: CONFLICT? check hotkey bar not updating when using runes
@@ -53,6 +60,8 @@ namespace RunicPower {
 		public static List<ClassSkill> listofCSkills = new List<ClassSkill>();
 
 		public static ConfigFile configFile;
+
+		public static Dictionary<string, int> activeCooldowns = new Dictionary<string, int>();
 
 		private void Awake() {
 			LoadRunes();
@@ -108,17 +117,25 @@ namespace RunicPower {
 		}
 
 		public static ConfigEntry<CastingMessage> configCastingMessage;
+		public static ConfigEntry<bool> configCooldownsEnabled;
+
 		public static ConfigEntry<bool> configPvpEnabled;
+
+		public static ConfigEntry<InvBarPosition> configInvBarPosition;
+
 		public static ConfigEntry<bool> configHotkeysEnabled;
 		public static ConfigEntry<int> configHotkeysScale;
 		public static ConfigEntry<int> configHotkeysOffsetX;
 		public static ConfigEntry<int> configHotkeysOffsetY;
 		public static ConfigEntry<KeyModifiers> configHotkeysModifier;
-		public static ConfigEntry<InvBarPosition> configInvBarPosition;
+
+		public static ConfigEntry<bool> configsCraftAllEnabled;
+
 		private void SetupConfig() {
 			Config.Bind("General", "NexusID", 840, "NexusMods ID for updates.");
 
 			configCastingMessage = Config.Bind("Casting", "Message", CastingMessage.NORMAL, "Define where the casting message should appear.");
+			configCooldownsEnabled = Config.Bind("Casting", "Cooldowns", true, "Enables cooldowns when rune-casting.");
 
 			configPvpEnabled = Config.Bind("PVP", "Enabled", true, "If enabled, this will count pvp-flagged players as enemies.");
 
@@ -129,6 +146,8 @@ namespace RunicPower {
 			configHotkeysOffsetX = Config.Bind("HotkeysBar", "OffsetX", 0, "Adjust the hotkey's bar horizontal position (left/right).");
 			configHotkeysOffsetY = Config.Bind("HotkeysBar", "OffsetY", 0, "Adjust the hotkey's bar vertical position (down/up).");
 			configHotkeysModifier = Config.Bind("HotkeysBar", "Modifier", KeyModifiers.SHIFT, "Key modifier to use the runes.");
+
+			configsCraftAllEnabled = Config.Bind("Interface", "Craft All", true, "Enables the 'Craft All' button on your crafting panel.");
 		}
 
 		private void OnDestroy() {
@@ -236,18 +255,6 @@ namespace RunicPower {
 			return rune.statusEffect;
 		}
 
-		private void Update() {
-			if (tryAgain) {
-				tryAgainTime += Time.deltaTime;
-				if (tryAgainTime >= tryAgainDuration) {
-					tryAgain = false;
-					TryRegisterRecipes();
-				}
-			}
-			if (Player.m_localPlayer?.TakeInput() == true) SpellsBar.CheckInputs();
-			// SpellsBar.UpdateVisibility();
-		}
-
 		public static void Log(string message) {
 			UnityEngine.Debug.Log("[RunicPower] "+message);
 		}
@@ -263,12 +270,12 @@ namespace RunicPower {
 
 		public static void CreateCraftAllButton(InventoryGui gui) {
 			if (gui == null) gui = InventoryGui.instance;
+
 			var craftButton = gui.m_craftButton.gameObject;
 			var name = "runicPowerCraftAllButton";
 
-			if (craftAllgo != null) {
-				Destroy(craftAllgo);
-			}
+			if (craftAllgo != null) Destroy(craftAllgo);
+			if (!configsCraftAllEnabled.Value) return;
 
 			// var comps2 = craftButton.GetComponentsInChildren(typeof(Component));
 			// foreach (var comp in comps2) RunicPower.Debug("children.comp -> " + comp);
@@ -328,5 +335,68 @@ namespace RunicPower {
 			if (!isCraftingAll) return;
 			InventoryGui.instance.OnCraftPressed();
 		}
+
+		public static void Recreate() {
+			if (!configCooldownsEnabled.Value) activeCooldowns.Clear();
+			SpellsBar.RegisterKeybinds();
+			CreateCraftAllButton(null);
+			SpellsBar.ClearBindings();
+			SpellsBar.CreateHotkeysBar(null);
+			SpellsBar.CreateInventoryBar(null);
+			SpellsBar.UpdateInventory();
+			SpellsBar.UpdateVisibility();
+		}
+
+		public static void AddCooldown(string name, int cooldown) {
+			if (!configCooldownsEnabled.Value) return;
+			activeCooldowns.Add(name, cooldown);
+			SpellsBar.SetCooldownText(name, cooldown);
+		}
+
+		public static int GetCooldown(RuneData data) {
+			var got = activeCooldowns.TryGetValue(data.name, out int cooldown);
+			return (got) ? cooldown : 0;
+		}
+
+		public static bool IsOnCooldown(RuneData data) {
+			return GetCooldown(data) > 0;
+		}
+
+		float tickCooldown = 0f;
+
+		private void Update() {
+			if (tryAgain) {
+				tryAgainTime += Time.deltaTime;
+				if (tryAgainTime >= tryAgainDuration) {
+					tryAgain = false;
+					TryRegisterRecipes();
+				}
+			}
+			
+			if (Player.m_localPlayer?.TakeInput() == true) SpellsBar.CheckInputs();
+
+			tickCooldown += Time.deltaTime;
+
+			if (tickCooldown >= 1f) {
+				tickCooldown -= 1f;
+
+				var keys = activeCooldowns.Keys;
+				var newCooldowns = new Dictionary<string, int>();
+
+				foreach (var key in keys) {
+					var cd = activeCooldowns[key] - 1;
+
+					if (cd > 0) {
+						newCooldowns[key] = cd;
+						SpellsBar.SetCooldownText(key, cd);
+					} else {
+						SpellsBar.SetCooldownText(key, 0);
+					}
+				}
+
+				activeCooldowns = newCooldowns;
+			}
+		}
+
 	}
 }
