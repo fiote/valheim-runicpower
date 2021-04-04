@@ -10,6 +10,16 @@
 - self (just a message in your screen but not in the chat)
 - none (no message at all)
 
+# Enables cooldowns when rune-casting.
+``rp.cooldowns=value``
+
+### Default value:
+- true
+
+### Acceptable values:
+- true/on/1
+- false/off/0
+
 # Enables the hotkey's bar (the one the bottom of the screen).
 ``rp.hotkey=flag``
 
@@ -61,6 +71,16 @@
 
 # If enabled, this will count pvp-flagged players as enemies.
 ``rp.pvp=flag``
+
+### Default value:
+true
+
+### Acceptable values:
+- true/on/1
+- false/off/0
+
+# Enables the 'Craft All' button on your crafting panel.
+``rp.craftall=flag``
 
 ### Default value:
 true
