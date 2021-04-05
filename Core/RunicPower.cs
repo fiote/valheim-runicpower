@@ -31,7 +31,7 @@ using UnityEngine.UI;
  * -> Recovery Spells: 30 seconds (Inspiring Shout, Healing Circle).
  * -> Battle (De)Buffs: 120 seconds (Expose Weakness, Stone Rune, Mind Rune, etc).
  * -> Normal Buffs: 5 seconds (Swift Rune, Light Rune, etc) (just to avoid casting it twice my mistake).
- * -> Recall: 300 seconds. * 
+ * -> Recall: 300 seconds. *
  * - Added CONFIG to disable cooldowns if you don't like them (I won't judge!).
 */
 
@@ -50,7 +50,7 @@ using UnityEngine.UI;
 // MAYBE: ranks for recall rune. Better recalls allow to teleport with better ores.
 
 namespace RunicPower {
-	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "1.2")]
+	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "1.2.2")]
 	[BepInDependency("com.pipakin.SkillInjectorMod")]
 	[BepInDependency("randyknapp.mods.extendeditemdataframework")]
 
@@ -376,7 +376,7 @@ namespace RunicPower {
 					TryRegisterRecipes();
 				}
 			}
-			
+
 			if (Player.m_localPlayer?.TakeInput() == true) SpellsBar.CheckInputs();
 
 			tickCooldown += Time.deltaTime;
