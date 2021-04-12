@@ -374,11 +374,9 @@ namespace RunicPower.Core {
 		}
 
 		private int GetCooldown() {
-			RunicPower.Debug("GetCooldown");
 			var factor = GetSkillFactor();
 			var cooldown = data.cooldown;
 			var value = cooldown * (1 - factor / 2);
-			RunicPower.Debug("factor="+factor+" cooldown="+cooldown+" | value="+value);
 			return Mathf.RoundToInt(value);
 		}
 
