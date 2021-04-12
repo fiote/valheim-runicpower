@@ -20,7 +20,7 @@ namespace RunicPower.Patches {
 	[HarmonyPatch(typeof(Player), "Save")]
 	public static class Player_Save_Patch {
 		public static void Prefix(Player __instance) {
-			try { 
+			try {
 				__instance.ExtendedPlayer().Save();
 				RunicPower.Log("Spellsbar saved!");
 			} catch (Exception) {
@@ -42,6 +42,13 @@ namespace RunicPower.Patches {
 			RunicPower.Debug("UseHotbarItem Prefix");
 			var item = SpellsBar.GetSpellHotKeyItem(__instance, index-1, true);
 			return (item == null);
+		}
+	}
+
+	[HarmonyPatch(typeof(Player), "SetPlaceMode")]
+	public static class Player_SetPlaceMode_Patch {
+		public static void Postfix(Player __instance, PieceTable buildPieces) {
+			SpellsBar.UpdateVisibility(buildPieces == null);
 		}
 	}
 

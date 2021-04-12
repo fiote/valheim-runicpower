@@ -114,6 +114,10 @@ namespace RunicPower.Core {
             if (visible && Hud.instance?.m_buildHud?.activeSelf == true) visible = false;
             if (visible && Hud.instance?.IsVisible() == false) visible = false;
 
+            UpdateVisibility(visible);
+        }
+
+        public static void UpdateVisibility(Boolean visible) {
             if (visible != isVisible) {
                 isVisible = visible;
                 hotkeysRect.gameObject.SetActive(isVisible);
@@ -346,8 +350,11 @@ namespace RunicPower.Core {
 
                 position.x -= ((size.x - 107) / 2) * cfgScale;
                 goRect.anchoredPosition = position;
-            } else {
-                if (RunicPower.configInvBarPosition.Value == RunicPower.InvBarPosition.BOTTOM) {
+            } else { 
+                if (RunicPower.configInvBarPosition.Value == RunicPower.InvBarPosition.TOP) {
+                    var position = new Vector2(1000, 103);
+                    goRect.anchoredPosition = position;
+                } else { 
                     var cfgScale = RunicPower.configHotkeysScale.Value / 100f;
                     var scale = new Vector3(cfgScale, cfgScale, cfgScale);
                     goRect.localScale = scale;
@@ -368,11 +375,7 @@ namespace RunicPower.Core {
                     var position = new Vector2(x, y);
 
                     goRect.anchoredPosition = position;
-                } else {
-                    var position = new Vector2(1000, 103);
-                    goRect.anchoredPosition = position;
-
-                }
+                } 
             }
 
             return goRect;

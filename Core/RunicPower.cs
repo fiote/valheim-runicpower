@@ -13,9 +13,6 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
 
-/* [1.2.1]
- * - Removing use of AUTO for SpellsBar.position (not using that)
-*/
 
 /* [1.2]
  * - Fixed bug when picking up runes from the ground.
@@ -35,9 +32,21 @@ using UnityEngine.UI;
  * - Added CONFIG to disable cooldowns if you don't like them (I won't judge!).
 */
 
+/* [1.2.2]
+ * - Removing use of AUTO for SpellsBar.position (not using that)
+*/
+
+/* [1.2.3]
+ * - Inventory Spellsbar position now defaulted to bottom.
+ * - Improving visibility updates so the hotkey's bar won't appear alongside the building panel.
+ */
+
 // TODO: change how extended data is stored (make it into component so it'll die when its object dies?)
 
-// TODO: CONFLICT? "crafting with containers" characters run on the spot like gliding over the terrain
+// TODO: CONFLICT? "crafting with containers" characters run on the spot like gliding over the terrain?
+// TODO: CONFLICT/PERFORMANCE? Valheim+
+// TODO: CONFLICT/PERFORMANCE? Auto Map Pins
+
 // TODO: CONFLICT? check hotkey bar not updating when using runes
 // TODO: CONFLICT? check if ghost mode is really broken.
 // TODO: CONFLICT? check looted-items message not showing
@@ -56,7 +65,7 @@ namespace RunicPower {
 
 	public class RunicPower : BaseUnityPlugin {
 		private Harmony _harmony;
-		public static bool debug = false;
+		public static bool debug = true;
 
 		public static RunesConfig runesConfig;
 		public static List<Rune> runes = new List<Rune>();
@@ -109,8 +118,7 @@ namespace RunicPower {
 
 		public enum InvBarPosition {
 			TOP,
-			BOTTOM,
-			AUTO
+			BOTTOM
 		}
 
 		public enum CastingMessage {
@@ -143,7 +151,7 @@ namespace RunicPower {
 
 			configPvpEnabled = Config.Bind("PVP", "Enabled", true, "If enabled, this will count pvp-flagged players as enemies.");
 
-			configInvBarPosition = Config.Bind("SpellsBar", "Position", InvBarPosition.AUTO, "Defines where the inventory spells' bar should appear.");
+			configInvBarPosition = Config.Bind("SpellsBar", "Position", InvBarPosition.BOTTOM, "Defines where the inventory spells' bar should appear.");
 
 			configHotkeysEnabled = Config.Bind("HotkeysBar", "Enabled", true, "Enables the hotkey's bar (the one the bottom of the screen).");
 			configHotkeysScale = Config.Bind("HotkeysBar", "Scale", 100, "Adjusts the hotkey's bar size.");
