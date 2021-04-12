@@ -118,6 +118,8 @@ namespace RunicPower.Core {
         }
 
         public static void UpdateVisibility(Boolean visible) {
+            if (hotkeysRect == null) return;
+
             if (visible != isVisible) {
                 isVisible = visible;
                 hotkeysRect.gameObject.SetActive(isVisible);
