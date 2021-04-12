@@ -21,7 +21,7 @@ namespace RunicPower.Patches {
     public static class StatusEffect_ModifyStaminaRegen_Patch {
         public static bool Prefix(StatusEffect __instance, ref float staminaRegen) {
             var rune = __instance.GetRune();
-            if (rune == null) return true;            
+            if (rune == null) return true;
             rune.ModifyStaminaRegen(ref staminaRegen);
             return false;
         }
@@ -34,6 +34,14 @@ namespace RunicPower.Patches {
             if (rune == null) return true;
             rune.ModifyHealthRegen(ref regenMultiplier);
             return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(StatusEffect), "RemoveStartEffects")]
+    public static class StatusEffect_RemoveStartEffects_Patch {
+        public static void Prefix(StatusEffect __instance) {
+            var rune = __instance.GetRune();
+            __instance.m_character?.ExtendedCharacter()?.RemoveRune(rune);
         }
     }
 }

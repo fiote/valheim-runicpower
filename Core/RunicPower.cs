@@ -39,9 +39,11 @@ using UnityEngine.UI;
 /* [1.2.3]
  * - Inventory Spellsbar position now defaulted to bottom.
  * - Improving visibility updates so the hotkey's bar won't appear alongside the building panel.
+ * - Runic buffs should now correctly be removed when the rune expires.
  */
 
 // TODO: change how extended data is stored (make it into component so it'll die when its object dies?)
+
 
 // TODO: CONFLICT? "crafting with containers" characters run on the spot like gliding over the terrain?
 // TODO: CONFLICT/PERFORMANCE? Valheim+
@@ -65,7 +67,7 @@ namespace RunicPower {
 
 	public class RunicPower : BaseUnityPlugin {
 		private Harmony _harmony;
-		public static bool debug = true;
+		public static bool debug = false;
 
 		public static RunesConfig runesConfig;
 		public static List<Rune> runes = new List<Rune>();

@@ -13,7 +13,7 @@ namespace RunicPower {
 		public Character character;
 
 		public List<Rune> runes = new List<Rune>();
-		
+
 		public float runicMoveBonus = 0;
 		public float runicInvisibilityRange = 0;
 		public float runicLifeSteal = 0;
@@ -31,6 +31,7 @@ namespace RunicPower {
 		}
 
 		void StoreRuneEffects() {
+			Log("StoreRuneEffects");
 			runicMoveBonus = 0f;
 			runicInvisibilityRange = 0f;
 			runicLifeSteal = 0f;
@@ -58,14 +59,25 @@ namespace RunicPower {
 
 		public void AddRune(Rune rune) {
 			if (rune == null) return;
+			Log("AddRune " + rune?.data.name);
 			runes.Add(rune);
 			Update();
 		}
 
 		public void RemoveRune(Rune rune) {
 			if (rune == null) return;
-			runes.Remove(rune);
-			Update();
+			Log("RemoveRune " + rune?.data.name);
+			if (runes.Contains(rune)) {
+				Log("rune removed.");
+				runes.Remove(rune);
+				Update();
+			} else {
+				Log("cant remove rune, its not on the stack!");
+			}
+		}
+
+		void Log(string message) {
+			RunicPower.Debug(this.character.name + " " + message);
 		}
 	}
 }

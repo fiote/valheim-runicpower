@@ -49,12 +49,4 @@ namespace RunicPower.Patches {
             __instance.m_character?.ExtendedCharacter()?.AddRune(rune);
         }
     }
-
-    [HarmonyPatch(typeof(SEMan), "RemoveStatusEffect", typeof(string), typeof(bool))]
-    public static class SEMan_RemoveStatusEffect_Patch {
-        static void Prefix(SEMan __instance, string name, bool quiet) {
-            var rune = __instance.GetStatusEffect(name)?.GetRune();
-            __instance?.m_character?.ExtendedCharacter()?.RemoveRune(rune);
-        }
-    }
 }
