@@ -40,6 +40,9 @@ using UnityEngine.UI;
  * - Inventory Spellsbar position now defaulted to bottom.
  * - Improving visibility updates so the hotkey's bar won't appear alongside the building panel.
  * - Runic buffs should now correctly be removed when the rune expires.
+ * - Making sure the crafting works even if the hotkey's bar is disabled.
+ * - Fixing error related to hotkeys-bar disabled.
+ * - Fixing errors related to craft-all disabled.
  */
 
 // TODO: change how extended data is stored (make it into component so it'll die when its object dies?)
@@ -61,7 +64,7 @@ using UnityEngine.UI;
 // MAYBE: ranks for recall rune. Better recalls allow to teleport with better ores.
 
 namespace RunicPower {
-	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "1.2.2")]
+	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "1.2.3")]
 	[BepInDependency("com.pipakin.SkillInjectorMod")]
 	[BepInDependency("randyknapp.mods.extendeditemdataframework")]
 
@@ -313,7 +316,7 @@ namespace RunicPower {
 
 			craftAllButton = craftAllgo.GetComponentInChildren<Button>();
 			craftAllButton.interactable = true;
-			craftAllButton.onClick.AddListener(OnClickCraftButton);
+			craftAllButton.onClick.AddListener(OnClickCraftAllButton);
 
 			craftAllText = craftAllgo.GetComponentInChildren<Text>();
 			craftAllText.text = "Craft All";
@@ -323,8 +326,9 @@ namespace RunicPower {
 			craftAllgo.GetComponent<UITooltip>().m_text = "";
 		}
 
-		public static void OnClickCraftButton() {
-			RunicPower.Debug("OnClickCraftButton");
+		public static void OnClickCraftAllButton() {
+			if (!configsCraftAllEnabled.Value) return;
+
 			if (isCraftingAll) {
 				StopCraftingAll(true);
 			} else {
@@ -333,19 +337,25 @@ namespace RunicPower {
 		}
 
 		public static void StartCraftingAll() {
+			if (!configsCraftAllEnabled.Value) return;
+
 			isCraftingAll = true;
 			craftAllText.text = "Stop Crafting";
 			InventoryGui.instance.OnCraftPressed();
 		}
 
 		public static void StopCraftingAll(bool triggerCancel) {
+			if (!configsCraftAllEnabled.Value) return;
+
 			isCraftingAll = false;
-			craftAllText.text = "Craft All";
+			if (craftAllText != null) craftAllText.text = "Craft All";
 			if (triggerCancel) InventoryGui.instance.OnCraftCancelPressed();
 		}
 
 		public static void TryCraftingMore() {
-			RunicPower.Debug("TryCraftingMore");
+			if (!configsCraftAllEnabled.Value) return;
+
+			Debug("TryCraftingMore");
 			if (!isCraftingAll) return;
 			InventoryGui.instance.OnCraftPressed();
 		}
