@@ -50,5 +50,8 @@ namespace RunicPower.Patches {
 		public static bool CanHelpWithRunes(this Player __instance, Character other) {
 			return !__instance.CanHarmWithRunes(other);
 		}
+		public static void LowerSkill(this Player __instance, Skills.SkillType skill, float value = 1f) {
+			__instance.m_skills.LowerSkill(skill, value);
+		}
 	}
 }

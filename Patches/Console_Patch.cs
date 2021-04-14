@@ -79,6 +79,11 @@ namespace RunicPower {
 					RunicPower.Log("CASTING.COOLDOWNS config changed to " + cvalue.boolvalue);
 				}
 
+				if (cmd == "control") {
+					RunicPower.configClassControl.Value = cvalue.intvalue;
+					RunicPower.Log("CASTING.CONTROL config changed to " + cvalue.intvalue);
+				}
+
 				// ===== PVP ====================================================
 
 				if (cmd == "pvp") {

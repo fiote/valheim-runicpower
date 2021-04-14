@@ -760,7 +760,7 @@ namespace RunicPower.Core {
 
 			// getting the archetype skill Id and adding experience to it
 			if (data.archetype != "Generic") {
-				caster.RaiseSkill(data.skillType, 1f);
+				AddExperience(1f);
 				RunicPower.ClearCache();
 			}
 
@@ -799,6 +799,19 @@ namespace RunicPower.Core {
 				foreach (var seman in semans) ApplyEffectOnSeman(seman);
 			}
 		}
+		public void AddExperience(float value) {
+			caster.RaiseSkill(data.skillType, value);
 
+			var cskills = RunicPower.listofCSkills;
+			var qty = cskills.Count - 1;
+			var lower = value / qty;
+
+			cskills.ForEach(cskill => {
+				var ctype = cskill.GetSkillType();
+				if (ctype != data.skillType) {
+					caster.LowerSkill(ctype, lower);
+				}
+			});
+		}
 	}
 }

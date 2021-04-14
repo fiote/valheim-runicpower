@@ -47,6 +47,7 @@ using UnityEngine.UI;
 
 /* [1.3]
  * - Changed how extended data is stored to avoid using unnecessary memory.
+ * - Added CONFIG "class control" to set the max level of alt class skills.
 */
 
 // TODO: INTEGRATION? equip wheel considering runes as consumables (which they are)
