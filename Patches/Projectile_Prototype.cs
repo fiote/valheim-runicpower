@@ -11,25 +11,18 @@ using UnityEngine;
 namespace RunicPower.Patches {
 
 	public static class Projectile_Prototype {
-
-		public static Dictionary<string, Projectile_Extended> mapping = new Dictionary<string, Projectile_Extended>();
-		public static Projectile_Extended ExtendedProjectile(this Projectile self) {
-			var key = self.GetInstanceID().ToString();
-			if (key == null) return null;
-			var ext = mapping.ContainsKey(key) ? mapping[key] : null;
-			if (ext == null) {
-				mapping[key] = ext = new Projectile_Extended();
-				RunicPower.Debug("ExtendedProjectile: " + mapping.Count);
-			}
+		public static Projectile_Extended ExtendedProjectile(this Projectile __instance, Boolean create) {
+			var ext = __instance.gameObject.GetComponent<Projectile_Extended>();
+			if (ext == null && create) ext = __instance.gameObject.AddComponent<Projectile_Extended>();
 			return ext;
 		}
 
 		public static Rune GetRuneConfig(this Projectile self) {
-			return self.ExtendedProjectile().rune;
+			return self.ExtendedProjectile(false)?.rune;
 		}
 
 		public static void SetRune(this Projectile self, Rune rune) {
-			self.ExtendedProjectile().rune = rune;
+			self.ExtendedProjectile(true)?.SetRune(rune);
 		}
 	}
 }

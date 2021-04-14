@@ -17,7 +17,7 @@ namespace RunicPower.Patches {
             if (hit == null) return;
             if (attacker == null) return;
 
-            var prSteal = attacker.ExtendedCharacter()?.runicLifeSteal ?? 0;
+            var prSteal = attacker.ExtendedCharacter(false)?.runicLifeSteal ?? 0;
             if (prSteal <= 0) return;
 
             var totalf = hit.GetTotalDamage();
@@ -46,7 +46,7 @@ namespace RunicPower.Patches {
         static void Postfix(SEMan __instance, StatusEffect statusEffect, bool resetTime) {
             var rune = statusEffect.GetRune();
             if (rune == null) return;
-            __instance.m_character?.ExtendedCharacter()?.AddRune(rune);
+            __instance.m_character?.ExtendedCharacter(true)?.AddRune(rune);
         }
     }
 }

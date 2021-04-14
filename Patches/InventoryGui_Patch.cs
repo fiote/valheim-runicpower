@@ -127,7 +127,7 @@ namespace RunicPower.Patches {
         public static void Postfix(InventoryGui __instance, int index, bool center) {
             var item = __instance?.m_selectedRecipe.Key?.m_item?.m_itemData;
             var rune = item?.GetRuneData();
-            var ext = Player.m_localPlayer?.ExtendedPlayer();
+            var ext = Player.m_localPlayer?.ExtendedPlayer(false);
 
             if (rune == null) {
                 ext?.SetCraftingRuneItem(null);

@@ -58,55 +58,7 @@ namespace RunicPower {
 
 				var cmd = keyparts[1];
 
-				if (cmd == "hotkey") {
-					RunicPower.configHotkeysEnabled.Value = cvalue.boolvalue;
-					RunicPower.Log("HOTKEY.ENABLED config changed to "+ cvalue.boolvalue);
-				}
-				if (cmd == "scale") {
-					RunicPower.configHotkeysScale.Value = cvalue.intvalue;
-					RunicPower.Log("HOTKEY.SCALE config changed to " + cvalue.intvalue);
-				}
-				if (cmd == "x") {
-					RunicPower.configHotkeysOffsetX.Value = cvalue.intvalue;
-					RunicPower.Log("HOTKEY.OFFSETX config changed to " + cvalue.intvalue);
-				}
-				if (cmd == "y") {
-					RunicPower.configHotkeysOffsetY.Value = cvalue.intvalue;
-					RunicPower.Log("HOTKEY.OFFSETY config changed to " + cvalue.intvalue);
-				}
-
-				if (cmd == "pvp") {
-					RunicPower.configPvpEnabled.Value = cvalue.boolvalue;
-					RunicPower.Log("PVP.ENABLED config changed to " + cvalue.boolvalue);
-				}
-
-				if (cmd == "debug") {
-					RunicPower.debug = cvalue.boolvalue;
-					RunicPower.Log("DEBUG config changed to " + cvalue.boolvalue);
-				}
-
-				if (cmd == "cooldowns") {
-					RunicPower.configCooldownsEnabled.Value = cvalue.boolvalue;
-					RunicPower.Log("CASTING.COOLDOWNS config changed to " + cvalue.boolvalue);
-				}
-
-				if (cmd == "craftall") {
-					RunicPower.configsCraftAllEnabled.Value = cvalue.boolvalue;
-					RunicPower.Log("INTERFACE.CRAFTALL config changed to " + cvalue.boolvalue);
-				}
-
-				if (cmd == "pos") {
-					RunicPower.InvBarPosition pos;
-					if (cvalue.value == "top") pos = RunicPower.InvBarPosition.TOP;
-					else if (cvalue.value == "bottom") pos = RunicPower.InvBarPosition.BOTTOM;
-					else {
-						RunicPower.Log("INVBAR.POS failed to change. Acceptable values are: top, bottom");
-						return true;
-
-					}
-					RunicPower.configInvBarPosition.Value = pos;
-					RunicPower.Log("INVBAR.POS config changed to " + cvalue.value);
-				}
+				// ===== CASTING ================================================
 
 				if (cmd == "message") {
 					RunicPower.CastingMessage message;
@@ -122,6 +74,51 @@ namespace RunicPower {
 					RunicPower.Log("CASTING.MESSAGE config changed to " + message);
 				}
 
+				if (cmd == "cooldowns") {
+					RunicPower.configCooldownsEnabled.Value = cvalue.boolvalue;
+					RunicPower.Log("CASTING.COOLDOWNS config changed to " + cvalue.boolvalue);
+				}
+
+				// ===== PVP ====================================================
+
+				if (cmd == "pvp") {
+					RunicPower.configPvpEnabled.Value = cvalue.boolvalue;
+					RunicPower.Log("PVP.ENABLED config changed to " + cvalue.boolvalue);
+				}
+
+				// ===== SPELLSBAR ==============================================
+
+				if (cmd == "pos") {
+					RunicPower.InvBarPosition pos;
+					if (cvalue.value == "top") pos = RunicPower.InvBarPosition.TOP;
+					else if (cvalue.value == "bottom") pos = RunicPower.InvBarPosition.BOTTOM;
+					else {
+						RunicPower.Log("INVBAR.POS failed to change. Acceptable values are: top, bottom");
+						return true;
+					}
+					RunicPower.configInvBarPosition.Value = pos;
+					RunicPower.Log("INVBAR.POS config changed to " + cvalue.value);
+				}
+
+				// ===== HOTKEYS BAR ============================================
+
+				if (cmd == "hotkey") {
+					RunicPower.configHotkeysEnabled.Value = cvalue.boolvalue;
+					RunicPower.Log("HOTKEY.ENABLED config changed to " + cvalue.boolvalue);
+				}
+				if (cmd == "scale") {
+					RunicPower.configHotkeysScale.Value = cvalue.intvalue;
+					RunicPower.Log("HOTKEY.SCALE config changed to " + cvalue.intvalue);
+				}
+				if (cmd == "x") {
+					RunicPower.configHotkeysOffsetX.Value = cvalue.intvalue;
+					RunicPower.Log("HOTKEY.OFFSETX config changed to " + cvalue.intvalue);
+				}
+				if (cmd == "y") {
+					RunicPower.configHotkeysOffsetY.Value = cvalue.intvalue;
+					RunicPower.Log("HOTKEY.OFFSETY config changed to " + cvalue.intvalue);
+				}
+
 				if (cmd == "modifier") {
 					RunicPower.KeyModifiers mod;
 					if (cvalue.value == "shift") mod = RunicPower.KeyModifiers.SHIFT;
@@ -133,6 +130,20 @@ namespace RunicPower {
 					}
 					RunicPower.configHotkeysModifier.Value = mod;
 					RunicPower.Log("HOTKEY.MODIFIER config changed to " + mod);
+				}
+
+				// ===== INTERFACE ==============================================
+
+				if (cmd == "craftall") {
+					RunicPower.configsCraftAllEnabled.Value = cvalue.boolvalue;
+					RunicPower.Log("INTERFACE.CRAFTALL config changed to " + cvalue.boolvalue);
+				}
+
+				// ===== DEBUG ==================================================
+
+				if (cmd == "debug") {
+					RunicPower.debug = cvalue.boolvalue;
+					RunicPower.Log("DEBUG config changed to " + cvalue.boolvalue);
 				}
 
 				RunicPower.configFile.Save();

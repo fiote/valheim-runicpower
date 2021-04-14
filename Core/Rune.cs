@@ -270,7 +270,7 @@ namespace RunicPower.Core {
 			if (caster == null) return;
 			var dmg = caster.GetCurrentWeapon().GetDamage();
 			casterWeaponDmg = dmg.GetTotalElementalDamage() + dmg.GetTotalPhysicalDamage();
-			casterPowerMods = caster.ExtendedCharacter()?.runicPowerModifier;
+			casterPowerMods = caster.ExtendedCharacter(false)?.runicPowerModifier ?? new DamageTypeValues();
 		}
 
 		// ================================================================
@@ -561,8 +561,6 @@ namespace RunicPower.Core {
 			var hitDamage = new HitData();
 
 			if (data.effect.DoDamage()) {
-				RunicPower.Debug("doDamage " + data.effect.doDamage.ToString());
-
 				hitDamage.m_damage.m_blunt = GetDamage(HitData.DamageType.Blunt);
 				hitDamage.m_damage.m_pierce = GetDamage(HitData.DamageType.Pierce);
 				hitDamage.m_damage.m_slash = GetDamage(HitData.DamageType.Slash);

@@ -7,34 +7,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using static Skills;
 
 namespace RunicPower.Patches {
 
 	public static class Player_Prototype {
-
-		public static Dictionary<string, Player_Extended> mapping = new Dictionary<string, Player_Extended>();
-		public static Player_Extended ExtendedPlayer(this Player __instance) {
-			var key = __instance.GetInstanceID().ToString();
-			if (key == null) return null;
-			var ext = mapping.ContainsKey(key) ? mapping[key] : null;
-			if (ext == null) {
-				mapping[key] = ext = new Player_Extended(__instance);
-				RunicPower.Debug("ExtendedPlayer: " + mapping.Count);
+		public static Player_Extended ExtendedPlayer(this Player __instance, Boolean create) {
+			var ext = __instance.gameObject.GetComponent<Player_Extended>();
+			if (ext == null && create) {
+				ext = __instance.gameObject.AddComponent<Player_Extended>();
+				ext.SetPlayer(__instance);
 			}
-			// and return it
 			return ext;
 		}
 
 		public static Inventory GetSpellsBarInventory(this Player __instance) {
-			var ext = __instance.ExtendedPlayer();
-			return ext?.spellsBarInventory;
+			return __instance.ExtendedPlayer(true)?.spellsBarInventory;
 		}
-
 
 		public static ItemDrop.ItemData GetSpellsBarItem(this Player __instance, int index) {
 			if (index < 0 || index > SpellsBar.slotCount) return null;
-			var spellsBarInventory = __instance.GetSpellsBarInventory();
-			return spellsBarInventory?.GetItemAt(index, 0);
+			return __instance.GetSpellsBarInventory()?.GetItemAt(index, 0);
 		}
 
 		public static void UseRuneFromSpellBar(this Player __instance, ItemDrop.ItemData item) {

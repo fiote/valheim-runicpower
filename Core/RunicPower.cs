@@ -45,16 +45,9 @@ using UnityEngine.UI;
  * - Fixing errors related to craft-all disabled.
  */
 
-// TODO: change how extended data is stored (make it into component so it'll die when its object dies?)
-
-
-// TODO: CONFLICT? "crafting with containers" characters run on the spot like gliding over the terrain?
-// TODO: CONFLICT/PERFORMANCE? Valheim+
-// TODO: CONFLICT/PERFORMANCE? Auto Map Pins
-
-// TODO: CONFLICT? check hotkey bar not updating when using runes
-// TODO: CONFLICT? check if ghost mode is really broken.
-// TODO: CONFLICT? check looted-items message not showing
+/* [1.3]
+ * - Changed how extended data is stored to avoid using unnecessary memory.
+*/
 
 // TODO: INTEGRATION? equip wheel considering runes as consumables (which they are)
 
@@ -64,7 +57,7 @@ using UnityEngine.UI;
 // MAYBE: ranks for recall rune. Better recalls allow to teleport with better ores.
 
 namespace RunicPower {
-	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "1.2.3")]
+	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "1.3")]
 	[BepInDependency("com.pipakin.SkillInjectorMod")]
 	[BepInDependency("randyknapp.mods.extendeditemdataframework")]
 
@@ -133,37 +126,41 @@ namespace RunicPower {
 			NONE
 		}
 
+		// CASTING
 		public static ConfigEntry<CastingMessage> configCastingMessage;
 		public static ConfigEntry<bool> configCooldownsEnabled;
-
+		public static ConfigEntry<int> configClassControl;
+		// PVP
 		public static ConfigEntry<bool> configPvpEnabled;
-
+		// SPELLSBAR
 		public static ConfigEntry<InvBarPosition> configInvBarPosition;
-
+		// HOTKEYS BAR
 		public static ConfigEntry<bool> configHotkeysEnabled;
 		public static ConfigEntry<int> configHotkeysScale;
 		public static ConfigEntry<int> configHotkeysOffsetX;
 		public static ConfigEntry<int> configHotkeysOffsetY;
 		public static ConfigEntry<KeyModifiers> configHotkeysModifier;
-
+		// INTERFACE
 		public static ConfigEntry<bool> configsCraftAllEnabled;
 
 		private void SetupConfig() {
 			Config.Bind("General", "NexusID", 840, "NexusMods ID for updates.");
 
+			// CASTING
 			configCastingMessage = Config.Bind("Casting", "Message", CastingMessage.NORMAL, "Define where the casting message should appear.");
 			configCooldownsEnabled = Config.Bind("Casting", "Cooldowns", true, "Enables cooldowns when rune-casting.");
-
+			configClassControl = Config.Bind("Casting", "Class Control", 20, "Defines the max level that your alt classes can raise up to.");
+			// PVP
 			configPvpEnabled = Config.Bind("PVP", "Enabled", true, "If enabled, this will count pvp-flagged players as enemies.");
-
+			// SPELLSBAR
 			configInvBarPosition = Config.Bind("SpellsBar", "Position", InvBarPosition.BOTTOM, "Defines where the inventory spells' bar should appear.");
-
+			// HOTKEYS BAR
 			configHotkeysEnabled = Config.Bind("HotkeysBar", "Enabled", true, "Enables the hotkey's bar (the one the bottom of the screen).");
 			configHotkeysScale = Config.Bind("HotkeysBar", "Scale", 100, "Adjusts the hotkey's bar size.");
 			configHotkeysOffsetX = Config.Bind("HotkeysBar", "OffsetX", 0, "Adjust the hotkey's bar horizontal position (left/right).");
 			configHotkeysOffsetY = Config.Bind("HotkeysBar", "OffsetY", 0, "Adjust the hotkey's bar vertical position (down/up).");
 			configHotkeysModifier = Config.Bind("HotkeysBar", "Modifier", KeyModifiers.SHIFT, "Key modifier to use the runes.");
-
+			// INTERFACE
 			configsCraftAllEnabled = Config.Bind("Interface", "Craft All", true, "Enables the 'Craft All' button on your crafting panel.");
 		}
 

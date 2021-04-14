@@ -18,7 +18,7 @@ namespace RunicPower.Patches {
 			var inv = SpellsBar.invBarGrid?.m_inventory;
 			if (inv == null) return true;
 			// if we're not crating a rune, return true so it goes as normal
-			var item = Player.m_localPlayer?.ExtendedPlayer()?.craftingRuneItem;
+			var item = Player.m_localPlayer?.ExtendedPlayer(false)?.craftingRuneItem;
 			if (item == null) return true;
 			// checking if this item already exists in the inventory (with free stack space)
 			ItemDrop.ItemData itemData = inv.FindFreeStackItem(item.m_shared?.m_name, item.m_quality);
@@ -49,7 +49,7 @@ namespace RunicPower.Patches {
 	public static class Inventory_AddItem_Patch {
 		public static bool Prefix(Inventory __instance, ref ItemDrop.ItemData item, ref bool __result) {
 			// if we're not crafting/looting a rune, ignore this flow
-			var ext = Player.m_localPlayer?.ExtendedPlayer();
+			var ext = Player.m_localPlayer?.ExtendedPlayer(false);
 			if (ext == null || (ext.craftingRuneItem == null && ext.lootingRuneItem == null)) {
 				return true;
 			}

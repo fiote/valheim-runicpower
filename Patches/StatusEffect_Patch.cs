@@ -40,8 +40,9 @@ namespace RunicPower.Patches {
     [HarmonyPatch(typeof(StatusEffect), "RemoveStartEffects")]
     public static class StatusEffect_RemoveStartEffects_Patch {
         public static void Prefix(StatusEffect __instance) {
-            var rune = __instance.GetRune();
-            __instance.m_character?.ExtendedCharacter()?.RemoveRune(rune);
+            var rune = __instance.GetRune();            
+            __instance.m_character?.ExtendedCharacter(false)?.RemoveRune(rune);
+            __instance.SetRune(null);
         }
     }
 }

@@ -10,22 +10,17 @@ using UnityEngine;
 
 namespace RunicPower {
 	public static class Character_Prototype {
-
-		public static Dictionary<string, Character_Extended> mapping = new Dictionary<string, Character_Extended>();
-
-		public static Character_Extended ExtendedCharacter(this Character __instance) {
-			var key = __instance.GetInstanceID().ToString();
-			if (key == null) return null;
-			var ext = mapping.ContainsKey(key) ? mapping[key] : null;
-			if (ext == null) {
-				mapping[key] = ext = new Character_Extended(__instance);
-				RunicPower.Debug("ExtendedCharacter: " + mapping.Count);
+		public static Character_Extended ExtendedCharacter(this Character __instance, Boolean create) {
+			var ext = __instance.gameObject.GetComponent<Character_Extended>();
+			if (ext == null && create) {
+				ext = __instance.gameObject.AddComponent<Character_Extended>();
+				ext.SetCharacter(__instance);
 			}
 			return ext;
 		}
 
 		public static bool IsInvisibleTo(this Character __instance, BaseAI monster) {
-			var range = __instance.ExtendedCharacter()?.runicInvisibilityRange ?? 0;
+			var range = __instance.ExtendedCharacter(false)?.runicInvisibilityRange ?? 0;
 			if (range == 0) return false;
 
 			var dist = Vector3.Distance(__instance.transform.position, monster.transform.position);
@@ -101,7 +96,7 @@ namespace RunicPower {
 				__instance.ResetCloth();
 			}
 			if (__instance.IsPlayer() && num > 4f) {
-				var prevented = __instance.ExtendedCharacter()?.runicIgnoreFallDamage ?? false;
+				var prevented = __instance.ExtendedCharacter(false)?.runicIgnoreFallDamage ?? false;
 				if (!prevented) {
 					HitData hitData = new HitData();
 					hitData.m_damage.m_damage = Mathf.Clamp01((num - 4f) / 16f) * 100f;

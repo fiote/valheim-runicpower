@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace RunicPower.Patches {
-	public class Player_Extended {
+	public class Player_Extended : MonoBehaviour {
 
 		public DamageTypeValues powerModifiers = new DamageTypeValues();
 		public Inventory spellsBarInventory = new Inventory(nameof(spellsBarInventory), null, SpellsBar.slotCount, 1);
@@ -24,12 +24,12 @@ namespace RunicPower.Patches {
 
 		public const string Sentinel = "<|>";
 
-		public Player_Extended(Player player) {
+		public void SetPlayer(Player player) {
 			this.player = player;
 			spellsBarInventory.m_onChanged += OnInventoryChanged;
 		}
 
-		public void SetLootingRuneItem(ItemDrop.ItemData item) {
+	public void SetLootingRuneItem(ItemDrop.ItemData item) {
 			lootingRuneItem = item;
 		}
 

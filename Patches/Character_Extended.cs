@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace RunicPower {
-	public class Character_Extended {
+	public class Character_Extended : MonoBehaviour {
 		public Character character;
 
 		public List<Rune> runes = new List<Rune>();
@@ -21,11 +21,11 @@ namespace RunicPower {
 		public DamageTypeValues runicResistModifier = new DamageTypeValues();
 		public DamageTypeValues runicPowerModifier = new DamageTypeValues();
 
-		public Character_Extended(Character character) {
+		public void SetCharacter(Character character) {
 			this.character = character;
 		}
 
-		private void Update() {
+		private void UpdateValues() {
 			StoreRuneEffects();
 			if (character?.IsPlayer() == true) RunicPower.ClearCache();
 		}
@@ -61,7 +61,7 @@ namespace RunicPower {
 			if (rune == null) return;
 			Log("AddRune " + rune?.data.name);
 			runes.Add(rune);
-			Update();
+			UpdateValues();
 		}
 
 		public void RemoveRune(Rune rune) {
@@ -70,7 +70,7 @@ namespace RunicPower {
 			if (runes.Contains(rune)) {
 				Log("rune removed.");
 				runes.Remove(rune);
-				Update();
+				UpdateValues();
 			} else {
 				Log("cant remove rune, its not on the stack!");
 			}

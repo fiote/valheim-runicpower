@@ -387,7 +387,7 @@ namespace RunicPower.Core {
             return (InventoryGrid inventoryGrid, ItemDrop.ItemData item, Vector2i pos, InventoryGrid.Modifier mod) => {
                 if (mod == InventoryGrid.Modifier.Move) return;
 
-                var ext = Player.m_localPlayer.ExtendedPlayer();
+                var ext = Player.m_localPlayer.ExtendedPlayer(true);
                 var ok = true;
                 ext.SetSelectingRuneItem(item);
                 if (inventoryGui.m_dragItem != null) {

@@ -32,19 +32,19 @@ namespace RunicPower {
 	public static class Humanoid_Pickup_Patch {
 		static void Prefix(Humanoid __instance, GameObject go) {
 			if (!__instance.IsPlayer()) return;
-			
+
 			var itemDrop = go.GetComponent<ItemDrop>();
 			if (itemDrop == null) return;
 
 			var rune = itemDrop.m_itemData.GetRuneData();
 			if (rune == null) return;
 
-			Player.m_localPlayer?.ExtendedPlayer()?.SetLootingRuneItem(itemDrop.m_itemData);
+			Player.m_localPlayer?.ExtendedPlayer(true)?.SetLootingRuneItem(itemDrop.m_itemData);
 		}
 
 		static void Postfix(Humanoid __instance, GameObject go) {
 			if (!__instance.IsPlayer()) return;
-			Player.m_localPlayer?.ExtendedPlayer()?.SetLootingRuneItem(null);
+			Player.m_localPlayer?.ExtendedPlayer(true)?.SetLootingRuneItem(null);
 		}
 	}
 
