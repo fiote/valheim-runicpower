@@ -1,90 +1,35 @@
-# Define where the casting message should appear.
-``rp.message=value``
+# CASTING
 
-### Default value:
-- normal
+| Command | Description | Default value | Acceptable values |
+| --- | --- | --- | --- |
+| rp.message=value | Define where the casting message should appear. | normal | global (as a shout)<br/>normal (normal chat)<br/>self (just a message in your screen)<br/>none (no message at all) |
+| rp.cooldowns=flag | Enables cooldowns when rune-casting. | true | true/on/1<br/>false/off/0 |
+| rp.control=value | Defines the max level that your alt classes can raise up to. | 20 | any number between 0 and 100 |
 
-### Acceptable values:
-- global (as a shout)
-- normal (normal chat)
-- self (just a message in your screen but not in the chat)
-- none (no message at all)
+# PVP
 
-# Enables cooldowns when rune-casting.
-``rp.cooldowns=value``
+| Command | Description | Default value | Acceptable values |
+| --- | --- | --- | --- |
+| rp.pvp=flag | If enabled, this will count pvp-flagged players as enemies. | true | true/on/1<br/>false/off/0 |
 
-### Default value:
-- true
+# SPELLSBAR
 
-### Acceptable values:
-- true/on/1
-- false/off/0
+| Command | Description | Default value | Acceptable values |
+| --- | --- | --- | --- |
+| rp.pos=value | Defines where the inventory spells' bar should appear. | bottom | top<br/>bottom |
 
-# Enables the hotkey's bar (the one the bottom of the screen).
-``rp.hotkey=flag``
+# HOTKEYS BAR
 
-### Default value:
-- true
+| Command | Description | Default value | Acceptable values |
+| --- | --- | --- | --- |
+| rp.hotkey=flag | Enables the hotkey's bar (the one the bottom of the screen). | true | true/on/1<br/>false/off/0 |
+| rp.scale=value | Adjusts the hotkey's bar size. | 100 | any positive number |
+| rp.x=value | Adjust the hotkey's bar horizontal position (left/right). | 0 | any number |
+| rp.y=value | Adjust the hotkey's bar vertical position (down/up). | 0 | any number |
+| rp.modifier=value | Key modifier to use the runes. | shift | shift<br/>ctrl/control<br/>alt |
 
-### Acceptable values:
-- true/on/1
-- false/off/0
+# INTERFACE
 
-# Adjusts the hotkey's bar size.
-``rp.scale=value``
-
-### Default value:
-- 100
-
-### Acceptable values:
-- any positive number (although values between 50 and 150 should be enough)
-
-
-# Adjust the hotkey's bar horizontal position (left/right).
-``rp.x=value``
-
-### Default value:
-- 0
-
-### Acceptable values:
-- any number (negatives values = left. positives values = right)
-
-# Adjust the hotkey's bar vertical position (down/up).
-``rp.y=value``
-
-### Default value:
-- 0
-
-### Acceptable values:
-- any number (negatives values = down. positives = up)
-
-# Key modifier to use the runes.
-``rp.modifier=value``
-
-### Default value:
-- shift
-
-### Acceptable values:
-- shift
-- ctrl/control
-- alt
-
-# If enabled, this will count pvp-flagged players as enemies.
-``rp.pvp=flag``
-
-### Default value:
-true
-
-### Acceptable values:
-- true/on/1
-- false/off/0
-
-# Enables the 'Craft All' button on your crafting panel.
-``rp.craftall=flag``
-
-### Default value:
-true
-
-### Acceptable values:
-- true/on/1
-- false/off/0
+| Command | Description | Default value | Acceptable values |
+| --- | --- | --- | --- |
+| rp.craftall=flag | Enables the 'Craft All' button on your crafting panel. | true | true/on/1<br/>false/off/0 |
