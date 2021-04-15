@@ -4,7 +4,7 @@
 | --- | --- | --- | --- |
 | rp.message=value | Define where the casting message should appear. | normal | global (as a shout)<br/>normal (normal chat)<br/>self (just a message in your screen)<br/>none (no message at all) |
 | rp.cooldowns=flag | Enables cooldowns when rune-casting. | true | true/on/1<br/>false/off/0 |
-| rp.control=value | Defines the max level that your alt classes can raise up to. | 20 | any number between 0 and 100 |
+| rp.control=value | CLASS CONTROL: Defines the max level that your alt classes can raise up to. | 20 | any number between 0 and 100 |
 
 # PVP
 
