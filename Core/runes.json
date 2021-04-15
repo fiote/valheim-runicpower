@@ -26,6 +26,9 @@
                     }
                 ]
             },
+            "resources": [
+                "GreydwarfEye:10"
+            ],
             "sfx": {
                 "name": "sfx_OpenPortal"
             },
@@ -86,14 +89,15 @@
             "recipe": {
                 "name": "Recipe_Warrior_Bladestorm",
                 "item": "Warrior_Bladestorm",
-                "amount": 2,
-                "resources": [
-                    {
-                        "item": "Flint",
-                        "amount": 1
-                    }
-                ]
+                "amount": 1
             },
+            "resources": [
+                "Flint",
+                "BoneFragments",
+                "Bloodbag",
+                "Crystal",
+                "BlackMetalScrap"
+            ],
             "vfx": {
                 "name": "vfx_sledge_hit",
                 "list": [ "waves", "splosh" ]
@@ -117,14 +121,15 @@
             "recipe": {
                 "name": "Recipe_Warrior_InspiringShout",
                 "item": "Warrior_InspiringShout",
-                "amount": 1,
-                "resources": [
-                    {
-                        "item": "BoneFragments",
-                        "amount": 1
-                    }
-                ]
+                "amount": 1
             },
+            "resources": [
+                "Flint",
+                "BoneFragments",
+                "Bloodbag",
+                "Crystal",
+                "BlackMetalScrap"
+            ],
             "vfx": {
                 "name": "vfx_Potion_stamina_medium"
             },
@@ -142,18 +147,19 @@
             "archetype": "Warrior",
             "description": "You call upon the powers of the stone, hardening your skin against physical damage.",
             "implemented": true,
-            "cooldown":  120,
+            "cooldown": 120,
             "recipe": {
                 "name": "Recipe_Warrior_Stone",
                 "item": "Warrior_Stone",
-                "amount": 3,
-                "resources": [
-                    {
-                        "item": "Crystal",
-                        "amount": 1
-                    }
-                ]
+                "amount": 1
             },
+            "resources": [
+                "Flint",
+                "BoneFragments",
+                "Bloodbag",
+                "Crystal",
+                "BlackMetalScrap"
+            ],
             "effect": {
                 "doResist": {
                     "m_pierce": 100,
@@ -174,14 +180,15 @@
             "recipe": {
                 "name": "Recipe_Warrior_Blood",
                 "item": "Warrior_Blood",
-                "amount": 1,
-                "resources": [
-                    {
-                        "item": "Bloodbag",
-                        "amount": 1
-                    }
-                ]
+                "amount": 1
             },
+            "resources": [
+                "Flint",
+                "BoneFragments",
+                "Bloodbag",
+                "Crystal",
+                "BlackMetalScrap"
+            ],
             "effect": {
                 "healthBack": 100,
                 "target": "self",
@@ -200,14 +207,15 @@
             "recipe": {
                 "name": "Recipe_Rogue_PoisonousShiv",
                 "item": "Rogue_PoisonousShiv",
-                "amount": 2,
-                "resources": [
-                    {
-                        "item": "MushroomYellow",
-                        "amount": 1
-                    }
-                ]
+                "amount": 1
             },
+            "resources": [
+                "NeckTail",
+                "MushroomYellow",
+                "Ooze",
+                "WolfFang",
+                "BlackMetalScrap"
+            ],
             "vfx": {
                 "name": "vfx_ProjectileHit"
             },
@@ -231,17 +239,17 @@
             "recipe": {
                 "name": "Recipe_Rogue_ExposeWeakness",
                 "item": "Rogue_ExposeWeakness",
-                "amount": 2,
-                "resources": [
-                    {
-                        "item": "Ooze",
-                        "amount": 1
-                    }
-                ]
+                "amount": 1
             },
+            "resources": [
+                "NeckTail",
+                "MushroomYellow",
+                "Ooze",
+                "WolfFang",
+                "BlackMetalScrap"
+            ],
             "vfx": {
                 "name": "vfx_damaged_cart"
-
             },
             "sfx": {
                 "name": "sfx_serpent_attack_trigger"
@@ -262,14 +270,15 @@
             "recipe": {
                 "name": "Recipe_Rogue_Swift",
                 "item": "Rogue_Swift",
-                "amount": 1,
-                "resources": [
-                    {
-                        "item": "NeckTail",
-                        "amount": 1
-                    }
-                ]
+                "amount": 1
             },
+            "resources": [
+                "NeckTail",
+                "MushroomYellow",
+                "Ooze",
+                "WolfFang",
+                "BlackMetalScrap"
+            ],
             "effect": {
                 "movementBonus": 100,
                 "ignoreFallDamage": true,
@@ -287,14 +296,15 @@
             "recipe": {
                 "name": "Recipe_Rogue_Night",
                 "item": "Rogue_Night",
-                "amount": 3,
-                "resources": [
-                    {
-                        "item": "WolfFang",
-                        "amount": 1
-                    }
-                ]
+                "amount": 1
             },
+            "resources": [
+                "NeckTail",
+                "MushroomYellow",
+                "Ooze",
+                "WolfFang",
+                "BlackMetalScrap"
+            ],
             "effect": {
                 "stealthiness": 100,
                 "target": "self",
@@ -312,14 +322,15 @@
             "recipe": {
                 "name": "Recipe_Cleric_HealingCircle",
                 "item": "Cleric_HealingCircle",
-                "amount": 1,
-                "resources": [
-                    {
-                        "item": "Dandelion",
-                        "amount": 3
-                    }
-                ]
+                "amount": 1
             },
+            "resources": [
+                "Dandelion:3",
+                "Blueberries",
+                "Entrails",
+                "WolfPelt",
+                "BlackMetalScrap"
+            ],
             "vfx": {
                 "name": "vfx_WishbonePing"
             },
@@ -343,14 +354,15 @@
             "recipe": {
                 "name": "Recipe_Cleric_ShieldSlam",
                 "item": "Cleric_ShieldSlam",
-                "amount": 3,
-                "resources": [
-                    {
-                        "item": "WolfPelt",
-                        "amount": 1
-                    }
-                ]
+                "amount": 1
             },
+            "resources": [
+                "RawMeat",
+                "Blueberries",
+                "Entrails",
+                "WolfPelt",
+                "BlackMetalScrap"
+            ],
             "vfx": {
                 "name": "vfx_perfectblock"
             },
@@ -376,14 +388,15 @@
             "recipe": {
                 "name": "Recipe_Cleric_Light",
                 "item": "Cleric_Light",
-                "amount": 2,
-                "resources": [
-                    {
-                        "item": "Entrails",
-                        "amount": 1
-                    }
-                ]
+                "amount": 1
             },
+            "resources": [
+                "RawMeat",
+                "Blueberries",
+                "Entrails",
+                "WolfPelt",
+                "BlackMetalScrap"
+            ],
             "effect": {
                 "healthRegen": 100,
                 "target": "allies",
@@ -400,14 +413,15 @@
             "recipe": {
                 "name": "Recipe_Cleric_Vigor",
                 "item": "Cleric_Vigor",
-                "amount": 2,
-                "resources": [
-                    {
-                        "item": "Blueberries",
-                        "amount": 1
-                    }
-                ]
+                "amount":  1
             },
+            "resources": [
+                "RawMeat",
+                "Blueberries",
+                "Entrails",
+                "WolfPelt",
+                "BlackMetalScrap"
+            ],
             "effect": {
                 "staminaRegen": 100,
                 "target": "allies",
@@ -427,14 +441,15 @@
             "recipe": {
                 "name": "Recipe_Wizard_Iceshard",
                 "item": "Wizard_Iceshard",
-                "amount": 3,
-                "resources": [
-                    {
-                        "item": "FreezeGland",
-                        "amount": 1
-                    }
-                ]
+                "amount": 1
             },
+            "resources": [
+                "Resin",
+                "Thistle",
+                "ElderBark",
+                "FreezeGland",
+                "BlackMetalScrap"
+            ],
             "sfx": {
                 "name": "sfx_dragon_coldball_launch"
             },
@@ -463,14 +478,15 @@
             "recipe": {
                 "name": "Recipe_Wizard_Fireball",
                 "item": "Wizard_Fireball",
-                "amount": 1,
-                "resources": [
-                    {
-                        "item": "Resin",
-                        "amount": 2
-                    }
-                ]
+                "amount": 1
             },
+            "resources": [
+                "Resin",
+                "Thistle",
+                "ElderBark",
+                "FreezeGland",
+                "BlackMetalScrap"
+            ],
             "sfx": {
                 "name": "sfx_GoblinShaman_fireball_launch"
             },
@@ -495,18 +511,19 @@
             "archetype": "Wizard",
             "description": "Your focus allow you to cast a barrier of sorts around yourself, protecting you from elemental harm.",
             "implemented": true,
-            "cooldown":  120,
+            "cooldown": 120,
             "recipe": {
                 "name": "Recipe_Wizard_Ward",
                 "item": "Wizard_Ward",
-                "amount": 1,
-                "resources": [
-                    {
-                        "item": "ElderBark",
-                        "amount": 2
-                    }
-                ]
+                "amount": 1
             },
+            "resources": [
+                "Resin",
+                "Thistle",
+                "ElderBark",
+                "FreezeGland",
+                "BlackMetalScrap"
+            ],
             "effect": {
                 "doResist": {
                     "m_fire": 100,
@@ -529,14 +546,15 @@
             "recipe": {
                 "name": "Recipe_Wizard_Mind",
                 "item": "Wizard_Mind",
-                "amount": 1,
-                "resources": [
-                    {
-                        "item": "Thistle",
-                        "amount": 2
-                    }
-                ]
+                "amount": 1
             },
+            "resources": [
+                "Resin",
+                "Thistle",
+                "ElderBark",
+                "FreezeGland",
+                "BlackMetalScrap"
+            ],
             "effect": {
                 "doPower": {
                     "m_fire": 100,

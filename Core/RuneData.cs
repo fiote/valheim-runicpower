@@ -24,6 +24,10 @@ namespace RunicPower.Core {
 		public string archetype;
 		public string description;
 		public bool implemented;
+
+		public int rank;
+
+		public List<string> resources = new List<string>();
 		public RecipeConfig recipe;
 
 		public int cooldown;

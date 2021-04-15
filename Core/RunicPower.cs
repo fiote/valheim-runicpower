@@ -50,6 +50,11 @@ using UnityEngine.UI;
  * - Added CONFIG "class control" to set the max level of alt class skills.
 */
 
+/* [1.4]
+ * - Implementing ranks for spells.
+ *
+*/
+
 // TODO: INTEGRATION? equip wheel considering runes as consumables (which they are)
 
 // MAYBE: change how crafting works. Instead of different items, just use a single 'currency' that would be the result of desenchanting items or something like that.
@@ -64,7 +69,7 @@ namespace RunicPower {
 
 	public class RunicPower : BaseUnityPlugin {
 		private Harmony _harmony;
-		public static bool debug = false;
+		public static bool debug = true;
 
 		public static RunesConfig runesConfig;
 		public static List<Rune> runes = new List<Rune>();
@@ -84,18 +89,41 @@ namespace RunicPower {
 		}
 
 		private void LoadRunes() {
-			runesConfig = PrefabCreator.LoadJsonFile<RunesConfig>("runes.json");
-			var assetBundle = PrefabCreator.LoadAssetBundle("runeassets");
-			if (runesConfig != null && assetBundle != null) {
-				foreach (var data in runesConfig.runes) {
-					if (!data.implemented) continue;
-					if (assetBundle.Contains(data.recipe.item)) {
-						data.prefab = assetBundle.LoadAsset<GameObject>(data.recipe.item);
-						runesData.Add(data);
+
+			var rank2rank = new Dictionary<int, string> {
+				{1, "I"},
+				{2, "II"},
+				{3, "III"},
+				{4, "IV"},
+				{5, "V"},
+			};
+
+			for (var i = 1; i <= 5; i++) {
+				runesConfig = PrefabCreator.LoadJsonFile<RunesConfig>("runes.json");
+				var assetBundle = PrefabCreator.LoadAssetBundle("runeassets");
+
+				if (runesConfig != null && assetBundle != null) {
+					foreach (var data in runesConfig.runes) {
+						if (!data.implemented) continue;
+						if (i > data.resources.Count) continue;
+
+						if (assetBundle.Contains(data.recipe.item)) {
+							data.prefab = assetBundle.LoadAsset<GameObject>(data.recipe.item);
+							data.rank = i;
+							data.name += " " + rank2rank[data.rank];
+							if (data.rank > 1) {
+								data.prefab.name += data.rank;
+								data.recipe.name += data.rank;
+								data.recipe.item += data.rank;
+							}
+							runesData.Add(data);
+						}
 					}
 				}
+
+				assetBundle?.Unload(false);
 			}
-			assetBundle?.Unload(false);
+
 			_harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), "fiote.mods.runicpower");
 		}
 
@@ -106,6 +134,108 @@ namespace RunicPower {
 					listofCSkills.Add(cskill);
 					SkillInjector.RegisterNewSkill(cskill.id, cskill.name, cskill.description, 1.0f, PrefabCreator.LoadCustomTexture(cskill.icon), Skills.SkillType.Unarmed);
 				}
+			}
+		}
+
+		private void OnDestroy() {
+			_harmony?.UnpatchAll();
+			foreach (var rune in runesData) Destroy(rune.prefab);
+			runesData.Clear();
+		}
+
+		public static void TryRegisterPrefabs(ZNetScene zNetScene) {
+			if (zNetScene == null) return;
+			foreach (var rune in runesData) zNetScene.m_prefabs.Add(rune.prefab);
+		}
+
+		public static void TryRegisterItems() {
+			foreach (var data in runesData) {
+				data.itemDrop = data.prefab.GetComponent<ItemDrop>();
+				if (data.itemDrop == null) {
+					Log("Failed to register item " + data.name + ". ItemDrop not found.");
+					continue;
+				}
+				if (ObjectDB.instance.GetItemPrefab(data.prefab.name.GetStableHashCode()) != null) {
+					Log("Failed to register item " + data.name + ". Prefab already exists.");
+					continue;
+				}
+
+				var itemDrop = data.itemDrop;
+				itemDrop.SetRuneData(data);
+				ObjectDB.instance.m_items.Add(data.prefab);
+			}
+		}
+
+		static bool tryAgain = false;
+		static float tryAgainTime = 0f;
+		static float tryAgainDuration = 0.25f;
+
+		public static void TryRegisterRecipes() {
+			if (ObjectDB.instance == null) return;
+
+			var wrongTime = (ObjectDB.instance?.m_items?.Count == 0);
+
+			if (!wrongTime) Log("TryRegisterRecipes (" + ObjectDB.instance?.m_items?.Count + " items in the database).");
+
+			var resources = new List<string>();
+			foreach (var data in runesData) {
+				foreach (var item in data.resources) {
+					if (!resources.Contains(item)) resources.Add(item);
+				}
+			}
+
+			var missing = new List<string>();
+
+			foreach (var value in resources) {
+				var parts = value.Split(':');
+				var item = parts[0];
+				var pref = ObjectDB.instance.GetItemPrefab(item);
+				if (pref == null) missing.Add(item);
+			}
+
+			if (missing.Count > 0) {
+				if (!wrongTime) Log("Some requeriments are not ready yet (" + string.Join(", ", missing) + "). Let's try again in few miliseconds...");
+				tryAgain = true;
+				tryAgainTime = 0f;
+				return;
+			} else {
+				Log("All requeriments are ready!");
+			}
+
+			TryRegisterItems();
+
+			PrefabCreator.Reset();
+			foreach (var data in runesData) {
+				var mats = new List<RecipeRequirementConfig>();
+
+				var min = data.rank - 3;
+				if (min < 0) min = 0;
+
+				for (var i = min; i < data.rank; i++) {
+					var value = data.resources[i];
+					var parts = value.Split(':');
+					var item = parts[0];
+					var amount = 1;
+					if (parts.Length == 2) amount = int.Parse(parts[1]);
+					mats.Add(new RecipeRequirementConfig { item = item, amount = amount });
+				}
+
+				data.recipe.craftingStation = null;
+
+				if (data.recipe.amount == 0) data.recipe.amount = runesConfig.defRecipes.amount;
+				if (data.recipe.minStationLevel == 0) data.recipe.minStationLevel = runesConfig.defRecipes.minStationLevel;
+				if (data.recipe.repairStation == "") data.recipe.repairStation = runesConfig.defRecipes.repairStation;
+
+				data.recipe.resources = mats;
+				data.recipe.enabled = true;
+
+				data.itemDrop.m_itemData.m_shared.m_name = data.name;
+				data.itemDrop.m_itemData.m_shared.m_description = data.description;
+				data.itemDrop.m_itemData.m_shared.m_maxStackSize = 100;
+				data.itemDrop.m_itemData.m_shared.m_weight = 0.1f;
+				PrefabCreator.AddNewRuneRecipe(data);
+				var rune = new Rune(data, null);
+				runes.Add(rune);
 			}
 		}
 
@@ -163,91 +293,6 @@ namespace RunicPower {
 			configHotkeysModifier = Config.Bind("HotkeysBar", "Modifier", KeyModifiers.SHIFT, "Key modifier to use the runes.");
 			// INTERFACE
 			configsCraftAllEnabled = Config.Bind("Interface", "Craft All", true, "Enables the 'Craft All' button on your crafting panel.");
-		}
-
-		private void OnDestroy() {
-			_harmony?.UnpatchAll();
-			foreach (var rune in runesData) Destroy(rune.prefab);
-			runesData.Clear();
-		}
-
-		public static void TryRegisterPrefabs(ZNetScene zNetScene) {
-			if (zNetScene == null) return;
-			foreach (var rune in runesData) zNetScene.m_prefabs.Add(rune.prefab);
-		}
-
-		public static void TryRegisterItems() {
-			foreach (var data in runesData) {
-				data.itemDrop = data.prefab.GetComponent<ItemDrop>();
-				if (data.itemDrop == null) {
-					Log("Failed to register item " + data.name + ". ItemDrop not found.");
-					continue;
-				}
-				if (ObjectDB.instance.GetItemPrefab(data.prefab.name.GetStableHashCode()) != null) {
-					Log("Failed to register item " + data.name + ". Prefab already exists.");
-					continue;
-				}
-
-				var itemDrop = data.itemDrop;
-				itemDrop.SetRuneData(data);
-				ObjectDB.instance.m_items.Add(data.prefab);
-			}
-		}
-
-		static bool tryAgain = false;
-		static float tryAgainTime = 0f;
-		static float tryAgainDuration = 0.25f;
-
-		public static void TryRegisterRecipes() {
-			if (ObjectDB.instance == null) return;
-
-			var wrongTime = (ObjectDB.instance?.m_items?.Count == 0);
-
-			if (!wrongTime) Log("TryRegisterRecipes (" + ObjectDB.instance?.m_items?.Count+" items in the database).");
-
-			var resources = new List<string>();
-			foreach (var data in runesData) {
-				foreach (var req in data.recipe.resources) {
-					if (!resources.Contains(req.item)) resources.Add(req.item);
-				}
-			}
-
-			var missing = new List<string>();
-
-			foreach (var item in resources) {
-				var pref = ObjectDB.instance.GetItemPrefab(item);
-				if (pref == null) missing.Add(item);
-			}
-
-			if (missing.Count > 0) {
-				if (!wrongTime) Log("Some requeriments are not ready yet ("+string.Join(", ",missing)+"). Let's try again in few miliseconds...");
-				tryAgain = true;
-				tryAgainTime = 0f;
-				return;
-			} else {
-				Log("All requeriments are ready!");
-			}
-
-			TryRegisterItems();
-
-			PrefabCreator.Reset();
-
-			foreach (var data in runesData) {
-				if (data.recipe.amount == 0) data.recipe.amount = runesConfig.defRecipes.amount;
-				if (data.recipe.craftingStation == "") data.recipe.craftingStation = runesConfig.defRecipes.craftingStation;
-				if (data.recipe.minStationLevel == 0) data.recipe.minStationLevel = runesConfig.defRecipes.minStationLevel;
-				if (data.recipe.repairStation == "") data.recipe.repairStation = runesConfig.defRecipes.repairStation;
-
-				data.recipe.enabled = true;
-				data.itemDrop.m_itemData.m_shared.m_name = data.name;
-				data.itemDrop.m_itemData.m_shared.m_description = data.description;
-				data.itemDrop.m_itemData.m_shared.m_maxStackSize = 100;
-				data.itemDrop.m_itemData.m_shared.m_weight = 0.1f;
-
-				PrefabCreator.AddNewRuneRecipe(data);
-				var rune = new Rune(data, null);
-				runes.Add(rune);
-			}
 		}
 		public static Rune GetStaticRune(RuneData data) {
 			var rune = runes.Find(r => r.data.name == data.name);

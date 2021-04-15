@@ -175,7 +175,8 @@ namespace RunicPower.Core {
 				if (complete) {
 					var level = Mathf.FloorToInt(GetSkill());
 					var extra = (level < 10) ? "-" : "";
-					text.AppendFormat("\n------ <color=orange>Level {0}</color> -------{1}\n", level, extra);
+					var max = GetMaxLevel();
+					text.AppendFormat("\n--- <color=orange>Level {0} / {2}</color> ----{1}\n", level, extra, max);
 				}
 
 				// REGEN
@@ -257,6 +258,10 @@ namespace RunicPower.Core {
 			return GetTooltip(null);
 		}
 
+		public int GetMaxLevel() {
+			return this.data.rank * 20;
+		}
+
 		// ================================================================
 		// SETTERS
 		// ================================================================
@@ -281,6 +286,8 @@ namespace RunicPower.Core {
 			if (caster == null) return 1;
 			float skill = GetSkillFactor() * 100f;
 			if (skill < 1) skill = 1;
+			var max = GetMaxLevel();
+			if (skill > max) skill = max;
 			return skill;
 		}
 
