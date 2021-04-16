@@ -27,16 +27,16 @@ namespace RunicPower {
 		}
 
 		public static Dictionary<string, ConsoleValue> vars = new Dictionary<string, ConsoleValue>() {
-			{  "x" , new ConsoleValue("25") },
-			{  "y" , new ConsoleValue("-22") },
-			{  "t" , new ConsoleValue("15") },
-			{  "ax" , new ConsoleValue("0,5") },
+			{  "x" , new ConsoleValue("7") },
+			{  "y" , new ConsoleValue("0") },
+			{  "t" , new ConsoleValue("0") },
+			{  "ax" , new ConsoleValue("0") },
 			{  "ay" , new ConsoleValue("0") },
-			{  "px" , new ConsoleValue("0,5") },
+			{  "px" , new ConsoleValue("0") },
 			{  "py" , new ConsoleValue("0") },
-			{  "s" , new ConsoleValue("20") },
-			{  "w" , new ConsoleValue("643") },
-			{  "h" , new ConsoleValue("88") },
+			{  "s" , new ConsoleValue("0") },
+			{  "w" , new ConsoleValue("50") },
+			{  "h" , new ConsoleValue("0") },
 		};
 
 		static bool Prefix(Console __instance) {
@@ -142,6 +142,16 @@ namespace RunicPower {
 				if (cmd == "craftall") {
 					RunicPower.configsCraftAllEnabled.Value = cvalue.boolvalue;
 					RunicPower.Log("INTERFACE.CRAFTALL config changed to " + cvalue.boolvalue);
+				}
+
+				if (cmd == "rankx") {
+					RunicPower.configRanksOffsetX.Value = cvalue.intvalue;
+					RunicPower.Log("RANKS.OFFSETX config changed to " + cvalue.intvalue);
+				}
+
+				if (cmd == "ranky") {
+					RunicPower.configRanksOffsetY.Value = cvalue.intvalue;
+					RunicPower.Log("RANKS.OFFSETY config changed to " + cvalue.intvalue);
 				}
 
 				// ===== DEBUG ==================================================

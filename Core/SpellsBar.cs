@@ -223,8 +223,6 @@ namespace RunicPower.Core {
                         var go = Object.Instantiate(bind);
                         go.transform.SetParent(bind.parent.transform, false);
 
-                        var vars = Console_InputText_Patch.vars;
-
                         var cooldownText = go.GetComponent<Text>();
                         cooldownText.text = "";
                         cooldownText.fontSize = 25;
@@ -360,8 +358,6 @@ namespace RunicPower.Core {
                     var cfgScale = RunicPower.configHotkeysScale.Value / 100f;
                     var scale = new Vector3(cfgScale, cfgScale, cfgScale);
                     goRect.localScale = scale;
-
-                    var vars = Console_InputText_Patch.vars;
 
                     goRect.anchorMin = new Vector2(0.5f, 0f);
                     goRect.anchorMax = new Vector2(0.5f, 0f);

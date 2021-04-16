@@ -52,8 +52,9 @@ using UnityEngine.UI;
 
 /* [1.4]
  * - Implementing ranks for spells.
- *
 */
+
+// TODO: make cooldowns appear on the inventory itself.
 
 // TODO: INTEGRATION? equip wheel considering runes as consumables (which they are)
 
@@ -88,15 +89,15 @@ namespace RunicPower {
 			SpellsBar.RegisterKeybinds();
 		}
 
-		private void LoadRunes() {
-
-			var rank2rank = new Dictionary<int, string> {
+		public static Dictionary<int, string> rank2rank = new Dictionary<int, string> {
 				{1, "I"},
 				{2, "II"},
 				{3, "III"},
 				{4, "IV"},
 				{5, "V"},
 			};
+
+		private void LoadRunes() {
 
 			for (var i = 1; i <= 5; i++) {
 				runesConfig = PrefabCreator.LoadJsonFile<RunesConfig>("runes.json");
@@ -273,6 +274,8 @@ namespace RunicPower {
 		public static ConfigEntry<KeyModifiers> configHotkeysModifier;
 		// INTERFACE
 		public static ConfigEntry<bool> configsCraftAllEnabled;
+		public static ConfigEntry<int> configRanksOffsetX;
+		public static ConfigEntry<int> configRanksOffsetY;
 
 		private void SetupConfig() {
 			Config.Bind("General", "NexusID", 840, "NexusMods ID for updates.");
@@ -293,6 +296,8 @@ namespace RunicPower {
 			configHotkeysModifier = Config.Bind("HotkeysBar", "Modifier", KeyModifiers.SHIFT, "Key modifier to use the runes.");
 			// INTERFACE
 			configsCraftAllEnabled = Config.Bind("Interface", "Craft All", true, "Enables the 'Craft All' button on your crafting panel.");
+			configRanksOffsetX = Config.Bind("Interface", "RanksX", 0, "Adjust the rank's buttons horizontal position (left/right).");
+			configRanksOffsetY = Config.Bind("Interface", "RanksY", 0, "Adjust the rank's buttons vertical position (down/up).");
 		}
 		public static Rune GetStaticRune(RuneData data) {
 			var rune = runes.Find(r => r.data.name == data.name);
@@ -344,8 +349,6 @@ namespace RunicPower {
 			craftAllgo.transform.SetParent(craftButton.transform.parent, false);
 			craftAllgo.name = name;
 
-			var vars = Console_InputText_Patch.vars;
-
 			var position = craftAllgo.transform.position;
 			position.x += 0f;
 			position.y += -60f;
@@ -367,6 +370,64 @@ namespace RunicPower {
 			craftAllText.fontSize = 20;
 
 			craftAllgo.GetComponent<UITooltip>().m_text = "";
+		}
+
+		public static Dictionary<int, Button> rankButtons = new Dictionary<int, Button>();
+
+		public static void CreateRankTabs(InventoryGui gui) {
+			Log("CreateRankTabs");
+			if (gui == null) gui = InventoryGui.instance;
+
+			var vars = Console_InputText_Patch.vars;
+
+			var offsetx = configRanksOffsetX.Value;
+			var offsety = configRanksOffsetY.Value;
+
+			var posbase = gui.m_tabUpgrade.GetComponent<RectTransform>().anchoredPosition;
+			Log("posbase " + posbase);
+
+			for (var rank = 1; rank <= 5; rank++) {
+				Button TabButton;
+
+				if (rankButtons.ContainsKey(rank)) {
+					Log("update" + rank);
+
+					var button = rankButtons[rank];
+					var go = button.gameObject;
+					TabButton = go.GetComponent<Button>();
+
+				} else {
+					Log("create" + rank);
+					var button = Instantiate(gui.m_tabUpgrade, gui.m_tabUpgrade.transform.parent, true);
+					rankButtons[rank] = button;
+
+					var go = button.gameObject;
+
+					go.name = "craftRank" + rank;
+					go.GetComponentInChildren<Text>().text = rank2rank[rank];
+
+					go.transform.SetSiblingIndex(gui.m_tabUpgrade.transform.parent.childCount - 2);
+
+					TabButton = go.GetComponent<Button>();
+					TabButton.onClick = new Button.ButtonClickedEvent();
+					TabButton.onClick.AddListener(TabButton.GetComponent<ButtonSfx>().OnClick);
+					TabButton.onClick.AddListener(() => onTabPressed());
+				}
+
+				var posx = 140;
+				var width = 35;
+				var padleft = 0;
+
+				var rect = TabButton.gameObject.GetComponent<RectTransform>();
+				rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+
+				var basex = (width + padleft);
+				rect.anchoredPosition = posbase + new Vector2(posx + basex * (rank + 1) + offsetx, 0 + offsety);
+			}
+		}
+
+		public static void onTabPressed() {
+			Log("ON TAB PRESSED");
 		}
 
 		public static void OnClickCraftAllButton() {
@@ -407,6 +468,7 @@ namespace RunicPower {
 			if (!configCooldownsEnabled.Value) activeCooldowns.Clear();
 			SpellsBar.RegisterKeybinds();
 			CreateCraftAllButton(null);
+			CreateRankTabs(null);
 			SpellsBar.ClearBindings();
 			SpellsBar.CreateHotkeysBar(null);
 			SpellsBar.CreateInventoryBar(null);

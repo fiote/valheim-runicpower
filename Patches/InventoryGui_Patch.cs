@@ -15,6 +15,7 @@ namespace RunicPower.Patches {
         public static void Postfix(InventoryGui __instance) {
             SpellsBar.CreateInventoryBar(__instance);
             RunicPower.CreateCraftAllButton(__instance);
+            RunicPower.CreateRankTabs(__instance);
         }
     }
 
