@@ -27,14 +27,18 @@ namespace RunicPower {
 		}
 
 		public static Dictionary<string, ConsoleValue> vars = new Dictionary<string, ConsoleValue>() {
-			{  "x" , new ConsoleValue("7") },
-			{  "y" , new ConsoleValue("0") },
-			{  "t" , new ConsoleValue("0") },
+			{  "x1" , new ConsoleValue("0,5") },
+			{  "y1" , new ConsoleValue("0,5") },
+			{  "x2" , new ConsoleValue("0,5") },
+			{  "y2" , new ConsoleValue("0,5") },
+
+			{  "t" , new ConsoleValue("IV") },
+			{  "s" , new ConsoleValue("15") },
+
 			{  "ax" , new ConsoleValue("0") },
 			{  "ay" , new ConsoleValue("0") },
 			{  "px" , new ConsoleValue("0") },
 			{  "py" , new ConsoleValue("0") },
-			{  "s" , new ConsoleValue("0") },
 			{  "w" , new ConsoleValue("50") },
 			{  "h" , new ConsoleValue("0") },
 		};
@@ -142,6 +146,11 @@ namespace RunicPower {
 				if (cmd == "craftall") {
 					RunicPower.configsCraftAllEnabled.Value = cvalue.boolvalue;
 					RunicPower.Log("INTERFACE.CRAFTALL config changed to " + cvalue.boolvalue);
+				}
+
+				if (cmd == "ranktabs") {
+					RunicPower.configRanksTabEnabled.Value = cvalue.boolvalue;
+					RunicPower.Log("INTERFACE.RANKTABS config changed to " + cvalue.boolvalue);
 				}
 
 				if (cmd == "rankx") {
