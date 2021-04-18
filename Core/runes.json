@@ -325,7 +325,7 @@
                 "amount": 1
             },
             "resources": [
-                "Dandelion:3",
+                "Dandelion",
                 "Blueberries",
                 "Entrails",
                 "WolfPelt",
@@ -357,7 +357,7 @@
                 "amount": 1
             },
             "resources": [
-                "RawMeat",
+                "Dandelion",
                 "Blueberries",
                 "Entrails",
                 "WolfPelt",
@@ -391,7 +391,7 @@
                 "amount": 1
             },
             "resources": [
-                "RawMeat",
+                "Dandelion",
                 "Blueberries",
                 "Entrails",
                 "WolfPelt",
@@ -416,7 +416,7 @@
                 "amount":  1
             },
             "resources": [
-                "RawMeat",
+                "Dandelion",
                 "Blueberries",
                 "Entrails",
                 "WolfPelt",
