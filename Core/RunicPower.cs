@@ -52,6 +52,10 @@ using UnityEngine.UI;
 
 /* [1.4]
  * - Implementing "Ranks" for spells.
+ * - Adding rank tabs.
+ * - Fixing tooltip position when it's on the lower part of the screen.
+ * - Adding CONGIFs for ranktab, rankx, ranky.
+ * - Recreating the mod's game objects when the game's scale changes.
 */
 
 // TODO: make cooldowns appear on the inventory itself.
@@ -64,7 +68,7 @@ using UnityEngine.UI;
 // MAYBE: ranks for recall rune. Better recalls allow to teleport with better ores.
 
 namespace RunicPower {
-	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "1.3")]
+	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "1.4")]
 	[BepInDependency("com.pipakin.SkillInjectorMod")]
 	[BepInDependency("randyknapp.mods.extendeditemdataframework")]
 
