@@ -51,7 +51,7 @@ using UnityEngine.UI;
 */
 
 /* [1.4]
- * - Implementing ranks for spells.
+ * - Implementing "Ranks" for spells.
 */
 
 // TODO: make cooldowns appear on the inventory itself.
@@ -274,6 +274,7 @@ namespace RunicPower {
 		public static ConfigEntry<KeyModifiers> configHotkeysModifier;
 		// INTERFACE
 		public static ConfigEntry<bool> configsCraftAllEnabled;
+		public static ConfigEntry<bool> configRanksTabEnabled;
 		public static ConfigEntry<int> configRanksOffsetX;
 		public static ConfigEntry<int> configRanksOffsetY;
 
@@ -296,6 +297,7 @@ namespace RunicPower {
 			configHotkeysModifier = Config.Bind("HotkeysBar", "Modifier", KeyModifiers.SHIFT, "Key modifier to use the runes.");
 			// INTERFACE
 			configsCraftAllEnabled = Config.Bind("Interface", "Craft All", true, "Enables the 'Craft All' button on your crafting panel.");
+			configRanksTabEnabled = Config.Bind("Interface", "Rank Tabs", true, "Enables the 'Rank Tab's on your crafting panel.");
 			configRanksOffsetX = Config.Bind("Interface", "RanksX", 0, "Adjust the rank's buttons horizontal position (left/right).");
 			configRanksOffsetY = Config.Bind("Interface", "RanksY", 0, "Adjust the rank's buttons vertical position (down/up).");
 		}
@@ -336,7 +338,8 @@ namespace RunicPower {
 		public static void CreateCraftAllButton(InventoryGui gui) {
 			if (gui == null) gui = InventoryGui.instance;
 
-			var craftButton = gui.m_craftButton.gameObject;
+			var craftButton = gui?.m_craftButton?.gameObject;
+			if (craftButton == null) return;
 			var name = "runicPowerCraftAllButton";
 
 			if (craftAllgo != null) Destroy(craftAllgo);
@@ -375,59 +378,102 @@ namespace RunicPower {
 		public static Dictionary<int, Button> rankButtons = new Dictionary<int, Button>();
 
 		public static void CreateRankTabs(InventoryGui gui) {
-			Log("CreateRankTabs");
 			if (gui == null) gui = InventoryGui.instance;
 
-			var vars = Console_InputText_Patch.vars;
+			var parent = gui?.m_tabUpgrade?.transform?.parent;
+			if (parent == null) return;
+
+			var enabled = configRanksTabEnabled.Value;
+
+			for (var rank = 1; rank <= 5; rank++) {
+				if (enabled) {
+					CreateRankTab(gui, rank);
+				} else {
+					DeleteRankTab(gui, rank);
+				}
+			}
+
+			onTabPressed(0, true);
+		}
+
+		public static void DeleteRankTab(InventoryGui gui, int rank) {
+			if (rankButtons.ContainsKey(rank)) {
+				var button = rankButtons[rank];
+				Destroy(button.gameObject);
+				rankButtons.Remove(rank);
+			}
+		}
+
+		public static void CreateRankTab(InventoryGui gui, int rank) {
+			Button button;
 
 			var offsetx = configRanksOffsetX.Value;
 			var offsety = configRanksOffsetY.Value;
 
 			var posbase = gui.m_tabUpgrade.GetComponent<RectTransform>().anchoredPosition;
-			Log("posbase " + posbase);
+
+
+			if (rankButtons.ContainsKey(rank)) {
+				button = rankButtons[rank];
+				var go = button.gameObject;
+			} else {
+				button = Instantiate(gui.m_tabUpgrade, gui.m_tabUpgrade.transform.parent, true);
+				rankButtons[rank] = button;
+
+				var go = button.gameObject;
+
+				go.name = "craftRank" + rank;
+				go.GetComponentInChildren<Text>().text = rank2rank[rank];
+
+				go.transform.SetSiblingIndex(gui.m_tabUpgrade.transform.parent.childCount - 2);
+
+				button.onClick = new Button.ButtonClickedEvent();
+				button.onClick.AddListener(button.GetComponent<ButtonSfx>().OnClick);
+				button.onClick.AddListener(() => onTabPressed(rank, true));
+			}
+
+			var posx = 140;
+			var width = 35;
+			var padleft = 0;
+
+			var rect = button.gameObject.GetComponent<RectTransform>();
+			rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+
+			var basex = (width + padleft);
+			rect.anchoredPosition = posbase + new Vector2(posx + basex * (rank + 1) + offsetx, 0 + offsety);
+		}
+
+		public static int craftRank = 0;
+
+		public static void onTabPressed(int selected, Boolean doUpgrade) {
+			if (!configRanksTabEnabled.Value) return;
+
+			var gui = InventoryGui.instance;
+			craftRank = (selected == craftRank) ? 0 : selected;
 
 			for (var rank = 1; rank <= 5; rank++) {
-				Button TabButton;
-
 				if (rankButtons.ContainsKey(rank)) {
-					Log("update" + rank);
-
 					var button = rankButtons[rank];
-					var go = button.gameObject;
-					TabButton = go.GetComponent<Button>();
-
-				} else {
-					Log("create" + rank);
-					var button = Instantiate(gui.m_tabUpgrade, gui.m_tabUpgrade.transform.parent, true);
-					rankButtons[rank] = button;
-
-					var go = button.gameObject;
-
-					go.name = "craftRank" + rank;
-					go.GetComponentInChildren<Text>().text = rank2rank[rank];
-
-					go.transform.SetSiblingIndex(gui.m_tabUpgrade.transform.parent.childCount - 2);
-
-					TabButton = go.GetComponent<Button>();
-					TabButton.onClick = new Button.ButtonClickedEvent();
-					TabButton.onClick.AddListener(TabButton.GetComponent<ButtonSfx>().OnClick);
-					TabButton.onClick.AddListener(() => onTabPressed());
+					((Selectable)button).interactable = (rank != craftRank);
 				}
+			}
 
-				var posx = 140;
-				var width = 35;
-				var padleft = 0;
-
-				var rect = TabButton.gameObject.GetComponent<RectTransform>();
-				rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
-
-				var basex = (width + padleft);
-				rect.anchoredPosition = posbase + new Vector2(posx + basex * (rank + 1) + offsetx, 0 + offsety);
+			if (doUpgrade) {
+				try {
+					gui.UpdateCraftingPanel(true);
+				} catch {
+				};
 			}
 		}
 
-		public static void onTabPressed() {
-			Log("ON TAB PRESSED");
+		public static void UpdateVisibilityRankTabs() {
+			if (!configRanksTabEnabled.Value) return;
+
+			var active = (Player.m_localPlayer.GetCurrentCraftingStation() == null);
+			for (var rank = 1; rank <= 5; rank++) {
+				var button = rankButtons[rank];
+				button.gameObject.SetActive(active);
+			}
 		}
 
 		public static void OnClickCraftAllButton() {
@@ -479,7 +525,7 @@ namespace RunicPower {
 		public static void AddCooldown(string name, int cooldown) {
 			if (!configCooldownsEnabled.Value) return;
 			activeCooldowns.Add(name, cooldown);
-			SpellsBar.SetCooldownText(name, cooldown);
+			SpellsBar.SetExtraTexts(name, cooldown);
 		}
 
 		public static int GetCooldown(RuneData data) {
@@ -517,9 +563,9 @@ namespace RunicPower {
 
 					if (cd > 0) {
 						newCooldowns[key] = cd;
-						SpellsBar.SetCooldownText(key, cd);
+						SpellsBar.SetExtraTexts(key, cd);
 					} else {
-						SpellsBar.SetCooldownText(key, 0);
+						SpellsBar.SetExtraTexts(key, 0);
 					}
 				}
 

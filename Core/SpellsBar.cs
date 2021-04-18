@@ -129,7 +129,7 @@ namespace RunicPower.Core {
         public static void UpdateInventory() {
             UpdateGrid(invBarGrid);
             UpdateGrid(hotkeysGrid);
-            UpdateCooldowns();
+            UpdateExtraTexts();
         }
         
         public static void ClearBindings() {
@@ -137,40 +137,51 @@ namespace RunicPower.Core {
             mapCooldownText.Clear();
 		}
 
-        public static void UpdateCooldowns() {
+        public static void UpdateExtraTexts() {
             for (var i = 0; i < slotCount; ++i) {
                 var spell = invBarGrid?.m_inventory?.GetItemAt(i, 0);
-                var name = spell?.GetRuneData()?.name;
-                var value = 0;
-                var got = (name == null) ? false : RunicPower.activeCooldowns?.TryGetValue(name, out value);
-                if (got != true) value = 0;
-                SetCooldownText(i, value);
+                var data = spell?.GetRuneData();
+                var name = data?.name;
+                var rank = data?.rank ?? 0;
+                var cooldown = 0;
+                var got = (name == null) ? false : RunicPower.activeCooldowns?.TryGetValue(name, out cooldown);
+                if (got != true) cooldown = 0;
+                SetExtraTexts(i, rank, cooldown);
             }
         }
 
-        public static Dictionary<string, Text> mapBindingText = new Dictionary<string, Text>();
-        public static Dictionary<string, Text> mapCooldownText = new Dictionary<string, Text>();
-
-        public static void SetCooldownText(int index, int value) {
-            SetCooldownText(hotkeysGrid, index, value);
-            SetCooldownText(invBarGrid, index, value);
+        public static void SetExtraTexts(int index, int rank, int cooldown) {
+            SetExtraTexts(hotkeysGrid, index, rank, cooldown);
+            SetExtraTexts(invBarGrid, index, rank, cooldown);
         }
-        public static void SetCooldownText(InventoryGrid grid, int index, int value) {
+
+        public static void SetExtraTexts(string name, int cooldown) {
+            for (var i = 0; i < slotCount; ++i) {
+                var spell = invBarGrid?.m_inventory?.GetItemAt(i, 0);
+                var data = spell?.GetRuneData();
+                if (data?.name == name) SetExtraTexts(i, data.rank, cooldown);
+            }
+        }
+
+        public static void SetExtraTexts(InventoryGrid grid, int index, int rank, int cooldown) {
             if (grid == null) return;
             var key = grid.name + ":" + index;
 
             if (!mapCooldownText.ContainsKey(key)) return;
+            if (!mapRankText.ContainsKey(key)) return;
             if (!mapBindingText.ContainsKey(key)) return;
 
             var cooldownText = mapCooldownText[key];
+            var rankText = mapRankText[key];
             var bindingText = mapBindingText[key];
-            if (value > 0) {
-                var dsvalue = value.ToString();
+
+            if (cooldown > 0) {
+                var dsvalue = cooldown.ToString();
                 var fontSize = 30;
 
-                if (value >= 60) {
-                    var mins = Mathf.Floor(value / 60f);
-                    var secs = value - mins * 60;
+                if (cooldown >= 60) {
+                    var mins = Mathf.Floor(cooldown / 60f);
+                    var secs = cooldown - mins * 60;
                     var dssecs = secs.ToString();
                     if (secs < 10) dssecs = '0' + dssecs;
                     dsvalue = mins.ToString() + ":" + dssecs;
@@ -180,20 +191,23 @@ namespace RunicPower.Core {
                 cooldownText.gameObject.SetActive(true);
                 cooldownText.text = dsvalue;
                 cooldownText.fontSize = fontSize;
-
                 bindingText.gameObject.SetActive(false);
             } else {
                 cooldownText.gameObject.SetActive(false);
                 bindingText.gameObject.SetActive(true);
             }
+
+            if (rank > 0) {
+                rankText.text = RunicPower.rank2rank[rank];
+			} else {
+                rankText.text = "";
+			}
         }
 
-        public static void SetCooldownText(string name, int value) {
-            for (var i = 0; i < slotCount; ++i) {
-                var spell = invBarGrid?.m_inventory?.GetItemAt(i, 0);
-                if (spell?.GetRuneData().name == name) SetCooldownText(i, value);
-            }
-        }
+
+        public static Dictionary<string, Text> mapBindingText = new Dictionary<string, Text>();
+        public static Dictionary<string, Text> mapRankText = new Dictionary<string, Text>();
+        public static Dictionary<string, Text> mapCooldownText = new Dictionary<string, Text>();
 
         public static void UpdateGrid(InventoryGrid grid) {
             var player = Player.m_localPlayer;
@@ -205,37 +219,46 @@ namespace RunicPower.Core {
 
             try {
                 grid?.UpdateInventory(inv, player, invGui?.m_dragItem);
+
                 for (var i = 0; i < slotCount; ++i) {
                     var key = grid.name + ":" + i;
 
                     Text bindingText;
+                    Text rankText;
 
                     if (mapBindingText.ContainsKey(key)) {
                         bindingText = mapBindingText[key];
+                        rankText = mapRankText[key];
                     } else {
+                        // BINDING
                         var bind = grid.m_elements[i].m_go.transform.Find("binding");
                         bindingText = bind.GetComponent<Text>();
                         bindingText.enabled = true;
                         bindingText.horizontalOverflow = HorizontalWrapMode.Overflow;
                         bindingText.fontSize = 15;
                         mapBindingText[key] = bindingText;
-
+                        // COOLDOWN
                         var go = Object.Instantiate(bind);
                         go.transform.SetParent(bind.parent.transform, false);
-
                         var cooldownText = go.GetComponent<Text>();
                         cooldownText.text = "";
                         cooldownText.fontSize = 25;
                         cooldownText.alignByGeometry = false;
                         cooldownText.alignment = TextAnchor.MiddleCenter;
                         cooldownText.color = Color.red;
-
-                        var pos = go.transform.position;
-                        pos.x += 25;
-                        pos.y += -22;
-                        go.transform.position = pos;
-
+                        go.transform.position += new Vector3(25, -22, 0);
                         mapCooldownText[key] = cooldownText;
+                        // RANK
+                        go = Object.Instantiate(bind);
+                        go.transform.SetParent(bind.parent.transform, false);
+                        rankText = go.GetComponent<Text>();
+                        rankText.text = "";
+                        rankText.fontSize = 15;
+                        rankText.alignByGeometry = false;
+                        rankText.alignment = TextAnchor.MiddleCenter;
+                        rankText.color = Color.yellow;
+                        go.transform.position += new Vector3(0, -22, 0);
+                        mapRankText[key] = rankText;
                     }
 
                     bindingText.text = GetBindingLabel(i);
@@ -248,15 +271,23 @@ namespace RunicPower.Core {
         public static void CreateHotkeysBar(Hud hud) {
             ClearBindings();
             if (hud == null) hud = Hud.instance;
-            var parent = hud.m_rootObject;
-            var inventoryGui = InventoryGui.instance;
-            hotkeysRect = CreateGameObject(ref hotkeysGrid, inventoryGui, parent, spellsBarHotkeysName, GOTypes.HOTKEYS, barSize);
+            
+            var parent = hud?.m_rootObject;
+            if (parent == null) return;
+            
+            var gui = InventoryGui.instance;
+            if (gui == null) return;
+            
+            hotkeysRect = CreateGameObject(ref hotkeysGrid, gui, parent, spellsBarHotkeysName, GOTypes.HOTKEYS, barSize);
         }
 
         public static void CreateInventoryBar(InventoryGui gui) {
             ClearBindings();
             if (gui == null) gui = InventoryGui.instance;
+            
             var parent = gui?.m_player?.gameObject;
+            if (parent == null) return;
+
             var name = spellsBarGridName;
             invBarRect = CreateGameObject(ref invBarGrid, gui, parent, name, GOTypes.INVENTORY, barSize);
         }

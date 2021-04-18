@@ -259,7 +259,7 @@ namespace RunicPower.Core {
 		}
 
 		public int GetMaxLevel() {
-			return this.data.rank * 20;
+			return data.rank * 20;
 		}
 
 		// ================================================================
@@ -767,7 +767,7 @@ namespace RunicPower.Core {
 
 			// getting the archetype skill Id and adding experience to it
 			if (data.archetype != "Generic") {
-				AddExperience(1f);
+				AddExperience(data.rank);
 				RunicPower.ClearCache();
 			}
 
