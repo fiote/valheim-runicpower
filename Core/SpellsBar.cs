@@ -26,6 +26,7 @@ namespace RunicPower.Core {
     }
 
 	public class SpellsBar {
+
 		public const int slotCount = 10;
         public static Vector2 barSize = new Vector2((74 * slotCount) + 10, 90);
 
@@ -39,6 +40,12 @@ namespace RunicPower.Core {
         public static RectTransform invBarRect;
         public static RectTransform hotkeysRect;
 
+        public static Dictionary<string, Text> mapBindingText = new Dictionary<string, Text>();
+        public static Dictionary<string, Text> mapRankText = new Dictionary<string, Text>();
+        public static Dictionary<string, Text> mapCooldownText = new Dictionary<string, Text>();
+
+        public static bool isVisible = false;
+
         public static Dictionary<RunicPower.KeyModifiers, KeyCode> mod2key = new Dictionary<RunicPower.KeyModifiers, KeyCode> {
             { RunicPower.KeyModifiers.ALT, KeyCode.LeftAlt },
             { RunicPower.KeyModifiers.CTRL, KeyCode.LeftControl },
@@ -50,6 +57,21 @@ namespace RunicPower.Core {
             { RunicPower.KeyModifiers.CTRL, KeyCode.RightControl },
             { RunicPower.KeyModifiers.SHIFT, KeyCode.RightShift },
         };
+        public enum GOTypes {
+            INVENTORY,
+            HOTKEYS
+        }
+
+        public static void UnsetMostThings() {
+            invBarGrid = null;
+            hotkeysGrid = null;
+            invBarRect = null;
+            hotkeysRect = null;
+            mapBindingText = new Dictionary<string, Text>();
+            mapRankText = new Dictionary<string, Text>();
+            mapCooldownText = new Dictionary<string, Text>();
+            isVisible = false;
+        }
 
         public static void RegisterKeybinds() {
             shortcuts.Clear();
@@ -105,8 +127,6 @@ namespace RunicPower.Core {
             if (item != null) player.UseRuneFromSpellBar(item);
         }
 
-        public static bool isVisible = false;
-
         public static void UpdateVisibility() {
             if (hotkeysRect == null) return;
 
@@ -131,7 +151,7 @@ namespace RunicPower.Core {
             UpdateGrid(hotkeysGrid);
             UpdateExtraTexts();
         }
-        
+
         public static void ClearBindings() {
             mapBindingText.Clear();
             mapCooldownText.Clear();
@@ -204,11 +224,6 @@ namespace RunicPower.Core {
 			}
         }
 
-
-        public static Dictionary<string, Text> mapBindingText = new Dictionary<string, Text>();
-        public static Dictionary<string, Text> mapRankText = new Dictionary<string, Text>();
-        public static Dictionary<string, Text> mapCooldownText = new Dictionary<string, Text>();
-
         public static void UpdateGrid(InventoryGrid grid) {
             var player = Player.m_localPlayer;
             if (player == null) return;
@@ -271,31 +286,26 @@ namespace RunicPower.Core {
         public static void CreateHotkeysBar(Hud hud) {
             ClearBindings();
             if (hud == null) hud = Hud.instance;
-            
+
             var parent = hud?.m_rootObject;
             if (parent == null) return;
-            
+
             var gui = InventoryGui.instance;
             if (gui == null) return;
-            
+
             hotkeysRect = CreateGameObject(ref hotkeysGrid, gui, parent, spellsBarHotkeysName, GOTypes.HOTKEYS, barSize);
         }
 
         public static void CreateInventoryBar(InventoryGui gui) {
             ClearBindings();
             if (gui == null) gui = InventoryGui.instance;
-            
+
             var parent = gui?.m_player?.gameObject;
             if (parent == null) return;
 
             var name = spellsBarGridName;
             invBarRect = CreateGameObject(ref invBarGrid, gui, parent, name, GOTypes.INVENTORY, barSize);
         }
-
-        public enum GOTypes {
-            INVENTORY,
-            HOTKEYS
-		}
 
         public static RectTransform CreateGameObject(ref InventoryGrid grid, InventoryGui inventoryGui, GameObject parent, string name, GOTypes type, Vector2 size) {
             if (grid != null) {
@@ -381,11 +391,11 @@ namespace RunicPower.Core {
 
                 position.x -= ((size.x - 107) / 2) * cfgScale;
                 goRect.anchoredPosition = position;
-            } else { 
+            } else {
                 if (RunicPower.configInvBarPosition.Value == RunicPower.InvBarPosition.TOP) {
                     var position = new Vector2(1000, 103);
                     goRect.anchoredPosition = position;
-                } else { 
+                } else {
                     var cfgScale = RunicPower.configHotkeysScale.Value / 100f;
                     var scale = new Vector3(cfgScale, cfgScale, cfgScale);
                     goRect.localScale = scale;
@@ -404,7 +414,7 @@ namespace RunicPower.Core {
                     var position = new Vector2(x, y);
 
                     goRect.anchoredPosition = position;
-                } 
+                }
             }
 
             return goRect;

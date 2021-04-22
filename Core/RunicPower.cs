@@ -58,34 +58,71 @@ using UnityEngine.UI;
  * - Recreating the mod's game objects when the game's scale changes.
 */
 
+/* [1.4.1]
+ * - Disabling debug mode (lol sorry).
+*/
+
+/* [1.4.2]
+ * - Fixing CreateRankTab exception when relogging ingame.
+*/
+
+
+// BUG: when crafting runes, a new rune is being "spawned" at the game starting location.
+// BUG: check invbar position on 2560x1080 (100%).
+// BUG: check different rank stacking buffs.
+// BUG: check nullreferenceException on CreateRankTab
+
 // TODO: make cooldowns appear on the inventory itself.
 
 // TODO: INTEGRATION? equip wheel considering runes as consumables (which they are)
 
 // MAYBE: change how crafting works. Instead of different items, just use a single 'currency' that would be the result of desenchanting items or something like that.
-// MAYBE: change how crafting works. Rune material would increase as the rune get stronger.
 // MAYBE: change how casting works. Instead of consuming runes, use of kind of MANA resource.
 // MAYBE: ranks for recall rune. Better recalls allow to teleport with better ores.
 
 namespace RunicPower {
-	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "1.4")]
+	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "1.4.1")]
 	[BepInDependency("com.pipakin.SkillInjectorMod")]
 	[BepInDependency("randyknapp.mods.extendeditemdataframework")]
 
 	public class RunicPower : BaseUnityPlugin {
+		// core stuff
 		private Harmony _harmony;
 		public static bool debug = true;
-
 		public static RunesConfig runesConfig;
+		public static ConfigFile configFile;
 		public static List<Rune> runes = new List<Rune>();
 		public static List<RuneData> runesData = new List<RuneData>();
 		public static List<ClassSkill> listofCSkills = new List<ClassSkill>();
 
-		public static ConfigFile configFile;
+		// mod stuff
+		public static Dictionary<int, Button> rankButtons;
+		public static Dictionary<string, int> activeCooldowns;
+		static bool tryAgain;
+		static float tryAgainTime;
+		static float tryAgainDuration;
 
-		public static Dictionary<string, int> activeCooldowns = new Dictionary<string, int>();
+		public static GameObject craftAllgo;
+		public static Button craftAllButton;
+		public static Text craftAllText;
+		public static bool isCraftingAll;
+
+		public static int craftRank;
+		public static RunicPower _this;
+
+		float tickCooldown;
+
+		public static Dictionary<int, string> rank2rank = new Dictionary<int, string> {
+			{1, "I"},
+			{2, "II"},
+			{3, "III"},
+			{4, "IV"},
+			{5, "V"},
+		};
 
 		private void Awake() {
+			_this = this;
+			UnsetMostThings();
 			LoadRunes();
 			LoadClasses();
 			SetupConfig();
@@ -93,16 +130,20 @@ namespace RunicPower {
 			SpellsBar.RegisterKeybinds();
 		}
 
-		public static Dictionary<int, string> rank2rank = new Dictionary<int, string> {
-				{1, "I"},
-				{2, "II"},
-				{3, "III"},
-				{4, "IV"},
-				{5, "V"},
-			};
+
+		public static void UnsetMostThings() {
+			activeCooldowns = new Dictionary<string, int>();
+			rankButtons = new Dictionary<int, Button>();
+			tryAgain = false;
+			tryAgainTime = 0f;
+			tryAgainDuration = 0.25f;
+			isCraftingAll = false;
+			craftRank = 0;
+			if (_this != null) _this.tickCooldown = 0f;
+			SpellsBar.UnsetMostThings();
+		}
 
 		private void LoadRunes() {
-
 			for (var i = 1; i <= 5; i++) {
 				runesConfig = PrefabCreator.LoadJsonFile<RunesConfig>("runes.json");
 				var assetBundle = PrefabCreator.LoadAssetBundle("runeassets");
@@ -145,6 +186,7 @@ namespace RunicPower {
 		private void OnDestroy() {
 			_harmony?.UnpatchAll();
 			foreach (var rune in runesData) Destroy(rune.prefab);
+			UnsetMostThings();
 			runesData.Clear();
 		}
 
@@ -170,10 +212,6 @@ namespace RunicPower {
 				ObjectDB.instance.m_items.Add(data.prefab);
 			}
 		}
-
-		static bool tryAgain = false;
-		static float tryAgainTime = 0f;
-		static float tryAgainDuration = 0.25f;
 
 		public static void TryRegisterRecipes() {
 			if (ObjectDB.instance == null) return;
@@ -334,11 +372,6 @@ namespace RunicPower {
 			if (debug) Log(message);
 		}
 
-		public static GameObject craftAllgo;
-		public static Button craftAllButton;
-		public static Text craftAllText;
-		public static bool isCraftingAll = false;
-
 		public static void CreateCraftAllButton(InventoryGui gui) {
 			if (gui == null) gui = InventoryGui.instance;
 
@@ -379,8 +412,6 @@ namespace RunicPower {
 			craftAllgo.GetComponent<UITooltip>().m_text = "";
 		}
 
-		public static Dictionary<int, Button> rankButtons = new Dictionary<int, Button>();
-
 		public static void CreateRankTabs(InventoryGui gui) {
 			if (gui == null) gui = InventoryGui.instance;
 
@@ -414,6 +445,7 @@ namespace RunicPower {
 			var offsetx = configRanksOffsetX.Value;
 			var offsety = configRanksOffsetY.Value;
 
+			if (gui?.m_tabUpgrade == null) return;
 			var posbase = gui.m_tabUpgrade.GetComponent<RectTransform>().anchoredPosition;
 
 
@@ -446,8 +478,6 @@ namespace RunicPower {
 			var basex = (width + padleft);
 			rect.anchoredPosition = posbase + new Vector2(posx + basex * (rank + 1) + offsetx, 0 + offsety);
 		}
-
-		public static int craftRank = 0;
 
 		public static void onTabPressed(int selected, Boolean doUpgrade) {
 			if (!configRanksTabEnabled.Value) return;
@@ -540,8 +570,6 @@ namespace RunicPower {
 		public static bool IsOnCooldown(RuneData data) {
 			return GetCooldown(data) > 0;
 		}
-
-		float tickCooldown = 0f;
 
 		private void Update() {
 			if (tryAgain) {
