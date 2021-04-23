@@ -53,6 +53,7 @@ namespace RunicPower.Patches {
 				RunicPower.StopCraftingAll(false);
 				return true;
 			}
+
 			// getting hte spell inventory
 			var inv = SpellsBar.invBarGrid.m_inventory;
 			// if there is not an 'empty' slot, do the normal flow
@@ -62,8 +63,8 @@ namespace RunicPower.Patches {
 			}
 
 			var craftItem = __instance.m_craftRecipe.m_item;
-			GameObject go = Object.Instantiate(craftItem.gameObject);
-			ItemDrop item = go.GetComponent<ItemDrop>();
+
+			var item = craftItem;
 			item.m_itemData.m_stack = __instance.m_craftRecipe.m_amount;
 			item.m_itemData.m_quality = qualityLevel;
 			item.m_itemData.m_variant = __instance.m_craftVariant;
@@ -79,6 +80,7 @@ namespace RunicPower.Patches {
 				}
 				__instance.UpdateCraftingPanel();
 			}
+
 			// displaying some effects
 			CraftingStation currentCraftingStation = Player.m_localPlayer.GetCurrentCraftingStation();
 			var effs = (currentCraftingStation != null) ? currentCraftingStation.m_craftItemDoneEffects : __instance.m_craftItemDoneEffects;

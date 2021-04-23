@@ -66,10 +66,9 @@ using UnityEngine.UI;
  * - Fixing CreateRankTab exception when relogging ingame.
  * - Fixing bug that would allow players to stack multiple buffs for ranks of the same rune.
  * - Changed how extended data is stored to avoid using unnecessary memory.
+ * - Fixing a very weird bug that was spawning runes somewhere in your world whenever you crafted a rune.
 */
 
-
-// BUG: when crafting runes, a new rune is being "spawned" at the game starting location.
 // BUG: check invbar position on 2560x1080 (100%).
 
 // TODO: make cooldowns appear on the inventory itself.
@@ -370,14 +369,6 @@ namespace RunicPower {
 			return rune;
 		}
 
-		public static void Log(string message) {
-			UnityEngine.Debug.Log("[RunicPower] "+message);
-		}
-
-		public static void Debug(string message) {
-			if (debug) Log(message);
-		}
-
 		public static void CreateCraftAllButton(InventoryGui gui) {
 			if (gui == null) gui = InventoryGui.instance;
 
@@ -609,6 +600,19 @@ namespace RunicPower {
 
 				activeCooldowns = newCooldowns;
 			}
+		}
+
+		public static void Log(string message) {
+			UnityEngine.Debug.Log("[RunicPower] " + message);
+		}
+
+		public static void Bar() {
+			if (debug) Log("=======================================");
+		}
+
+
+		public static void Debug(string message) {
+			if (debug) Log(message);
 		}
 
 	}
