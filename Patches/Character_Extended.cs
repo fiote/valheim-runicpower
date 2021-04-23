@@ -20,6 +20,8 @@ namespace RunicPower {
 		}
 
 		private void UpdateValues() {
+			RunicPower.Log("======================");
+			RunicPower.Log($"Amount of in-effect runes changed to {runes.Count}. Updating values...");
 			StoreRuneEffects();
 			if (character?.IsPlayer() == true) RunicPower.ClearCache();
 		}
@@ -40,6 +42,13 @@ namespace RunicPower {
 				rune.ModifyResist(ref runicResistModifier);
 				rune.ModifyPower(ref runicPowerModifier);
 			});
+
+			RunicPower.Log($"runicMoveBonus = {runicMoveBonus}");
+			RunicPower.Log($"runicInvisibilityRange = {runicInvisibilityRange}");
+			RunicPower.Log($"runicLifeSteal = {runicLifeSteal}");
+			RunicPower.Log($"runicIgnoreFallDamage = {runicIgnoreFallDamage}");
+			RunicPower.Log($"runicResistModifier = {runicResistModifier}");
+			RunicPower.Log($"runicPowerModifier = {runicPowerModifier}");
 		}
 
 		public void ApplyResistModifiersToHit(ref HitData hit) {

@@ -66,6 +66,7 @@ using UnityEngine.UI;
  * - Changed how extended data is stored to avoid using unnecessary memory.
  * - Fixing a very weird bug that was spawning runes somewhere in your world whenever you crafted a rune.
  * - Fixing the bug that would duplicate runes when you dropped/picked them up.
+ * - Adding some debug.logging so you can know exactly what rune effects are on your character (good for testing stuff, if you're into that kind of thing).
 */
 
 // TODO: make cooldowns appear on the inventory itself.

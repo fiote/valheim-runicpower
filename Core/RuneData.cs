@@ -152,7 +152,19 @@ namespace RunicPower.Core {
 		}
 
 		override public string ToString() {
-			return "DamageTypeValues(m_blunt=" + m_blunt + ", m_pierce=" + m_pierce + ", m_slash=" + m_slash + ", m_fire=" + m_fire + ", m_frost=" + m_frost + ", m_lightning=" + m_lightning + ", m_poison=" + m_poison + ", m_spirit=" + m_spirit + ")";
+			var parts = new List<string>();
+			if (m_blunt != 0) parts.Add($"m_blunt={m_blunt}");
+			if (m_pierce != 0) parts.Add($"m_pierce={m_pierce}");
+			if (m_slash != 0) parts.Add($"m_slash={m_slash}");
+			if (m_fire != 0) parts.Add($"m_fire={m_fire}");
+			if (m_lightning != 0) parts.Add($"m_lightning={m_lightning}");
+			if (m_poison != 0) parts.Add($"m_poison={m_poison}");
+			if (m_spirit != 0) parts.Add($"m_spirit={m_spirit}");
+
+			var content = String.Join(", ", parts);
+			if (content == "") content = "empty";
+
+			return $"DamageTypeValues({content})";
 		}
 	}
 
