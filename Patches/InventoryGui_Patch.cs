@@ -37,7 +37,8 @@ namespace RunicPower.Patches {
 	public static class InventoryGui_DoCrafting_Patch {
 		public static bool Prefix(InventoryGui __instance, Player player) {
 			// if it's not a rune, do the normal flow
-			var data = __instance.m_craftRecipe?.m_item?.m_itemData?.GetRuneData();
+			var recipe = __instance.m_craftRecipe;
+			var data = recipe?.m_item?.m_itemData?.GetRuneData();
 			if (data == null) {
 				RunicPower.StopCraftingAll(false);
 				return true;
@@ -57,19 +58,10 @@ namespace RunicPower.Patches {
 				return true;
 			}
 
-			var craftItem = __instance.m_craftRecipe.m_item;
+			var craftItem = recipe.m_item;
+			var crafted = inv.AddItem(craftItem.gameObject.name, recipe.m_amount, qualityLevel, __instance.m_craftVariant, player.GetPlayerID(), player.GetPlayerName());
 
-			var item = craftItem;
-			item.m_itemData.m_stack = __instance.m_craftRecipe.m_amount;
-			item.m_itemData.m_quality = qualityLevel;
-			item.m_itemData.m_variant = __instance.m_craftVariant;
-			item.m_itemData.m_durability = item.m_itemData.GetMaxDurability();
-			item.m_itemData.m_crafterID = player.GetPlayerID();
-			item.m_itemData.m_crafterName = player.GetPlayerName();
-
-			var crafted = inv.AddItem(item.m_itemData);
-
-			if (crafted) {
+			if (crafted != null) {
 				if (!player.NoCostCheat()) {
 					player.ConsumeResources(__instance.m_craftRecipe.m_resources, qualityLevel);
 				}

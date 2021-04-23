@@ -65,6 +65,7 @@ using UnityEngine.UI;
  * - Fixing bug that would allow players to stack multiple buffs for ranks of the same rune.
  * - Changed how extended data is stored to avoid using unnecessary memory.
  * - Fixing a very weird bug that was spawning runes somewhere in your world whenever you crafted a rune.
+ * - Fixing the bug that would duplicate runes when you dropped/picked them up.
 */
 
 // TODO: make cooldowns appear on the inventory itself.

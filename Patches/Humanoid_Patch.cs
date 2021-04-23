@@ -32,10 +32,8 @@ namespace RunicPower {
 			if (!__instance.IsPlayer()) return;
 
 			var itemDrop = go.GetComponent<ItemDrop>();
-			if (itemDrop == null) return;
-
-			var rune = itemDrop.m_itemData.GetRuneData();
-			if (rune == null) return;
+			var runeData = itemDrop?.m_itemData?.GetRuneData();
+			if (runeData == null) return;
 
 			Player.m_localPlayer?.ExtendedPlayer(true)?.SetLootingRuneItem(itemDrop.m_itemData);
 		}

@@ -43,12 +43,18 @@ namespace RunicPower.Patches {
 		public static bool Prefix(Inventory __instance, ref ItemDrop.ItemData item, ref bool __result) {
 			// if we're not crafting/looting a rune, ignore this flow
 			var ext = Player.m_localPlayer?.ExtendedPlayer(false);
-			if (ext == null || (ext.craftingRuneItem == null && ext.lootingRuneItem == null)) {
-				return true;
-			}
-			var rune = item.GetRuneData();
-			if (rune == null) {
-				return true;
+			if (ext == null || (ext.craftingRuneItem == null && ext.lootingRuneItem == null)) return true;
+
+			// if there is no rune on this item, ignore this flow
+			var runeData = item.GetRuneData();
+			if (runeData == null) return true;
+
+			if (ext.lootingRuneItem != null) {
+				if (ext.lootingRuneItem == ext.lootedRuneItem) {
+					__result = true;
+					return false;
+				}
+				ext.lootedRuneItem = ext.lootingRuneItem;
 			}
 
 			var inv = SpellsBar.invBarGrid.m_inventory;

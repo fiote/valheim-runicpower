@@ -13,6 +13,7 @@ namespace RunicPower.Patches {
 
 		public ItemDrop.ItemData craftingRuneItem = null;
 		public ItemDrop.ItemData lootingRuneItem = null;
+		public ItemDrop.ItemData lootedRuneItem = null;
 		public ItemDrop.ItemData selectingRuneItem = null;
 
 		public const string Sentinel = "<|>";
@@ -24,6 +25,7 @@ namespace RunicPower.Patches {
 
 		public void SetLootingRuneItem(ItemDrop.ItemData item) {
 			lootingRuneItem = item;
+			lootedRuneItem = null;
 		}
 
 		public void SetCraftingRuneItem(ItemDrop.ItemData item) {
