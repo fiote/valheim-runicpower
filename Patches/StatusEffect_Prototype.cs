@@ -13,12 +13,11 @@ namespace RunicPower.Patches {
 
 		public static Dictionary<string, StatusEffect_Extended> mapping = new Dictionary<string, StatusEffect_Extended>();
 
-		public static StatusEffect_Extended ExtendedStatusEffect(this StatusEffect __instance) {
-
+		public static StatusEffect_Extended ExtendedStatusEffect(this StatusEffect __instance, bool create = false) {
 			var key = __instance.GetInstanceID().ToString();
 			if (key == null) return null;
 			var ext = mapping.ContainsKey(key) ? mapping[key] : null;
-			if (ext == null) {
+			if (ext == null && create) {
 				mapping[key] = ext = new StatusEffect_Extended();
 				RunicPower.Debug("ExtendedStatusEffect: " + mapping.Count);
 			}
@@ -26,19 +25,16 @@ namespace RunicPower.Patches {
 		}
 
 		public static void SetRune(this StatusEffect __instance, Rune rune) {
+			var key = __instance.GetInstanceID().ToString();
 			if (rune == null) {
-				var key = __instance.GetInstanceID().ToString();
 				mapping.Remove(key);
-				RunicPower.Debug("ExtendedStatusEffect: " + mapping.Count);
 			} else {
-				var ext = __instance.ExtendedStatusEffect();
-				ext.rune = rune;
+				__instance.ExtendedStatusEffect(true).rune = rune;
 			}
 		}
 
 		public static Rune GetRune(this StatusEffect __instance) {
-			var ext = __instance.ExtendedStatusEffect();
-			return ext?.rune;
+			return __instance.ExtendedStatusEffect()?.rune;
 		}
 
 		public static string GetEffectString(this StatusEffect __instance) {

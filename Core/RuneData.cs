@@ -20,6 +20,8 @@ namespace RunicPower.Core {
 	[Serializable]
 	public class RuneData {
 		public string name;
+		public string core;
+
 		public string type;
 		public string archetype;
 		public string description;

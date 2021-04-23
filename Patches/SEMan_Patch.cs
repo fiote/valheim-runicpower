@@ -43,10 +43,14 @@ namespace RunicPower.Patches {
 
     [HarmonyPatch(typeof(SEMan), "AddStatusEffect", typeof(StatusEffect), typeof(bool))]
     public static class SEMan_AddStatusEffect_Patch {
-        static void Postfix(SEMan __instance, StatusEffect statusEffect, bool resetTime) {
-            var rune = statusEffect.GetRune();
+        static void Postfix(SEMan __instance, StatusEffect statusEffect, bool resetTime, ref StatusEffect __result) {
+            var rune = SEMan_Prototype.GetTempRune(statusEffect);
             if (rune == null) return;
+            
+            __result.SetRune(rune);
             __instance.m_character?.ExtendedCharacter(true)?.AddRune(rune);
+
+            SEMan_Prototype.UnsetTemp();
         }
     }
 }

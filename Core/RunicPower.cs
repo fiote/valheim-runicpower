@@ -64,13 +64,13 @@ using UnityEngine.UI;
 
 /* [1.4.2]
  * - Fixing CreateRankTab exception when relogging ingame.
+ * - Fixing bug that would allow players to stack multiple buffs for ranks of the same rune.
+ * - Changed how extended data is stored to avoid using unnecessary memory.
 */
 
 
 // BUG: when crafting runes, a new rune is being "spawned" at the game starting location.
 // BUG: check invbar position on 2560x1080 (100%).
-// BUG: check different rank stacking buffs.
-// BUG: check nullreferenceException on CreateRankTab
 
 // TODO: make cooldowns appear on the inventory itself.
 
@@ -156,6 +156,8 @@ namespace RunicPower {
 						if (assetBundle.Contains(data.recipe.item)) {
 							data.prefab = assetBundle.LoadAsset<GameObject>(data.recipe.item);
 							data.rank = i;
+							data.core = data.recipe.item;
+
 							data.name += " " + rank2rank[data.rank];
 							if (data.rank > 1) {
 								data.prefab.name += data.rank;
@@ -353,7 +355,11 @@ namespace RunicPower {
 			runes.ForEach(rune => rune.ClearCache());
 		}
 
-		public static StatusEffect CreateStatusEffect(string name, Player caster, string dsbuffs) {
+		public static RuneData GetRuneData(string name) {
+			return runesData.Find(r => r.recipe.item == name);
+		}
+
+		public static Rune CreateRunicEffect(string name, Player caster, string dsbuffs) {
 			var data = runesData.Find(r => r.recipe.item == name);
 			if (data == null) return null;
 
@@ -361,7 +367,7 @@ namespace RunicPower {
 			rune.ParseBuffs(dsbuffs);
 			rune.CreateEffect();
 
-			return rune.statusEffect;
+			return rune;
 		}
 
 		public static void Log(string message) {

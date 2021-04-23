@@ -31,7 +31,6 @@ namespace RunicPower {
 		}
 
 		void StoreRuneEffects() {
-			Log("StoreRuneEffects");
 			runicMoveBonus = 0f;
 			runicInvisibilityRange = 0f;
 			runicLifeSteal = 0f;
@@ -59,20 +58,15 @@ namespace RunicPower {
 
 		public void AddRune(Rune rune) {
 			if (rune == null) return;
-			Log("AddRune " + rune?.data.name);
 			runes.Add(rune);
 			UpdateValues();
 		}
 
 		public void RemoveRune(Rune rune) {
 			if (rune == null) return;
-			Log("RemoveRune " + rune?.data.name);
 			if (runes.Contains(rune)) {
-				Log("rune removed.");
 				runes.Remove(rune);
 				UpdateValues();
-			} else {
-				Log("cant remove rune, its not on the stack!");
 			}
 		}
 

@@ -41,8 +41,8 @@ namespace RunicPower.Core {
 		// EFFECT
 		// ================================================================
 
-		public void CreateEffect() {
-			if (data.effect == null || data.effect.duration == 0) return;
+		public StatusEffect CreateEffect() {
+			if (data.effect == null || data.effect.duration == 0) return null;
 			statusEffect = ScriptableObject.CreateInstance<StatusEffect>();
 			statusEffect.m_ttl = GetDuration();
 			statusEffect.name = data.recipe.item;
@@ -50,7 +50,7 @@ namespace RunicPower.Core {
 			statusEffect.m_category = data.name;
 			statusEffect.m_cooldown = 0f;
 			statusEffect.m_icon = data.itemDrop.m_itemData.m_shared.m_icons[0];
-			statusEffect.SetRune(this);
+			return statusEffect;
 		}
 
 		public void ParseBuffs(string dsbuffs) {
