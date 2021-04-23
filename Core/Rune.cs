@@ -1,9 +1,7 @@
 ﻿using RunicPower.Patches;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace RunicPower.Core {
@@ -98,7 +96,7 @@ namespace RunicPower.Core {
 
 		public void GetEffectStringPart(ref List<string> parts, string key, float value) {
 			if (value == 0) return;
-			parts.Add(key+"="+value.ToString());
+			parts.Add(key + "=" + value.ToString());
 		}
 
 		public void GetEffectStringPart(ref List<string> parts, string key, bool? value = false) {
@@ -180,8 +178,8 @@ namespace RunicPower.Core {
 				}
 
 				// REGEN
-				if (fx.healthRegen != 0) text.AppendFormat("Health regen <color=orange>+{0}%</color>\n", GetHealthRegen()*100f);
-				if (fx.staminaRegen != 0) text.AppendFormat("Stamina regen <color=orange>+{0}%</color>\n", GetStaminaRegen()*100f);
+				if (fx.healthRegen != 0) text.AppendFormat("Health regen <color=orange>+{0}%</color>\n", GetHealthRegen() * 100f);
+				if (fx.staminaRegen != 0) text.AppendFormat("Stamina regen <color=orange>+{0}%</color>\n", GetStaminaRegen() * 100f);
 
 				// MOVEMENT
 				if (fx.movementBonus != 0) text.AppendFormat("Movement speed <color=orange>+{0}%</color>\n", GetMovementBonus());
@@ -388,7 +386,7 @@ namespace RunicPower.Core {
 		}
 
 		private float GetResist(HitData.DamageType dmgType) {
-			var vfixed = GetFixed("resist."+dmgType);
+			var vfixed = GetFixed("resist." + dmgType);
 			if (vfixed != 0) return Mathf.RoundToInt(vfixed);
 
 			// level 1: +2%

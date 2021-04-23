@@ -1,11 +1,4 @@
-﻿using Common;
-using HarmonyLib;
-using RunicPower.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using RunicPower.Core;
 using UnityEngine;
 
 namespace RunicPower.Patches {

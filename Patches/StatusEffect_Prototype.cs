@@ -1,12 +1,5 @@
-﻿using Common;
-using HarmonyLib;
-using RunicPower.Core;
-using System;
+﻿using RunicPower.Core;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 
 namespace RunicPower.Patches {
 	public static class StatusEffect_Prototype {

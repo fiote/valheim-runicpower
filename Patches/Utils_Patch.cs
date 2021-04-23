@@ -1,6 +1,4 @@
 ﻿using HarmonyLib;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -38,7 +36,7 @@ namespace RunicPower {
 					num2 -= array[0].y;
 				}
 				if (array[2].y < 0f) {
-					var scale = GuiScaler.m_largeGuiScale*100;
+					var scale = GuiScaler.m_largeGuiScale * 100;
 					var addy = (scale - 50) * 4.5f;
 					num2 -= array[2].y - addy;
 				}

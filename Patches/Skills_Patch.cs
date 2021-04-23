@@ -22,7 +22,7 @@ namespace RunicPower {
 				var sk = skillDatum.Value;
 				if (sk.m_info == null) toRemove.Add(skillDatum.Key);
 			}
-			foreach(var key in toRemove) __instance.m_skillData.Remove(key);
+			foreach (var key in toRemove) __instance.m_skillData.Remove(key);
 		}
 	}
 }

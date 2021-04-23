@@ -1,14 +1,4 @@
-﻿using Common;
-using HarmonyLib;
-using RunicPower.Core;
-using RunicPower;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using static Skills;
+﻿using static Skills;
 
 namespace RunicPower.Patches {
 	public static class Skills_Prototype {

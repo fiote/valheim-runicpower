@@ -1,10 +1,5 @@
-﻿using Common;
-using HarmonyLib;
-using RunicPower.Core;
-using RunicPower.Patches;
+﻿using HarmonyLib;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace RunicPower {

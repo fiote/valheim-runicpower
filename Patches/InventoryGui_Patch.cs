@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using HarmonyLib;
-using RunicPower;
+﻿using HarmonyLib;
 using RunicPower.Core;
-using RunicPower.Patches;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 
 namespace RunicPower.Patches {
 

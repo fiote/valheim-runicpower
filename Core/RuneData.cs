@@ -1,13 +1,7 @@
 ﻿using Common;
-using RunicPower.Patches;
-using RunicPower;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using static UnityEngine.ParticleSystem;
 
 namespace RunicPower.Core {
 

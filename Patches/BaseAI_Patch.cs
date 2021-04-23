@@ -1,9 +1,4 @@
-﻿using Common;
-using HarmonyLib;
-using RunicPower.Core;
-using RunicPower.Patches;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using HarmonyLib;
 
 namespace RunicPower {
 

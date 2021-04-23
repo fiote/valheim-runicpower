@@ -1,8 +1,6 @@
-﻿using Common;
-using HarmonyLib;
+﻿using HarmonyLib;
 using RunicPower.Core;
 using RunicPower.Patches;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace RunicPower {
@@ -15,7 +13,7 @@ namespace RunicPower {
 			if (inventory == null) inventory = __instance.m_inventory;
 
 			if (RunicPower.IsOnCooldown(data)) {
-				Player.m_localPlayer.Message(MessageHud.MessageType.Center, "["+data.name+"] is not ready yet.");
+				Player.m_localPlayer.Message(MessageHud.MessageType.Center, "[" + data.name + "] is not ready yet.");
 				return false;
 			}
 

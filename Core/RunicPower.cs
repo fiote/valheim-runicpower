@@ -2,13 +2,11 @@
 using BepInEx.Configuration;
 using Common;
 using HarmonyLib;
-using LitJson;
 using Pipakin.SkillInjectorMod;
 using RunicPower.Core;
 using RunicPower.Patches;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
@@ -69,8 +67,6 @@ using UnityEngine.UI;
  * - Fixing a very weird bug that was spawning runes somewhere in your world whenever you crafted a rune.
 */
 
-// BUG: check invbar position on 2560x1080 (100%).
-
 // TODO: make cooldowns appear on the inventory itself.
 
 // TODO: INTEGRATION? equip wheel considering runes as consumables (which they are)
@@ -80,14 +76,14 @@ using UnityEngine.UI;
 // MAYBE: ranks for recall rune. Better recalls allow to teleport with better ores.
 
 namespace RunicPower {
-	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "1.4.1")]
+	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "1.4.2")]
 	[BepInDependency("com.pipakin.SkillInjectorMod")]
 	[BepInDependency("randyknapp.mods.extendeditemdataframework")]
 
 	public class RunicPower : BaseUnityPlugin {
 		// core stuff
 		private Harmony _harmony;
-		public static bool debug = true;
+		public static bool debug = false;
 		public static RunesConfig runesConfig;
 		public static ConfigFile configFile;
 		public static List<Rune> runes = new List<Rune>();
