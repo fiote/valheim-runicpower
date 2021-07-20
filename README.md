@@ -1,3 +1,5 @@
+https://www.nexusmods.com/valheim/mods/840
+
 # CASTING
 
 | Command | Description | Default value | Acceptable values |
