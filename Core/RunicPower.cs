@@ -7,10 +7,10 @@ using RunicPower.Core;
 using RunicPower.Patches;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
-
 
 /* [1.2]
  * - Fixed bug when picking up runes from the ground.
@@ -69,16 +69,57 @@ using UnityEngine.UI;
  * - Adding some debug.logging so you can know exactly what rune effects are on your character (good for testing stuff, if you're into that kind of thing).
 */
 
+/* [2.0.0]
+ * - Removing "Craft All" button below "Craft" button (it's now its own mod).
+ * - Reduced class runes stack size to 10 (was 100).
+ * - Reduced recall runes stack size to 1 (was 100).
+ * - Runes now have "RPG" icons to make it easier to identify them.
+ * - Higher rank runes will now grant a lot of experience to help you 'catch up' with its level.
+ * - You can now only craft runes while resting.
+ * - You can now only manage your spellsbar while resting.
+ * - You can now only cast runes from your spellsbar.
+ * - You can no longer have duplicated rune stacks on your spellsbar.
+ * 
+ * [Generic]
+ * - "Recall" rune renamed to "Recall (Meadows)". It now the same restrictions of a portal (i.e: no ore/metals allowed).
+ * - New rune: "Recall (Black Forest)". Allows you to teleport even with tin/copper/bronze in your inventory.
+ * - New rune: "Recall (Swamp)". Allows you to teleport even with iron in your inventory.
+ * - New rune: "Recall (Mountains)". Allows you to teleport even with silver in your inventory.
+ * - New rune: "Recall (Plains)". Allows you to teleport even with black metal in your inventory.
+ * - New rune: "Enchant Axe". Increase your chopping damage. 
+ * - New rune: "Enchant Pickaxe". Increase your mining damage. 
+ * 
+ * [Warrior]
+ * - "Blade Storm" now requires a weapon. Its damage is now a percentage of your weapon (from 150% to 300%) instead of a flat amount.
+ * - "Inspiring Shout" now recovers a percentage of your max stamina instead of a flat amount.
+ * - "Blood Rune" and "Stone Rune" buffs tunned down a bit.
+ * 
+ * [Rogue]
+ * - "Poisonous Shiv" now requires a weapon. Its damage is now a percentage of your weapon (from 150% to 200%) instead of a flat amount.
+ * - "Expose Weakness" should now works alongside all attacks, not only those from runes.
+ * - "Night Rune" now increases your stealthness (just like the Troll gear set) instead of trying to mess with other stuff.
+ * - "Swift Rune" no longer removes fall damage (it was too OP while also dunking some player's FPS).
+ * 
+ * [Cleric]
+ * - "Shield Slam" now requires a shield. Its damage is now a percentage of your block power (from 150% to 300%) instead of a flat amount.
+ * - "Healing Circle" now recovers a percentage of your max health instead of a flat amount.
+ * - "Light Rune" and "Vigor Rune" buffs tunned down a bit.
+ * 
+ * [Wizard]
+ * - "Fireball" damage no longer scales with weapon, depending only of your wizard level.
+ * - "Ice Shard" damage no longer scales with weapon, depending only of your wizard level. 
+ * - "Ice Shard" slow effect now scales with your wizard level, from 10% (1) to 80% (100).
+ * - "Ward Rune" buff tunned down a bit, but should work more properly.
+ * - "Mind Rune" buff tunned up. It now should works alongside all attacks, not only those from runes.
+*/
+
 // TODO: make cooldowns appear on the inventory itself.
-
 // TODO: INTEGRATION? equip wheel considering runes as consumables (which they are)
-
 // MAYBE: change how crafting works. Instead of different items, just use a single 'currency' that would be the result of desenchanting items or something like that.
 // MAYBE: change how casting works. Instead of consuming runes, use of kind of MANA resource.
-// MAYBE: ranks for recall rune. Better recalls allow to teleport with better ores.
 
 namespace RunicPower {
-	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "1.4.2")]
+	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "2.0.0")]
 	[BepInDependency("com.pipakin.SkillInjectorMod")]
 	[BepInDependency("randyknapp.mods.extendeditemdataframework")]
 
@@ -86,11 +127,13 @@ namespace RunicPower {
 		// core stuff
 		private Harmony _harmony;
 		public static bool debug = false;
-		public static RunesConfig runesConfig;
 		public static ConfigFile configFile;
 		public static List<Rune> runes = new List<Rune>();
 		public static List<RuneData> runesData = new List<RuneData>();
 		public static List<ClassSkill> listofCSkills = new List<ClassSkill>();
+
+		public static RunesConfig runesConfig;
+		public static AssetBundle assetBundle;
 
 		// mod stuff
 		public static Dictionary<int, Button> rankButtons;
@@ -99,10 +142,7 @@ namespace RunicPower {
 		static float tryAgainTime;
 		static float tryAgainDuration;
 
-		public static GameObject craftAllgo;
-		public static Button craftAllButton;
-		public static Text craftAllText;
-		public static bool isCraftingAll;
+		public static string invName = "spellsBarInventory";
 
 		public static int craftRank;
 		public static RunicPower _this;
@@ -115,6 +155,18 @@ namespace RunicPower {
 			{3, "III"},
 			{4, "IV"},
 			{5, "V"},
+		};
+
+		public static Dictionary<MsgKey, string> texts = new Dictionary<MsgKey, string> {
+			{ MsgKey.ONLY_WHEN_RESTING, "You can only craft runes while resting." },
+			{ MsgKey.SAME_RUNE_MULTIPLE, "You already have this rune on your spellsbar." },
+			{ MsgKey.CANT_SWAP_THOSE, "You can't swap a rune for a non-rune item." },
+			{ MsgKey.CANT_PLACE_THAT, "You can't put a non-rune item on your spellsbar." },
+			{ MsgKey.ITEM_PREVENTS_RECALL, "An item in your inventory prevents you from recalling." },
+			{ MsgKey.CAST_ONLY_SPELLBAR, "You can only cast runes from your spellsbar." },
+			{ MsgKey.STILL_ON_COOLDOWN, "[$param] is still on cooldown." },
+			{ MsgKey.WEAPON_REQUIRED, "You need a weapon equipped to cast [$param]." },
+			{ MsgKey.SHIELD_REQUIRED, "You need a shield equipped to cast [$param]." },
 		};
 
 		private void Awake() {
@@ -134,27 +186,70 @@ namespace RunicPower {
 			tryAgain = false;
 			tryAgainTime = 0f;
 			tryAgainDuration = 0.25f;
-			isCraftingAll = false;
 			craftRank = 0;
 			if (_this != null) _this.tickCooldown = 0f;
 			SpellsBar.UnsetMostThings();
 		}
 
+		void ReloadAssets() {
+			UnloadAssets();
+			runesConfig = PrefabCreator.LoadJsonFile<RunesConfig>("runes.json");
+
+			foreach (var data in runesConfig.runes) {
+				if (data.reSet == "s1") data.resources = runesConfig.reSets.s1;
+				if (data.reSet == "s2") data.resources = runesConfig.reSets.s2;
+				if (data.reSet == "s3") data.resources = runesConfig.reSets.s3;
+				if (data.reSet == "s4") data.resources = runesConfig.reSets.s4;
+			}
+
+			assetBundle = PrefabCreator.LoadAssetBundle("runeassets");
+		}
+
+		void UnloadAssets() {
+			if (assetBundle != null) {
+				assetBundle.Unload(false);
+				assetBundle = null;
+			}
+		}
+
+		List<RuneData> GetRanked() {
+			ReloadAssets();
+			return runesConfig.runes.FindAll(x => x.implemented && x.ranked);
+		}
+
+		List<RuneData> GetSimple() {
+			ReloadAssets();
+			return runesConfig.runes.FindAll(x => x.implemented && !x.ranked);
+		}
+
 		private void LoadRunes() {
+			var simple = GetSimple();
+
+			foreach (var data in simple) {
+				if (data.recipe.prefab != "" && data.recipe.prefab != default) data.recipe.item = data.recipe.prefab;
+
+				ReloadAssets();
+				if (assetBundle.Contains(data.recipe.item)) {
+					data.prefab = assetBundle.LoadAsset<GameObject>(data.recipe.item);
+					data.core = data.recipe.item;
+					data.prefab.name += data.rank;
+					data.recipe.name += data.rank;
+					data.recipe.item += data.rank;
+					runesData.Add(data);
+				} else {
+					Log("SimpleRune " + data.recipe.item + " not found.");
+					Log("extra? "+assetBundle.Contains(data.recipe.prefab));
+				}
+			}
+
 			for (var i = 1; i <= 5; i++) {
-				runesConfig = PrefabCreator.LoadJsonFile<RunesConfig>("runes.json");
-				var assetBundle = PrefabCreator.LoadAssetBundle("runeassets");
-
-				if (runesConfig != null && assetBundle != null) {
-					foreach (var data in runesConfig.runes) {
-						if (!data.implemented) continue;
-						if (i > data.resources.Count) continue;
-
+				var ranked = GetRanked();
+				foreach (var data in ranked) {
+					if (runesConfig != null && assetBundle != null) {
 						if (assetBundle.Contains(data.recipe.item)) {
 							data.prefab = assetBundle.LoadAsset<GameObject>(data.recipe.item);
 							data.rank = i;
 							data.core = data.recipe.item;
-
 							data.name += " " + rank2rank[data.rank];
 							if (data.rank > 1) {
 								data.prefab.name += data.rank;
@@ -162,15 +257,18 @@ namespace RunicPower {
 								data.recipe.item += data.rank;
 							}
 							runesData.Add(data);
+						} else {
+							Log("RankedRune "+data.recipe.item + " not found.");
 						}
 					}
 				}
-
-				assetBundle?.Unload(false);
 			}
+
+			UnloadAssets();
 
 			_harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), "fiote.mods.runicpower");
 		}
+
 
 		private void LoadClasses() {
 			var classesConfig = PrefabCreator.LoadJsonFile<ClassesConfig>("classes.json");
@@ -195,6 +293,7 @@ namespace RunicPower {
 		}
 
 		public static void TryRegisterItems() {
+			Log("TryRegisterItems()");
 			foreach (var data in runesData) {
 				data.itemDrop = data.prefab.GetComponent<ItemDrop>();
 				if (data.itemDrop == null) {
@@ -205,7 +304,6 @@ namespace RunicPower {
 					Log("Failed to register item " + data.name + ". Prefab already exists.");
 					continue;
 				}
-
 				var itemDrop = data.itemDrop;
 				itemDrop.SetRuneData(data);
 				ObjectDB.instance.m_items.Add(data.prefab);
@@ -213,6 +311,7 @@ namespace RunicPower {
 		}
 
 		public static void TryRegisterRecipes() {
+			Log("TryRegisterRecipes()");
 			if (ObjectDB.instance == null) return;
 
 			var wrongTime = (ObjectDB.instance?.m_items?.Count == 0);
@@ -247,14 +346,26 @@ namespace RunicPower {
 			TryRegisterItems();
 
 			PrefabCreator.Reset();
+
 			foreach (var data in runesData) {
-				var mats = new List<RecipeRequirementConfig>();
 
 				var min = data.rank - 3;
 				if (min < 0) min = 0;
 
-				for (var i = min; i < data.rank; i++) {
-					var value = data.resources[i];
+				var resList = new List<string>();
+
+				if (data.ranked) {
+					for (var i = min; i < data.rank; i++) {
+						var value = data.resources[i];
+						resList.Add(value);
+					}
+				} else {
+					resList = data.resources;
+				}
+
+				var mats = new List<RecipeRequirementConfig>();
+
+				foreach (var value in resList) {
 					var parts = value.Split(':');
 					var item = parts[0];
 					var amount = 1;
@@ -273,8 +384,9 @@ namespace RunicPower {
 
 				data.itemDrop.m_itemData.m_shared.m_name = data.name;
 				data.itemDrop.m_itemData.m_shared.m_description = data.description;
-				data.itemDrop.m_itemData.m_shared.m_maxStackSize = 100;
+				data.itemDrop.m_itemData.m_shared.m_maxStackSize = data.maxstack != default ? data.maxstack : 10;
 				data.itemDrop.m_itemData.m_shared.m_weight = 0.1f;
+
 				PrefabCreator.AddNewRuneRecipe(data);
 				var rune = new Rune(data, null);
 				runes.Add(rune);
@@ -314,7 +426,6 @@ namespace RunicPower {
 		public static ConfigEntry<int> configHotkeysOffsetY;
 		public static ConfigEntry<KeyModifiers> configHotkeysModifier;
 		// INTERFACE
-		public static ConfigEntry<bool> configsCraftAllEnabled;
 		public static ConfigEntry<bool> configRanksTabEnabled;
 		public static ConfigEntry<int> configRanksOffsetX;
 		public static ConfigEntry<int> configRanksOffsetY;
@@ -337,11 +448,11 @@ namespace RunicPower {
 			configHotkeysOffsetY = Config.Bind("HotkeysBar", "OffsetY", 0, "Adjust the hotkey's bar vertical position (down/up).");
 			configHotkeysModifier = Config.Bind("HotkeysBar", "Modifier", KeyModifiers.SHIFT, "Key modifier to use the runes.");
 			// INTERFACE
-			configsCraftAllEnabled = Config.Bind("Interface", "Craft All", true, "Enables the 'Craft All' button on your crafting panel.");
 			configRanksTabEnabled = Config.Bind("Interface", "Rank Tabs", true, "Enables the 'Rank Tab's on your crafting panel.");
 			configRanksOffsetX = Config.Bind("Interface", "RanksX", 0, "Adjust the rank's buttons horizontal position (left/right).");
 			configRanksOffsetY = Config.Bind("Interface", "RanksY", 0, "Adjust the rank's buttons vertical position (down/up).");
 		}
+
 		public static Rune GetStaticRune(RuneData data) {
 			var rune = runes.Find(r => r.data.name == data.name);
 			rune.SetCaster(Player.m_localPlayer);
@@ -365,46 +476,6 @@ namespace RunicPower {
 			rune.CreateEffect();
 
 			return rune;
-		}
-
-		public static void CreateCraftAllButton(InventoryGui gui) {
-			if (gui == null) gui = InventoryGui.instance;
-
-			var craftButton = gui?.m_craftButton?.gameObject;
-			if (craftButton == null) return;
-			var name = "runicPowerCraftAllButton";
-
-			if (craftAllgo != null) Destroy(craftAllgo);
-			if (!configsCraftAllEnabled.Value) return;
-
-			// var comps2 = craftButton.GetComponentsInChildren(typeof(Component));
-			// foreach (var comp in comps2) RunicPower.Debug("children.comp -> " + comp);
-
-			craftAllgo = Instantiate(craftButton);
-			craftAllgo.transform.SetParent(craftButton.transform.parent, false);
-			craftAllgo.name = name;
-
-			var position = craftAllgo.transform.position;
-			position.x += 0f;
-			position.y += -60f;
-			craftAllgo.transform.position = position;
-
-			var rect = craftAllgo.GetComponent<RectTransform>();
-			var size = rect.sizeDelta;
-			size.x += -150;
-			size.y += -10;
-			rect.sizeDelta = size;
-
-			craftAllButton = craftAllgo.GetComponentInChildren<Button>();
-			craftAllButton.interactable = true;
-			craftAllButton.onClick.AddListener(OnClickCraftAllButton);
-
-			craftAllText = craftAllgo.GetComponentInChildren<Text>();
-			craftAllText.text = "Craft All";
-			craftAllText.resizeTextForBestFit = false;
-			craftAllText.fontSize = 20;
-
-			craftAllgo.GetComponent<UITooltip>().m_text = "";
 		}
 
 		public static void CreateRankTabs(InventoryGui gui) {
@@ -505,44 +576,9 @@ namespace RunicPower {
 			}
 		}
 
-		public static void OnClickCraftAllButton() {
-			if (!configsCraftAllEnabled.Value) return;
-
-			if (isCraftingAll) {
-				StopCraftingAll(true);
-			} else {
-				StartCraftingAll();
-			}
-		}
-
-		public static void StartCraftingAll() {
-			if (!configsCraftAllEnabled.Value) return;
-
-			isCraftingAll = true;
-			craftAllText.text = "Stop Crafting";
-			InventoryGui.instance.OnCraftPressed();
-		}
-
-		public static void StopCraftingAll(bool triggerCancel) {
-			if (!configsCraftAllEnabled.Value) return;
-
-			isCraftingAll = false;
-			if (craftAllText != null) craftAllText.text = "Craft All";
-			if (triggerCancel) InventoryGui.instance.OnCraftCancelPressed();
-		}
-
-		public static void TryCraftingMore() {
-			if (!configsCraftAllEnabled.Value) return;
-
-			Debug("TryCraftingMore");
-			if (!isCraftingAll) return;
-			InventoryGui.instance.OnCraftPressed();
-		}
-
 		public static void Recreate() {
 			if (!configCooldownsEnabled.Value) activeCooldowns.Clear();
 			SpellsBar.RegisterKeybinds();
-			CreateCraftAllButton(null);
 			CreateRankTabs(null);
 			SpellsBar.ClearBindings();
 			SpellsBar.CreateHotkeysBar(null);
@@ -600,18 +636,52 @@ namespace RunicPower {
 			}
 		}
 
+		public static bool ShowMessage(string message, bool flag = true) {
+			Player.m_localPlayer.Message(MessageHud.MessageType.Center, message);
+			return flag;
+		}
+
+		public static bool ShowMessage(MsgKey key, string param, bool flag = true) {
+			Player.m_localPlayer.Message(MessageHud.MessageType.Center, texts[key].Replace("$param", param));
+			return flag;
+		}
+
+		public static bool ShowMessage(MsgKey key, bool flag = true) {
+			Player.m_localPlayer.Message(MessageHud.MessageType.Center, texts[key]);
+			return flag;
+		}
+
+		public static bool IsResting() {
+			return Player.m_localPlayer.m_seman.HaveStatusEffect("Resting");
+		}
+
 		public static void Log(string message) {
 			UnityEngine.Debug.Log("[RunicPower] " + message);
 		}
 
 		public static void Bar() {
-			if (debug) Log("=======================================");
+			Log("=============================================================");
 		}
 
+		public static void Line() {
+			Log("---------------------------");
+		}
 
 		public static void Debug(string message) {
 			if (debug) Log(message);
 		}
 
 	}
+}
+
+public enum MsgKey {
+	ONLY_WHEN_RESTING,
+	SAME_RUNE_MULTIPLE,
+	CANT_SWAP_THOSE,
+	CANT_PLACE_THAT,
+	ITEM_PREVENTS_RECALL,
+	CAST_ONLY_SPELLBAR,
+	STILL_ON_COOLDOWN,
+	WEAPON_REQUIRED,
+	SHIELD_REQUIRED,
 }

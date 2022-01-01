@@ -8,7 +8,12 @@ namespace RunicPower.Core {
 	[Serializable]
 	public class RunesConfig {
 		public DefaultRecipeConfig defRecipes;
+		public RuneSets reSets;
 		public List<RuneData> runes = new List<RuneData>();
+	}
+
+	public class RuneSets {
+		public List<string> s1, s2, s3, s4;
 	}
 
 	[Serializable]
@@ -21,8 +26,11 @@ namespace RunicPower.Core {
 		public string description;
 		public bool implemented;
 
+		public bool ranked = true;
+		public int maxstack = 10;
 		public int rank;
 
+		public string reSet;
 		public List<string> resources = new List<string>();
 		public RecipeConfig recipe;
 
@@ -48,8 +56,14 @@ namespace RunicPower.Core {
 			HitData.DamageType.Blunt
 		};
 
+		public static List<HitData.DamageType> otTypes = new List<HitData.DamageType> {
+			HitData.DamageType.Chop,
+			HitData.DamageType.Pickaxe
+		};
 
 		public string fxcustom;
+		public string warpfix;
+
 		public RuneEffect effect;
 		public RuneProjectile projectile;
 
@@ -76,6 +90,65 @@ namespace RunicPower.Core {
 		}
 	}
 
+	public class DamageTypeFlags {
+		public bool blunt;
+		public bool pierce;
+		public bool slash;
+
+		public bool fire;
+		public bool frost;
+		public bool lightning;
+		public bool poison;
+		public bool spirit;
+
+		public bool chop;
+		public bool pickaxe;
+
+		public bool GetByType(HitData.DamageType dmgType) {
+			if (dmgType is HitData.DamageType.Blunt) return blunt;
+			if (dmgType is HitData.DamageType.Pierce) return pierce;
+			if (dmgType is HitData.DamageType.Slash) return slash;
+			if (dmgType is HitData.DamageType.Fire) return fire;
+			if (dmgType is HitData.DamageType.Frost) return frost;
+			if (dmgType is HitData.DamageType.Lightning) return lightning;
+			if (dmgType is HitData.DamageType.Poison) return poison;
+			if (dmgType is HitData.DamageType.Spirit) return spirit;
+			if (dmgType is HitData.DamageType.Chop) return chop;
+			if (dmgType is HitData.DamageType.Pickaxe) return pickaxe;
+			return false;
+		}
+
+		public bool IsValued() {
+			return fire || frost || lightning || poison || spirit || blunt || pierce || slash || chop || pickaxe;
+		}
+
+		public bool IsElemental() {
+			return fire && frost && lightning && poison && spirit;
+		}
+
+		public bool IsPhysical() {
+			return blunt && pierce && slash;
+		}
+
+		override public string ToString() {
+			var parts = new List<string>();
+			parts.Add($"blunt={blunt}");
+			parts.Add($"pierce={pierce}");
+			parts.Add($"slash={slash}");
+			parts.Add($"fire={fire}");
+			parts.Add($"lightning={lightning}");
+			parts.Add($"poison={poison}");
+			parts.Add($"spirit={spirit}");
+			parts.Add($"chop={chop}");
+			parts.Add($"pickaxe={pickaxe}");
+
+			var content = String.Join(", ", parts);
+			if (content == "") content = "empty";
+
+			return $"DamageTypeFlags({content})";
+		}
+	}
+
 	[Serializable]
 	public class DamageTypeValues {
 		public float m_blunt;
@@ -88,24 +161,27 @@ namespace RunicPower.Core {
 		public float m_poison;
 		public float m_spirit;
 
-		public float Elemental() {
-			return m_fire + m_frost + m_lightning + m_poison + m_spirit;
+		public float m_chop;
+		public float m_pickaxe;
+
+		public bool IsValued() {
+			return IsPhysical() || IsElemental();
 		}
 
 		public bool IsElemental() {
 			return m_fire != 0 && m_fire == m_frost && m_lightning == m_poison && m_poison == m_spirit && m_spirit == m_fire;
 		}
 
-		public bool IsValued() {
-			return IsPhysical() || IsElemental();
+		public bool IsPhysical() {
+			return m_blunt != 0 && m_blunt == m_pierce && m_pierce == m_slash;
+		}
+
+		public float Elemental() {
+			return m_fire + m_frost + m_lightning + m_poison + m_spirit;
 		}
 
 		public float Physical() {
 			return m_blunt + m_pierce + m_slash;
-		}
-
-		public bool IsPhysical() {
-			return m_blunt != 0 && m_blunt == m_pierce && m_pierce == m_slash;
 		}
 
 		public float Total() {
@@ -121,6 +197,8 @@ namespace RunicPower.Core {
 			m_lightning = 0;
 			m_poison = 0;
 			m_spirit = 0;
+			m_chop = 0;
+			m_pickaxe = 0;
 			return this;
 		}
 
@@ -137,6 +215,8 @@ namespace RunicPower.Core {
 			if (dmgType is HitData.DamageType.Lightning) m_lightning = value;
 			if (dmgType is HitData.DamageType.Poison) m_poison = value;
 			if (dmgType is HitData.DamageType.Spirit) m_spirit = value;
+			if (dmgType is HitData.DamageType.Chop) m_chop = value;
+			if (dmgType is HitData.DamageType.Pickaxe) m_pickaxe = value;
 		}
 
 		public float GetByType(HitData.DamageType dmgType) {
@@ -148,6 +228,8 @@ namespace RunicPower.Core {
 			if (dmgType is HitData.DamageType.Lightning) return m_lightning;
 			if (dmgType is HitData.DamageType.Poison) return m_poison;
 			if (dmgType is HitData.DamageType.Spirit) return m_spirit;
+			if (dmgType is HitData.DamageType.Chop) return m_chop;
+			if (dmgType is HitData.DamageType.Pickaxe) return m_pickaxe;
 			return 0;
 		}
 
@@ -160,6 +242,8 @@ namespace RunicPower.Core {
 			if (m_lightning != 0) parts.Add($"m_lightning={m_lightning}");
 			if (m_poison != 0) parts.Add($"m_poison={m_poison}");
 			if (m_spirit != 0) parts.Add($"m_spirit={m_spirit}");
+			if (m_chop != 0) parts.Add($"m_chop={m_chop}");
+			if (m_pickaxe != 0) parts.Add($"m_pickaxe={m_pickaxe}");
 
 			var content = String.Join(", ", parts);
 			if (content == "") content = "empty";
@@ -171,27 +255,31 @@ namespace RunicPower.Core {
 	[Serializable]
 	public class RuneEffect {
 		public int duration;
-		public string target;
+		public string target; 
 
-		public int healthRegen;
-		public int staminaRegen;
+		public bool healthRegen;
+		public bool staminaRegen;
 
-		public decimal healthBack;
+		public bool healthBack;
 		public decimal staminaBack;
 
-		public int healthRecover;
-		public int staminaRecover;
+		public bool healthRecover;
+		public bool staminaRecover;
 
 		public string physicalResitance;
 		public string elementalResistance;
 
-		public DamageTypeValues doDamage = new DamageTypeValues();
-		public DamageTypeValues doResist = new DamageTypeValues();
-		public DamageTypeValues doPower = new DamageTypeValues();
-		public DamageTypeValues doHealHP = new DamageTypeValues();
-		public DamageTypeValues doHealST = new DamageTypeValues();
+		public bool damage;
+		public DamageMode damage_mode;
+		public HitData.DamageType damage_type;
 
-		public decimal stealthiness;
+		// public DamageTypeFlags damage = new DamageTypeFlags();
+		public DamageTypeFlags resist = new DamageTypeFlags();
+		public DamageTypeFlags power = new DamageTypeFlags();
+
+		public bool stealthiness;
+
+		public decimal v1, vx, v100, value;
 
 		public bool stagger;
 		public bool pushback;
@@ -202,17 +290,8 @@ namespace RunicPower.Core {
 		public bool cripple;
 		public bool poison;
 
-		public decimal expose;
-		public decimal movementBonus;
-		public bool ignoreFallDamage;
-
-		public bool DoDamage() {
-			return doDamage.Total() != 0;
-		}
-
-		public bool DoHeal() {
-			return (doHealST.Total() + doHealHP.Total()) != 0;
-		}
+		public bool expose;
+		public bool movementBonus;
 	}
 
 	[Serializable]
@@ -232,4 +311,10 @@ namespace RunicPower.Core {
 			return this;
 		}
 	}
+}
+
+public enum DamageMode {
+	Weapon = 1,
+	Shield = 2,
+	Skill = 4
 }

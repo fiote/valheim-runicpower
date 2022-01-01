@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using UnityEngine;
 
 namespace RunicPower.Patches {
 
@@ -42,6 +43,17 @@ namespace RunicPower.Patches {
 			__instance.m_character?.ExtendedCharacter(true)?.AddRune(rune);
 
 			SEMan_Prototype.UnsetTemp();
+		}
+	}
+
+	[HarmonyPatch(typeof(SEMan), "ModifyStealth")]
+	public static class SEMan_ModifyStealth_Patch {
+		public static void Postfix(SEMan __instance, float baseStealth, ref float stealth) {
+			var runic = __instance.m_character?.ExtendedCharacter(true)?.runicStealth ?? 0;
+			if (runic != 0) {
+				var bf = stealth;
+				stealth -= runic / 100f;
+			}
 		}
 	}
 }

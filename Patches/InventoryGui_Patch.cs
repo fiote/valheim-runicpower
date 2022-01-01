@@ -10,7 +10,6 @@ namespace RunicPower.Patches {
 	public static class InventoryGui_Awake_Patch {
 		public static void Postfix(InventoryGui __instance) {
 			SpellsBar.CreateInventoryBar(__instance);
-			RunicPower.CreateCraftAllButton(__instance);
 			RunicPower.CreateRankTabs(__instance);
 		}
 	}
@@ -21,6 +20,7 @@ namespace RunicPower.Patches {
 			if (!__instance.m_animator.GetBool("visible")) {
 				SpellsBar.UpdateVisibility();
 			}
+			SpellsBar.UpdateInventory();
 		}
 	}
 
@@ -33,30 +33,43 @@ namespace RunicPower.Patches {
 		}
 	}
 
+
+	[HarmonyPatch(typeof(InventoryGui), "OnCraftPressed")]
+	public static class InventoryGui_OnCraftPressed_Patch {
+		public static bool Prefix(InventoryGui __instance) {
+			// getting the selected recipe
+			var recipe = __instance.m_selectedRecipe.Key;
+			// checking if it'a rune recipe
+			var runeData = recipe?.m_item?.m_itemData?.GetRuneData();
+			// if it is
+			if (runeData != null) {
+				// and we're not resting
+				if (!RunicPower.IsResting()) return RunicPower.ShowMessage(MsgKey.ONLY_WHEN_RESTING, false);
+				// if the rune we're crafting already exists on the spellsbar and its fullstack
+				var exists = SpellsBar.FindAnother(runeData, true);
+				if (exists != null) return RunicPower.ShowMessage(MsgKey.SAME_RUNE_MULTIPLE, false);
+			}
+			// otherwise do the normal flow
+			return true;
+		}
+	}
+
 	[HarmonyPatch(typeof(InventoryGui), "DoCrafting")]
 	public static class InventoryGui_DoCrafting_Patch {
 		public static bool Prefix(InventoryGui __instance, Player player) {
 			// if it's not a rune, do the normal flow
 			var recipe = __instance.m_craftRecipe;
 			var data = recipe?.m_item?.m_itemData?.GetRuneData();
-			if (data == null) {
-				RunicPower.StopCraftingAll(false);
-				return true;
-			}
-			// if the player does not have the requeriments, do the normal flow
+			if (data == null) return true;
+			// if the player does not have the requeriments, do the normal flow			
 			var qualityLevel = 1;
-			if (!player.HaveRequirements(__instance.m_craftRecipe, discover: false, qualityLevel) && !player.NoCostCheat()) {
-				RunicPower.StopCraftingAll(false);
-				return true;
-			}
+			if (!player.HaveRequirements(__instance.m_craftRecipe, discover: false, qualityLevel) && !player.NoCostCheat()) return true;
 
 			// getting hte spell inventory
 			var inv = SpellsBar.invBarGrid.m_inventory;
+			
 			// if there is not an 'empty' slot, do the normal flow
-			if (!inv.HaveEmptySlot()) {
-				RunicPower.StopCraftingAll(false);
-				return true;
-			}
+			if (!inv.HaveEmptySlot()) return true;
 
 			var craftItem = recipe.m_item;
 			var crafted = inv.AddItem(craftItem.gameObject.name, recipe.m_amount, qualityLevel, __instance.m_craftVariant, player.GetPlayerID(), player.GetPlayerName());
@@ -79,31 +92,6 @@ namespace RunicPower.Patches {
 			return false;
 		}
 	}
-
-	[HarmonyPatch(typeof(InventoryGui), "UpdateRecipe")]
-	public static class InventoryGui_UpdateRecipe_Patch {
-		public static void Postfix(InventoryGui __instance, Player player, float dt) {
-			if (__instance.m_craftTimer == -1f && __instance.m_craftRecipe != null) {
-				__instance.m_craftTimer = -0.5f;
-				RunicPower.TryCraftingMore();
-			}
-		}
-	}
-
-	[HarmonyPatch(typeof(InventoryGui), "OnCraftCancelPressed")]
-	public static class InventoryGui_OnCraftCancelPressed_Patch {
-		public static void Prefix(InventoryGui __instance) {
-			RunicPower.StopCraftingAll(false);
-		}
-	}
-
-	[HarmonyPatch(typeof(InventoryGui), "OnCraftPressed")]
-	public static class InventoryGui_OnCraftPressed_Patch {
-		public static void Postfix(InventoryGui __instance) {
-			if (__instance.m_craftRecipe == null) RunicPower.StopCraftingAll(false);
-		}
-	}
-
 
 	[HarmonyPatch(typeof(InventoryGui), "SetRecipe")]
 	public static class InventoryGui_SetRecipe_Patch {
@@ -131,25 +119,97 @@ namespace RunicPower.Patches {
 		}
 	}
 
+	[HarmonyPatch(typeof(InventoryGui), "UpdateContainer")]
+	public static class InventoryGui_UpdateContainer_Patch {
+
+		static void PrefixUpdateContainer(InventoryGui __instance, Player player) {
+			if (!__instance.m_animator.GetBool("visible")) {
+				return;
+			}
+			if (__instance.m_currentContainer != null && __instance.m_currentContainer.IsOwner()) {
+				__instance.m_currentContainer.SetInUse(inUse: true);
+				__instance.m_container.gameObject.SetActive(true);
+				__instance.m_containerGrid.UpdateInventory(__instance.m_currentContainer.GetInventory(), null, __instance.m_dragItem);
+				__instance.m_containerName.text = Localization.instance.Localize(__instance.m_currentContainer.GetInventory().GetName());
+				if (__instance.m_firstContainerUpdate) {
+					__instance.m_containerGrid.ResetView();
+					__instance.m_firstContainerUpdate = false;
+				}
+				if (Vector3.Distance(__instance.m_currentContainer.transform.position, player.transform.position) > __instance.m_autoCloseDistance) {
+					__instance.CloseContainer();
+				}
+			} else {
+				__instance.m_container.gameObject.SetActive(false);
+				if (__instance.m_dragInventory != null && __instance.m_dragInventory != Player.m_localPlayer.GetInventory() && __instance.m_dragInventory.m_name != RunicPower.invName) {
+					__instance.SetupDragItem(null, null, 1);
+				}
+			}
+		}
+
+		public static bool Prefix(InventoryGui __instance, Player player) {
+			PrefixUpdateContainer(__instance, player);
+			return false;
+		}
+	}
+
 	[HarmonyPatch(typeof(InventoryGui), "OnSelectedItem")]
 	public static class InventoryGui_OnSelectedItem_Patch {
 		public static bool Prefix(InventoryGui __instance, InventoryGrid grid, ItemDrop.ItemData item, Vector2i pos, InventoryGrid.Modifier mod) {
-			// if we're not moving from the spellbars, do nothing (normal flow)
-			if (__instance.m_dragInventory?.m_name != "spellsBarInventory") return true;
-			// if we moving TO the spellsbars, do nothing (normal flow)
-			if (grid.m_inventory?.m_name == "spellsBarInventory") return true;
-			// so if we're moving from the spellsbar to another inventory
-			ItemDrop.ItemData itemAt = grid.GetInventory().GetItemAt(pos.x, pos.y);
-			if (itemAt != null) {
-				// and there is an item at the destination
-				var runeData = itemAt.GetRuneData();
-				// and its not a rune
-				if (runeData == null) {
-					// we cant swap that!
-					Player.m_localPlayer.Message(MessageHud.MessageType.Center, "You can't swap a rune for a non-rune item.");
-					return false;
+			string invDrag = "", invDrop = "";
+			ItemDrop.ItemData itemDrag = null, itemDrop = null;
+			RuneData runeDrag = null, runeDrop = null;
+
+			if (__instance.m_dragInventory == null) {
+				invDrag = grid?.m_inventory?.m_name;
+				
+				itemDrag = item;
+			} else {
+				invDrag = __instance.m_dragInventory?.m_name;
+				invDrop = grid?.m_inventory?.m_name;
+
+				itemDrag = __instance.m_dragItem;
+				itemDrop = grid.m_inventory.GetItemAt(pos.x, pos.y);
+			}
+
+			runeDrag = itemDrag?.GetRuneData();
+			runeDrop = itemDrop?.GetRuneData();
+
+			var isRuneDrag = runeDrag != null;
+			var isRuneDrop = runeDrop != null;
+
+			var spellsbarInvolved = (invDrag == RunicPower.invName || invDrop == RunicPower.invName);
+			var spellsbarOnly = (invDrag == RunicPower.invName && invDrop == RunicPower.invName);
+			
+			// if this has nothing to do with the spellsbar, simply return true
+			if (!spellsbarInvolved) return true;
+
+			// if we're not resting, we cant manage the spellsbar
+			if (!RunicPower.IsResting()) return RunicPower.ShowMessage(MsgKey.ONLY_WHEN_RESTING, false);
+
+			// if we're still on the drag part, return true
+			if (invDrop == "") return true;
+
+			// if we're simply dropping what we dragged, return true
+			if (itemDrag == itemDrop) return true;
+
+			// if we're dropping a rune on the spellsbar
+			if (invDrop == RunicPower.invName) {
+				// check if that rune is already on the spellsbar
+				var exists = SpellsBar.FindAnother(runeDrag, false);
+				// if there is one
+				if (exists != null) {
+					// but it's where we're dropping it (stacking up), return true
+					if (exists == itemDrop) return true;
+					// if we're moving the entire stack, return true
+					if (exists == itemDrag && itemDrag.m_stack == __instance.m_dragAmount) return true;
+					// otherwise, prevent it
+					return RunicPower.ShowMessage(MsgKey.SAME_RUNE_MULTIPLE, false);
 				}
 			}
+			// if this is happening all inside the spellsbar, simply return true
+			if (spellsbarOnly) return true;
+			// if we're trying to swap a rune for a non-rune, stop here
+			if (itemDrop != null && isRuneDrag != isRuneDrop) return RunicPower.ShowMessage(MsgKey.CANT_SWAP_THOSE, false);
 			return true;
 		}
 	}
@@ -158,7 +218,6 @@ namespace RunicPower.Patches {
 	public static class InventoryGui_OnTabCraftPressed_Patch {
 		public static void Prefix(InventoryGui __instance) {
 			if (!RunicPower.configRanksTabEnabled.Value) return;
-
 			RunicPower.onTabPressed(0, false);
 		}
 	}
@@ -167,7 +226,6 @@ namespace RunicPower.Patches {
 	public static class InventoryGui_SetupCrafting_Patch {
 		public static void Prefix(InventoryGui __instance) {
 			if (!RunicPower.configRanksTabEnabled.Value) return;
-
 			RunicPower.onTabPressed(0, false);
 			RunicPower.UpdateVisibilityRankTabs();
 		}
@@ -177,7 +235,6 @@ namespace RunicPower.Patches {
 	public static class InventoryGui_UpdateRecipeList_Patch {
 		public static void Prefix(InventoryGui __instance, ref List<Recipe> recipes) {
 			if (!RunicPower.configRanksTabEnabled.Value) return;
-
 			var station = Player.m_localPlayer.GetCurrentCraftingStation();
 
 			if (station == null && RunicPower.craftRank > 0) {

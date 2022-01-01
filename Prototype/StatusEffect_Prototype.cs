@@ -12,7 +12,6 @@ namespace RunicPower.Patches {
 			var ext = mapping.ContainsKey(key) ? mapping[key] : null;
 			if (ext == null && create) {
 				mapping[key] = ext = new StatusEffect_Extended();
-				RunicPower.Debug("ExtendedStatusEffect: " + mapping.Count);
 			}
 			return ext;
 		}

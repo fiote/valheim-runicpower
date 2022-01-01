@@ -6,25 +6,53 @@
         "enabled": true,
         "repairStation": ""
     },
+    "reSets": {
+        "s1": [
+            "Resin",
+            "RoundLog",
+            "Bloodbag",
+            "Obsidian",
+            "BlackMetalScrap"
+        ],
+        "s2": [
+            "Flint",
+            "Thistle",
+            "Entrails",
+            "FreezeGland",
+            "BlackMetalScrap"
+        ],
+        "s3": [
+            "Feathers",
+            "Blueberries",
+            "ElderBark",
+            "WolfMeat",
+            "Cloudberry"
+        ],
+        "s4": [
+            "Dandelion",
+            "BoneFragments",
+            "Ooze",
+            "WolfPelt",
+            "Needle"
+        ]
+    },
     "runes": [
         // ===== GENERIC ============================================
+        // RECALLS
         {
-            "name": "Recall",
+            "name": "Recall (Meadows)",
+            "ranked": false,
+            "rank": 1,
             "type": "Spell",
             "archetype": "Generic",
-            "description": "Returns you back to your resting place.",
+            "description": "Returns you back to your resting place (no ore/metals allowed).",
             "implemented": true,
+            "maxstack":  1,
             "cooldown": 300,
             "recipe": {
-                "name": "Recipe_Generic_Recall",
-                "item": "Generic_Recall",
-                "amount": 1,
-                "resources": [
-                    {
-                        "item": "GreydwarfEye",
-                        "amount": 10
-                    }
-                ]
+                "name": "Recipe_Recall_Meadows",
+                "item": "Generic_Recall_Meadows",
+                "amount": 1
             },
             "resources": [
                 "GreydwarfEye:10"
@@ -34,6 +62,326 @@
             },
             "fxcustom": "recall"
         },
+        {
+            "name": "Recall (Black Forest)",
+            "ranked": false,
+            "rank": 2,
+            "type": "Spell",
+            "archetype": "Generic",
+            "description": "Returns you back to your resting place (Black Forest's ore/metals allowed).",
+            "implemented": true,
+            "maxstack": 1,
+            "cooldown": 300,
+            "recipe": {
+                "name": "Recipe_Recall_BlackForest",
+                "item": "Generic_Recall_BlackForest",
+                "amount": 1
+            },
+            "resources": [
+                "GreydwarfEye:10",
+                "Bronze:1"
+            ],
+            "sfx": {
+                "name": "sfx_OpenPortal"
+            },
+            "fxcustom": "recall",
+            "warpfix": "blackforest"
+        },
+        {
+            "name": "Recall (Swamp)",
+            "ranked": false,
+            "rank": 3,
+            "type": "Spell",
+            "archetype": "Generic",
+            "description": "Returns you back to your resting place (Swamp's ore/metals allowed).",
+            "implemented": true,
+            "maxstack": 1,
+            "cooldown": 300,
+            "recipe": {
+                "name": "Recipe_Recall_Swamp",
+                "item": "Generic_Recall_Swamp",
+                "amount": 1
+            },
+            "resources": [
+                "GreydwarfEye:10",
+                "Iron:1"
+            ],
+            "sfx": {
+                "name": "sfx_OpenPortal"
+            },
+            "fxcustom": "recall",
+            "warpfix": "swamp"
+        },
+        {
+            "name": "Recall (Montains)",
+            "ranked": false,
+            "rank": 4,
+            "type": "Spell",
+            "archetype": "Generic",
+            "description": "Returns you back to your resting place (Mountains' ore/metals allowed).",
+            "implemented": true,
+            "maxstack": 1,
+            "cooldown": 300,
+            "recipe": {
+                "name": "Recipe_Recall_Mountains",
+                "item": "Generic_Recall_Mountains",
+                "amount": 1
+            },
+            "resources": [
+                "GreydwarfEye:10",
+                "Silver:1"
+            ],
+            "sfx": {
+                "name": "sfx_OpenPortal"
+            },
+            "fxcustom": "recall",
+            "warpfix": "mountains"
+        },
+        {
+            "name": "Recall (Plains)",
+            "ranked": false,
+            "rank": 5,
+            "type": "Spell",
+            "archetype": "Generic",
+            "description": "Returns you back to your resting place (Plains' ore/metals allowed).",
+            "implemented": true,
+            "maxstack": 1,
+            "cooldown": 300,
+            "recipe": {
+                "name": "Recipe_Recall_Plains",
+                "item": "Generic_Recall_Plains",
+                "amount": 1
+            },
+            "resources": [
+                "GreydwarfEye:10",
+                "BlackMetal:1"
+            ],
+            "sfx": {
+                "name": "sfx_OpenPortal"
+            },
+            "fxcustom": "recall",
+            "warpfix": "plains"
+        },
+        // LUMBERJACK
+        {
+            "name": "Enchant Axe I",
+            "ranked": false,
+            "rank": 1,
+            "type": "Buff",
+            "archetype": "Generic",
+            "description": "You coat your axe with oils of the forest, improving its wood-cutting power for a while.",
+            "implemented": true,
+            "cooldown": 5,
+            "recipe": {
+                "prefab": "Generic_Lumberjack",
+                "name": "Recipe_Lumberjack_Wish_1",
+                "item": "Generic_Lumberjack_Wish_1",
+                "amount": 1
+            },
+            "resources": [
+                "BeechSeeds:1"
+            ],
+            "effect": {
+                "target": "self",
+                "power": {
+                    "chop": true
+                },
+                "value": 50,
+                "duration": 300
+            }
+        },
+        {
+            "name": "Enchant Axe II",
+            "ranked": false,
+            "rank": 2,
+            "type": "Buff",
+            "archetype": "Generic",
+            "description": "You coat your axe with oils of the forest, improving its wood-cutting power for a while.",
+            "implemented": true,
+            "cooldown": 5,
+            "recipe": {
+                "prefab": "Generic_Lumberjack",
+                "name": "Recipe_Lumberjack_Wish_2",
+                "item": "Generic_Lumberjack_Wish_2",
+                "amount": 1
+            },
+            "resources": [
+                "PineCone:1",
+                "FirCone:1"
+            ],
+            "effect": {
+                "target": "self",
+                "power": {
+                    "chop": true
+                },
+                "value": 100,
+                "duration": 400
+            }
+        },
+        {
+            "name": "Enchant Axe III",
+            "ranked": false,
+            "rank": 3,
+            "type": "Buff",
+            "archetype": "Generic",
+            "description": "You coat your axe with oils of the forest, improving its wood-cutting power for a while.",
+            "implemented": true,
+            "cooldown": 5,
+            "recipe": {
+                "prefab": "Generic_Lumberjack",
+                "name": "Recipe_Lumberjack_Wish_3",
+                "item": "Generic_Lumberjack_Wish_3",
+                "amount": 1
+            },
+            "resources": [
+                "BirchSeeds:1"
+            ],
+            "effect": {
+                "target": "self",
+                "power": {
+                    "chop": true
+                },
+                "value": 150,
+                "duration": 500
+            }
+        },
+        {
+            "name": "Enchant Axe IV",
+            "ranked": false,
+            "rank": 4,
+            "type": "Buff",
+            "archetype": "Generic",
+            "description": "You coat your axe with oils of the forest, improving its wood-cutting power for a while.",
+            "implemented": true,
+            "cooldown": 5,
+            "recipe": {
+                "prefab": "Generic_Lumberjack",
+                "name": "Recipe_Lumberjack_Wish_4",
+                "item": "Generic_Lumberjack_Wish_4",
+                "amount": 1
+            },
+            "resources": [
+                "Acorn:1"
+            ],
+            "effect": {
+                "target": "self",
+                "power": {
+                    "chop": true
+                },
+                "value": 200,
+                "duration": 600
+            }
+        },
+        // MINER
+        {
+            "name": "Enchant Pickaxe I",
+            "ranked": false,
+            "rank": 1,
+            "type": "Buff",
+            "archetype": "Generic",
+            "description": "You sharpen your pickaxe with precious ores, improving its mining power for a while.",
+            "implemented": true,
+            "cooldown": 5,
+            "recipe": {
+                "prefab": "Generic_Miner",
+                "name": "Recipe_Miner_Wish_1",
+                "item": "Generic_Miner_Wish_1",
+                "amount": 1
+            },
+            "resources": [
+                "CopperOre:1"
+            ],
+            "effect": {
+                "target": "self",
+                "power": {
+                    "pickaxe": true
+                },
+                "value": 50,
+                "duration": 300
+            }
+        },
+        {
+            "name": "Enchant Pickaxe II",
+            "ranked": false,
+            "rank": 2,
+            "type": "Buff",
+            "archetype": "Generic",
+            "description": "You sharpen your pickaxe with precious ores, improving its mining power for a while.",
+            "implemented": true,
+            "cooldown": 5,
+            "recipe": {
+                "prefab": "Generic_Miner",
+                "name": "Recipe_Miner_Wish_2",
+                "item": "Generic_Miner_Wish_2",
+                "amount": 1
+            },
+            "resources": [
+                "IronScrap:1"
+            ],
+            "effect": {
+                "target": "self",
+                "power": {
+                    "pickaxe": true
+                },
+                "value": 100,
+                "duration": 400
+            }
+        },
+        {
+            "name": "Enchant Pickaxe III",
+            "ranked": false,
+            "rank": 3,
+            "type": "Buff",
+            "archetype": "Generic",
+            "description": "You sharpen your pickaxe with precious ores, improving its mining power for a while.",
+            "implemented": true,
+            "cooldown": 5,
+            "recipe": {
+                "prefab": "Generic_Miner",
+                "name": "Recipe_Miner_Wish_3",
+                "item": "Generic_Miner_Wish_3",
+                "amount": 1
+            },
+            "resources": [
+                "SilverOre:1"
+            ],
+            "effect": {
+                "target": "self",
+                "power": {
+                    "pickaxe": true
+                },
+                "value": 150,
+                "duration": 500
+            }
+        },
+        {
+            "name": "Enchant Pickaxe IV",
+            "ranked": false,
+            "rank": 4,
+            "type": "Buff",
+            "archetype": "Generic",
+            "description": "You sharpen your pickaxe with precious ores, improving its mining power for a while.",
+            "implemented": true,
+            "cooldown": 5,
+            "recipe": {
+                "prefab": "Generic_Miner",
+                "name": "Recipe_Miner_Wish_4",
+                "item": "Generic_Miner_Wish_4",
+                "amount": 1
+            },
+            "resources": [
+                "BlackMetalScrap:1"
+            ],
+            "effect": {
+                "target": "self",
+                "power": {
+                    "pickaxe": true
+                },
+                "value": 200,
+                "duration": 600
+            }
+        },
+
         /*
         {
             "name": "Netherport",
@@ -50,31 +398,10 @@
             "implemented": false
         },
         {
-            "name": "Blacksmith's Wish",
-            "type": "Spell",
-            "archetype": "Generic",
-            "description": "Repair all equipament in the caster's inventory.",
-            "implemented":  false
-        },
-        {
             "name": "Builder's Wish",
             "type": "Spell",
             "archetype": "Buff",
             "description": "Lifts any station requeriment to build or repair constructions.",
-            "implemented": false
-        },
-        {
-            "name": "Fragile Stones",
-            "type": "Spell",
-            "archetype": "Buff",
-            "description": "Stones will shatter with a single attack.",
-            "implemented": false
-        },
-        {
-            "name": "Fragile Trees",
-            "type": "Spell",
-            "archetype": "Buff",
-            "description": "Trees will fall with a single attack.",
             "implemented": false
         },
         */
@@ -91,13 +418,7 @@
                 "item": "Warrior_Bladestorm",
                 "amount": 1
             },
-            "resources": [
-                "Flint",
-                "BoneFragments",
-                "Bloodbag",
-                "Crystal",
-                "BlackMetalScrap"
-            ],
+            "reSet": "s1",
             "vfx": {
                 "name": "vfx_sledge_hit",
                 "list": [ "waves", "splosh" ]
@@ -106,10 +427,15 @@
                 "name": "sfx_metal_blocked"
             },
             "effect": {
-                "doDamage": { "m_slash": 100 },
+                "damage": true,
+                "damage_mode": 1, // Weapon
+                "damage_type": 2, // Slash
+                "v1": 150,
+                "v100": 300,
                 "pushback": true,
                 "target": "foes"
             }
+
         },
         {
             "name": "Inspiring Shout",
@@ -123,13 +449,7 @@
                 "item": "Warrior_InspiringShout",
                 "amount": 1
             },
-            "resources": [
-                "Flint",
-                "BoneFragments",
-                "Bloodbag",
-                "Crystal",
-                "BlackMetalScrap"
-            ],
+            "reSet": "s2",
             "vfx": {
                 "name": "vfx_Potion_stamina_medium"
             },
@@ -137,37 +457,10 @@
                 "name": "sfx_Potion_stamina_Start"
             },
             "effect": {
-                "doHealST": { "m_spirit": 100 },
+                "staminaRecover": true,
+                "v1": 5,
+                "v100": 50,
                 "target": "allies"
-            }
-        },
-        {
-            "name": "Stone Rune",
-            "type": "Buff",
-            "archetype": "Warrior",
-            "description": "You call upon the powers of the stone, hardening your skin against physical damage.",
-            "implemented": true,
-            "cooldown": 120,
-            "recipe": {
-                "name": "Recipe_Warrior_Stone",
-                "item": "Warrior_Stone",
-                "amount": 1
-            },
-            "resources": [
-                "Flint",
-                "BoneFragments",
-                "Bloodbag",
-                "Crystal",
-                "BlackMetalScrap"
-            ],
-            "effect": {
-                "doResist": {
-                    "m_pierce": 100,
-                    "m_slash": 100,
-                    "m_blunt": 100
-                },
-                "target": "self",
-                "duration": 60
             }
         },
         {
@@ -176,23 +469,44 @@
             "archetype": "Warrior",
             "description": "You attune yourself to the blood of your foes, stealing a portion of their suffering when you attack them.",
             "implemented": true,
-            "cooldown": 120,
+            "cooldown": 5,
             "recipe": {
                 "name": "Recipe_Warrior_Blood",
                 "item": "Warrior_Blood",
                 "amount": 1
             },
-            "resources": [
-                "Flint",
-                "BoneFragments",
-                "Bloodbag",
-                "Crystal",
-                "BlackMetalScrap"
-            ],
+            "reSet": "s3",
             "effect": {
-                "healthBack": 100,
+                "healthBack": true,
                 "target": "self",
-                "duration": 60
+                "duration": 300,
+                "v1": 2,
+                "v100": 10
+            }
+        },
+        {
+            "name": "Stone Rune",
+            "type": "Buff",
+            "archetype": "Warrior",
+            "description": "You call upon the powers of the stone, hardening your skin against physical damage.",
+            "implemented": true,
+            "cooldown": 5,
+            "recipe": {
+                "name": "Recipe_Warrior_Stone",
+                "item": "Warrior_Stone",
+                "amount": 1
+            },
+            "reSet": "s4",
+            "effect": {
+                "resist": {
+                    "pierce": true,
+                    "slash": true,
+                    "blunt": true
+                },
+                "target": "self",
+                "duration": 300,
+                "v1": 5,
+                "v100": 30
             }
         },
         // ===== ROGUE ==============================================
@@ -201,7 +515,7 @@
             "name": "Poisonous Shiv",
             "type": "Spell",
             "archetype": "Rogue",
-            "description": "You throw uncountable daggers in every direction, all them coated with deadly poison.",
+            "description": "You throw uncountable projectiles coated with posion in every direction.",
             "implemented": true,
             "cooldown": 15,
             "recipe": {
@@ -209,13 +523,7 @@
                 "item": "Rogue_PoisonousShiv",
                 "amount": 1
             },
-            "resources": [
-                "NeckTail",
-                "MushroomYellow",
-                "Ooze",
-                "WolfFang",
-                "BlackMetalScrap"
-            ],
+            "reSet": "s1",
             "vfx": {
                 "name": "vfx_ProjectileHit"
             },
@@ -223,7 +531,11 @@
                 "name": "sfx_barnacle_destroyed"
             },
             "effect": {
-                "doDamage": { "m_pierce": 100 },
+                "damage": true,
+                "damage_mode": 1, // Weapon
+                "damage_type": 4, // Pierce
+                "v1": 100,
+                "v2": 200,
                 "poison": true,
                 "target": "foes",
                 "duration": 60
@@ -241,13 +553,7 @@
                 "item": "Rogue_ExposeWeakness",
                 "amount": 1
             },
-            "resources": [
-                "NeckTail",
-                "MushroomYellow",
-                "Ooze",
-                "WolfFang",
-                "BlackMetalScrap"
-            ],
+            "reSet": "s2",
             "vfx": {
                 "name": "vfx_damaged_cart"
             },
@@ -255,9 +561,32 @@
                 "name": "sfx_serpent_attack_trigger"
             },
             "effect": {
-                "expose": 100,
+                "expose": true,
+                "v1": 10,
+                "v100": 300,
                 "target": "foes",
                 "duration": 60
+            }
+        },
+        {
+            "name": "Night Rune",
+            "type": "Buff",
+            "archetype": "Rogue",
+            "description": "The night embraces you, blurring your silhouette in the eyes of enemies.",
+            "implemented": true,
+            "cooldown": 5,
+            "recipe": {
+                "name": "Recipe_Rogue_Night",
+                "item": "Rogue_Night",
+                "amount": 1
+            },
+            "reSet": "s3",
+            "effect": {
+                "stealthiness": true,
+                "target": "self",
+                "duration": 300,
+                "v1": 5,
+                "v100": 50
             }
         },
         {
@@ -272,78 +601,16 @@
                 "item": "Rogue_Swift",
                 "amount": 1
             },
-            "resources": [
-                "NeckTail",
-                "MushroomYellow",
-                "Ooze",
-                "WolfFang",
-                "BlackMetalScrap"
-            ],
+            "reSet": "s4",
             "effect": {
-                "movementBonus": 100,
-                "ignoreFallDamage": true,
+                "movementBonus": true,
                 "target": "allies",
-                "duration": 300
-            }
-        },
-        {
-            "name": "Night Rune",
-            "type": "Buff",
-            "archetype": "Rogue",
-            "description": "The night embraces you, blurring your silhouette in the eyes of enemies.",
-            "implemented": true,
-            "cooldown": 120,
-            "recipe": {
-                "name": "Recipe_Rogue_Night",
-                "item": "Rogue_Night",
-                "amount": 1
-            },
-            "resources": [
-                "NeckTail",
-                "MushroomYellow",
-                "Ooze",
-                "WolfFang",
-                "BlackMetalScrap"
-            ],
-            "effect": {
-                "stealthiness": 100,
-                "target": "self",
-                "duration": 60
+                "duration": 300,
+                "v1": 5,
+                "v100": 50
             }
         },
         // ===== CLERIC =============================================
-        {
-            "name": "Healing Circle",
-            "type": "Spell",
-            "archetype": "Cleric",
-            "description": "You chant forgotten words, calling spirits to mend the injuries of your party.",
-            "implemented": true,
-            "cooldown": 30,
-            "recipe": {
-                "name": "Recipe_Cleric_HealingCircle",
-                "item": "Cleric_HealingCircle",
-                "amount": 1
-            },
-            "resources": [
-                "Dandelion",
-                "Blueberries",
-                "Entrails",
-                "WolfPelt",
-                "BlackMetalScrap"
-            ],
-            "vfx": {
-                "name": "vfx_WishbonePing"
-            },
-            "sfx": {
-                "name": "sfx_greydwarf_shaman_heal"
-            },
-            "effect": {
-                "doHealHP": {
-                    "m_spirit": 50
-                },
-                "target": "allies"
-            }
-        },
         {
             "name": "Shield Slam",
             "type": "Spell",
@@ -356,13 +623,7 @@
                 "item": "Cleric_ShieldSlam",
                 "amount": 1
             },
-            "resources": [
-                "Dandelion",
-                "Blueberries",
-                "Entrails",
-                "WolfPelt",
-                "BlackMetalScrap"
-            ],
+            "reSet": "s1",
             "vfx": {
                 "name": "vfx_perfectblock"
             },
@@ -370,12 +631,39 @@
                 "name": "sfx_perfectblock"
             },
             "effect": {
-                "doDamage": {
-                    "m_blunt": 100,
-                    "m_spirit": 100
-                },
+                "damage": true,
+                "damage_mode": 2, // Shield
+                "damage_type": 1, // Blunt
+                "v1": 150,
+                "v100": 300,
                 "stagger": true,
                 "target": "foes"
+            }
+        },
+        {
+            "name": "Healing Circle",
+            "type": "Spell",
+            "archetype": "Cleric",
+            "description": "You chant forgotten words, calling spirits to mend the injuries of your party.",
+            "implemented": true,
+            "cooldown": 30,
+            "recipe": {
+                "name": "Recipe_Cleric_HealingCircle",
+                "item": "Cleric_HealingCircle",
+                "amount": 1
+            },
+            "reSet": "s2",
+            "vfx": {
+                "name": "vfx_WishbonePing"
+            },
+            "sfx": {
+                "name": "sfx_greydwarf_shaman_heal"
+            },
+            "effect": {
+                "healthRecover": true,
+                "v1": 5,
+                "v100": 50,
+                "target": "allies"
             }
         },
         {
@@ -390,15 +678,11 @@
                 "item": "Cleric_Light",
                 "amount": 1
             },
-            "resources": [
-                "Dandelion",
-                "Blueberries",
-                "Entrails",
-                "WolfPelt",
-                "BlackMetalScrap"
-            ],
+            "reSet": "s3",
             "effect": {
-                "healthRegen": 100,
+                "healthRegen": true,
+                "v1": 10,
+                "v100": 200,
                 "target": "allies",
                 "duration": 300
             }
@@ -413,17 +697,13 @@
             "recipe": {
                 "name": "Recipe_Cleric_Vigor",
                 "item": "Cleric_Vigor",
-                "amount":  1
+                "amount": 1
             },
-            "resources": [
-                "Dandelion",
-                "Blueberries",
-                "Entrails",
-                "WolfPelt",
-                "BlackMetalScrap"
-            ],
+            "reSet": "s4",
             "effect": {
-                "staminaRegen": 100,
+                "staminaRegen": true,
+                "v1": 10,
+                "v100": 100,
                 "target": "allies",
                 "duration": 300
             }
@@ -431,43 +711,6 @@
         // ==========================================================
         // ===== WIZARD =============================================
         // ==========================================================
-        {
-            "name": "Ice Shard",
-            "type": "Spell",
-            "archetype": "Wizard",
-            "description": "A cold breeze passes through and solidifies at the whim of your thoughts, ready to be cast upon your enemies.",
-            "implemented": true,
-            "cooldown": 15,
-            "recipe": {
-                "name": "Recipe_Wizard_Iceshard",
-                "item": "Wizard_Iceshard",
-                "amount": 1
-            },
-            "resources": [
-                "Resin",
-                "Thistle",
-                "ElderBark",
-                "FreezeGland",
-                "BlackMetalScrap"
-            ],
-            "sfx": {
-                "name": "sfx_dragon_coldball_launch"
-            },
-            "effect": {
-                "doDamage": {
-                    "m_frost": 100
-                },
-                "slow": true,
-                "duration": 10,
-                "target": "projectile"
-            },
-            "projectile": {
-                "name": "hatchling_cold_projectile",
-                "speed": 30,
-                "duration": 5,
-                "explode": true
-            }
-        },
         {
             "name": "Fireball",
             "type": "Spell",
@@ -480,21 +723,17 @@
                 "item": "Wizard_Fireball",
                 "amount": 1
             },
-            "resources": [
-                "Resin",
-                "Thistle",
-                "ElderBark",
-                "FreezeGland",
-                "BlackMetalScrap"
-            ],
+            "reSet": "s1",
             "sfx": {
                 "name": "sfx_GoblinShaman_fireball_launch"
             },
             "effect": {
-                "doDamage": {
-                    "m_fire": 100
-                },
-                "burn": true,
+                "damage": true,
+                "damage_mode": 4, // Skill
+                "damage_type": 32, // Fire
+                "v1": 4,
+                "vx": 1,
+                "burn": false,
                 "duration": 10,
                 "target": "projectile"
             },
@@ -506,34 +745,63 @@
             }
         },
         {
+            "name": "Ice Shard",
+            "type": "Spell",
+            "archetype": "Wizard",
+            "description": "A cold breeze passes through and solidifies at the whim of your thoughts, ready to be cast upon your enemies.",
+            "implemented": true,
+            "cooldown": 15,
+            "recipe": {
+                "name": "Recipe_Wizard_Iceshard",
+                "item": "Wizard_Iceshard",
+                "amount": 1
+            },
+            "reSet": "s2",
+            "sfx": {
+                "name": "sfx_dragon_coldball_launch"
+            },
+            "effect": {
+                "damage": true,
+                "damage_mode": 4, // Skill
+                "damage_type": 64, // Frost
+                "v1": 4,
+                "vx": 1,
+                "slow": true,
+                "duration": 10,
+                "target": "projectile"
+            },
+            "projectile": {
+                "name": "hatchling_cold_projectile",
+                "speed": 30,
+                "duration": 5,
+                "explode": true
+            }
+        },
+        {
             "name": "Ward Rune",
             "type": "Buff",
             "archetype": "Wizard",
             "description": "Your focus allow you to cast a barrier of sorts around yourself, protecting you from elemental harm.",
             "implemented": true,
-            "cooldown": 120,
+            "cooldown": 5,
             "recipe": {
                 "name": "Recipe_Wizard_Ward",
                 "item": "Wizard_Ward",
                 "amount": 1
             },
-            "resources": [
-                "Resin",
-                "Thistle",
-                "ElderBark",
-                "FreezeGland",
-                "BlackMetalScrap"
-            ],
+            "reSet": "s3",
             "effect": {
-                "doResist": {
-                    "m_fire": 100,
-                    "m_frost": 100,
-                    "m_lightning": 100,
-                    "m_poison": 100,
-                    "m_spirit": 100
+                "resist": {
+                    "fire": true,
+                    "frost": true,
+                    "lightning": true,
+                    "poison": true,
+                    "spirit": true
                 },
+                "v1": 5,
+                "v100": 30,
                 "target": "self",
-                "duration": 60
+                "duration": 300
             }
         },
         {
@@ -542,29 +810,25 @@
             "archetype": "Wizard",
             "description": "You clear the mind of your party, allowing them to tap more easily on their elemental powers.",
             "implemented": true,
-            "cooldown": 120,
+            "cooldown": 5,
             "recipe": {
                 "name": "Recipe_Wizard_Mind",
                 "item": "Wizard_Mind",
                 "amount": 1
             },
-            "resources": [
-                "Resin",
-                "Thistle",
-                "ElderBark",
-                "FreezeGland",
-                "BlackMetalScrap"
-            ],
+            "reSet": "s4",
             "effect": {
-                "doPower": {
-                    "m_fire": 100,
-                    "m_frost": 100,
-                    "m_lightning": 100,
-                    "m_poison": 100,
-                    "m_spirit": 100
+                "power": {
+                    "fire": true,
+                    "frost": true,
+                    "lightning": true,
+                    "poison": true,
+                    "spirit": true
                 },
+                "v1": 20,
+                "v100": 200,
                 "target": "allies",
-                "duration": 60
+                "duration": 300
             }
         }
         // ==========================================================
@@ -574,7 +838,7 @@
          - Implode (spell: pull all enemies around the caster and damage them)
          - Lockdown (spell: root all enemies around the caster)
          - Fury Rune (buff: increase the caster attack power while reducing its armor)  
-         - Blade Rune (buff: increase the party's physical attack damage)
+         - Blade Rune (buff: increase the party's physical attack power)
         */
         // ==========================================================
         // ===== DRUID ==============================================
@@ -598,7 +862,7 @@
         // ===== NECROMANCER ========================================
         // ==========================================================
         /* 
-         - Raise (spell: ressurects a nearby dead enemy to fight alongside the caster)
+         - Summon Skeletons (spell: summon some skeletons to fight alongside the caster)
          - Syphon Life (spell/projectile: deals damage to the target and heals the caster)
          - Death Rune (buff: heals the party's when a enemy dies nearby)
          - Decay Rune (buff: any target attacked by the party gets its armor reduced)

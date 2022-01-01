@@ -32,7 +32,6 @@
 
 | Command | Description | Default value | Acceptable values |
 | --- | --- | --- | --- |
-| rp.craftall=flag | Enables the 'Craft All' button on your crafting panel. | true | true/on/1<br/>false/off/0 |
 | rp.ranktabs=flag | Enables the 'Rank Tab's on your crafting panel. | true | true/on/1<br/>false/off/0 |
 | rp.rankx=value | Adjust the rank's buttons horizontal position (left/right). | 0 | any number |
 | rp.ranky=value | Adjust the rank's buttons vertical position (down/up). | 0 | any number |

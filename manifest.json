@@ -1,7 +1,7 @@
 {
     "name": "RunicPower",
-  "version_number": "1.4.2",
-    "website_url": "https://github.com/fiote/RunicPowerValheimMod",
+  "version_number": "2.0.0",
+    "website_url": "https://github.com/fiote/valheim-runicpower",
     "description": "Adds powerful runestones to the game.",
     "dependencies": []
 }

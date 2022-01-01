@@ -9,9 +9,8 @@ namespace RunicPower {
 		public List<Rune> runes = new List<Rune>();
 
 		public float runicMoveBonus = 0;
-		public float runicInvisibilityRange = 0;
+		public float runicStealth = 0;
 		public float runicLifeSteal = 0;
-		public bool runicIgnoreFallDamage = false;
 		public DamageTypeValues runicResistModifier = new DamageTypeValues();
 		public DamageTypeValues runicPowerModifier = new DamageTypeValues();
 
@@ -20,43 +19,24 @@ namespace RunicPower {
 		}
 
 		private void UpdateValues() {
-			RunicPower.Log("======================");
-			RunicPower.Log($"Amount of in-effect runes changed to {runes.Count}. Updating values...");
 			StoreRuneEffects();
 			if (character?.IsPlayer() == true) RunicPower.ClearCache();
 		}
 
 		void StoreRuneEffects() {
 			runicMoveBonus = 0f;
-			runicInvisibilityRange = 0f;
+			runicStealth = 0f;
 			runicLifeSteal = 0f;
-			runicIgnoreFallDamage = false;
 			runicResistModifier.Reset();
 			runicPowerModifier.Reset();
 
 			runes.ForEach(rune => {
 				rune.ModifyEquipmentMovement(ref runicMoveBonus);
-				rune.ModifyInvisibilityRange(ref runicInvisibilityRange);
+				rune.ModifyStealth(ref runicStealth);
 				rune.ModifyHealthSteal(ref runicLifeSteal);
-				rune.ModifyIgnoreFallDamage(ref runicIgnoreFallDamage);
 				rune.ModifyResist(ref runicResistModifier);
 				rune.ModifyPower(ref runicPowerModifier);
 			});
-
-			RunicPower.Log($"runicMoveBonus = {runicMoveBonus}");
-			RunicPower.Log($"runicInvisibilityRange = {runicInvisibilityRange}");
-			RunicPower.Log($"runicLifeSteal = {runicLifeSteal}");
-			RunicPower.Log($"runicIgnoreFallDamage = {runicIgnoreFallDamage}");
-			RunicPower.Log($"runicResistModifier = {runicResistModifier}");
-			RunicPower.Log($"runicPowerModifier = {runicPowerModifier}");
-		}
-
-		public void ApplyResistModifiersToHit(ref HitData hit) {
-			Rune.ApplyModifierToHit(runicResistModifier, ref hit);
-		}
-
-		public void ApplyPowerModifiersToHit(ref HitData hit) {
-			Rune.ApplyModifierToHit(runicPowerModifier, ref hit);
 		}
 
 		public void AddRune(Rune rune) {
@@ -71,10 +51,6 @@ namespace RunicPower {
 				runes.Remove(rune);
 				UpdateValues();
 			}
-		}
-
-		void Log(string message) {
-			RunicPower.Debug(this.character.name + " " + message);
 		}
 	}
 }

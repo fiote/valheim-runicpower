@@ -147,6 +147,22 @@ namespace RunicPower.Core {
 			UpdateExtraTexts();
 		}
 
+		public static ItemDrop.ItemData FindAnother(RuneData runeData, bool checkFull) {
+			var inv = invBarGrid.m_inventory;			
+			var items = inv.GetAllItems();
+
+			foreach (var item in items) {
+				var runeSlot = item?.GetRuneData();
+				if (runeSlot == null) continue;
+				if (runeSlot.name != runeData.name) continue;					
+				var full = item.m_stack >= item.m_shared.m_maxStackSize;
+				if (checkFull) return full ? item : null;
+				return item;
+			}
+
+			return null;
+		}
+
 		public static void ClearBindings() {
 			mapBindingText.Clear();
 			mapCooldownText.Clear();
@@ -419,17 +435,27 @@ namespace RunicPower.Core {
 			return (InventoryGrid inventoryGrid, ItemDrop.ItemData item, Vector2i pos, InventoryGrid.Modifier mod) => {
 				if (mod == InventoryGrid.Modifier.Move) return;
 
+				if (!RunicPower.IsResting()) {
+					RunicPower.ShowMessage(MsgKey.ONLY_WHEN_RESTING);
+					return;
+				}
+
 				var ext = Player.m_localPlayer.ExtendedPlayer(true);
 				var ok = true;
 				ext.SetSelectingRuneItem(item);
+
 				if (inventoryGui.m_dragItem != null) {
 					var rune = inventoryGui.m_dragItem?.GetRuneData();
 					if (rune == null) {
-						Player.m_localPlayer.Message(MessageHud.MessageType.Center, "You can't put a non-rune item on this slot.");
+						RunicPower.ShowMessage(MsgKey.CANT_PLACE_THAT);
 						ok = false;
 					}
 				}
-				if (ok) inventoryGui.OnSelectedItem(inventoryGrid, item, pos, mod);
+
+				if (ok) {
+					inventoryGui.OnSelectedItem(inventoryGrid, item, pos, mod);
+				}
+
 				ext.SetSelectingRuneItem(null);
 			};
 		}

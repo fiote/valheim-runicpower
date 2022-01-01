@@ -40,4 +40,5 @@ namespace RunicPower.Patches {
 			__instance.SetRune(null);
 		}
 	}
+
 }

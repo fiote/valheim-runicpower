@@ -138,11 +138,6 @@ namespace RunicPower {
 
 				// ===== INTERFACE ==============================================
 
-				if (cmd == "craftall") {
-					RunicPower.configsCraftAllEnabled.Value = cvalue.boolvalue;
-					RunicPower.Log("INTERFACE.CRAFTALL config changed to " + cvalue.boolvalue);
-				}
-
 				if (cmd == "ranktabs") {
 					RunicPower.configRanksTabEnabled.Value = cvalue.boolvalue;
 					RunicPower.Log("INTERFACE.RANKTABS config changed to " + cvalue.boolvalue);

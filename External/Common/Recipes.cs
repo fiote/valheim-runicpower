@@ -22,6 +22,7 @@ namespace Common {
 	public class RecipeConfig {
 		public string name;
 		public string item;
+		public string prefab;
 		public int amount;
 		public string craftingStation;
 		public int minStationLevel;
