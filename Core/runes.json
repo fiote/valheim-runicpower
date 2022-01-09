@@ -535,7 +535,7 @@
                 "damage_mode": 1, // Weapon
                 "damage_type": 4, // Pierce
                 "v1": 100,
-                "v2": 200,
+                "v100": 200,
                 "poison": true,
                 "target": "foes",
                 "duration": 60
@@ -733,7 +733,7 @@
                 "damage_type": 32, // Fire
                 "v1": 4,
                 "vx": 1,
-                "burn": false,
+                "burn": true,
                 "duration": 10,
                 "target": "projectile"
             },
