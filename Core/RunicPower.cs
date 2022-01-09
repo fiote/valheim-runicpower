@@ -79,39 +79,46 @@ using UnityEngine.UI;
  * - You can now only manage your spellsbar while resting.
  * - You can now only cast runes from your spellsbar.
  * - You can no longer have duplicated rune stacks on your spellsbar.
- * 
+ *
  * [Generic]
  * - "Recall" rune renamed to "Recall (Meadows)". It now the same restrictions of a portal (i.e: no ore/metals allowed).
  * - New rune: "Recall (Black Forest)". Allows you to teleport even with tin/copper/bronze in your inventory.
  * - New rune: "Recall (Swamp)". Allows you to teleport even with iron in your inventory.
  * - New rune: "Recall (Mountains)". Allows you to teleport even with silver in your inventory.
  * - New rune: "Recall (Plains)". Allows you to teleport even with black metal in your inventory.
- * - New rune: "Enchant Axe". Increase your chopping damage. 
- * - New rune: "Enchant Pickaxe". Increase your mining damage. 
- * 
+ * - New rune: "Enchant Axe". Increase your chopping damage.
+ * - New rune: "Enchant Pickaxe". Increase your mining damage.
+ *
  * [Warrior]
  * - "Blade Storm" now requires a weapon. Its damage is now a percentage of your weapon (from 150% to 300%) instead of a flat amount.
  * - "Inspiring Shout" now recovers a percentage of your max stamina instead of a flat amount.
  * - "Blood Rune" and "Stone Rune" buffs tunned down a bit.
- * 
+ *
  * [Rogue]
  * - "Poisonous Shiv" now requires a weapon. Its damage is now a percentage of your weapon (from 150% to 200%) instead of a flat amount.
  * - "Expose Weakness" should now works alongside all attacks, not only those from runes.
  * - "Night Rune" now increases your stealthness (just like the Troll gear set) instead of trying to mess with other stuff.
  * - "Swift Rune" no longer removes fall damage (it was too OP while also dunking some player's FPS).
- * 
+ *
  * [Cleric]
  * - "Shield Slam" now requires a shield. Its damage is now a percentage of your block power (from 150% to 300%) instead of a flat amount.
  * - "Healing Circle" now recovers a percentage of your max health instead of a flat amount.
  * - "Light Rune" and "Vigor Rune" buffs tunned down a bit.
- * 
+ *
  * [Wizard]
  * - "Fireball" damage no longer scales with weapon, depending only of your wizard level.
- * - "Ice Shard" damage no longer scales with weapon, depending only of your wizard level. 
+ * - "Ice Shard" damage no longer scales with weapon, depending only of your wizard level.
  * - "Ice Shard" slow effect now scales with your wizard level, from 10% (1) to 80% (100).
  * - "Ward Rune" buff tunned down a bit, but should work more properly.
  * - "Mind Rune" buff tunned up. It now should works alongside all attacks, not only those from runes.
 */
+
+
+/* [2.0.1]
+ * Removing forced min level and reanabling burn effect.
+ * Trying to make it work better with craft all mod.
+ * Fixing "v2" on poisonous shiv data (it's v100).
+ */
 
 // TODO: make cooldowns appear on the inventory itself.
 // TODO: INTEGRATION? equip wheel considering runes as consumables (which they are)
@@ -119,7 +126,7 @@ using UnityEngine.UI;
 // MAYBE: change how casting works. Instead of consuming runes, use of kind of MANA resource.
 
 namespace RunicPower {
-	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "2.0.0")]
+	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "2.0.1")]
 	[BepInDependency("com.pipakin.SkillInjectorMod")]
 	[BepInDependency("randyknapp.mods.extendeditemdataframework")]
 
