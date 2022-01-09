@@ -325,7 +325,7 @@ namespace RunicPower.Core {
 			float skill = GetSkillFactor() * 100f;
 			if (skill < 1) skill = 1;
 			if (limits) {
-				var min = GetMinLevel();
+				var min = 1; // GetMinLevel();
 				var max = GetMaxLevel();
 				skill = Mathf.Clamp(skill, min, max);
 			}
@@ -603,7 +603,7 @@ namespace RunicPower.Core {
 				// calculating the total burn value and adding it
 				var burnTotal = burnValue * burning.m_ttl;
 				burning.AddFireDamage(burnTotal);
-				//target.m_seman.AddStatusEffect(burning);
+				target.m_seman.AddStatusEffect(burning);
 			}
 
 			if (data.effect.slow) {
