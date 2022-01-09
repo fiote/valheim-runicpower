@@ -44,10 +44,16 @@ namespace RunicPower.Patches {
 			// if it is
 			if (runeData != null) {
 				// and we're not resting
-				if (!RunicPower.IsResting()) return RunicPower.ShowMessage(MsgKey.ONLY_WHEN_RESTING, false);
+				if (!RunicPower.IsResting()) {
+					__instance.OnCraftCancelPressed();
+					return RunicPower.ShowMessage(MsgKey.ONLY_WHEN_RESTING, false);
+				}
 				// if the rune we're crafting already exists on the spellsbar and its fullstack
 				var exists = SpellsBar.FindAnother(runeData, true);
-				if (exists != null) return RunicPower.ShowMessage(MsgKey.SAME_RUNE_MULTIPLE, false);
+				if (exists != null) {
+					__instance.OnCraftCancelPressed();
+					return RunicPower.ShowMessage(MsgKey.SAME_RUNE_MULTIPLE, false);
+				}
 			}
 			// otherwise do the normal flow
 			return true;
@@ -219,6 +225,7 @@ namespace RunicPower.Patches {
 		public static void Prefix(InventoryGui __instance) {
 			if (!RunicPower.configRanksTabEnabled.Value) return;
 			RunicPower.onTabPressed(0, false);
+			__instance.OnCraftCancelPressed();
 		}
 	}
 
