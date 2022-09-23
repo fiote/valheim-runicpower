@@ -22,10 +22,10 @@ namespace RunicPower.Patches {
 			return __instance.GetSpellsBarInventory()?.GetItemAt(index, 0);
 		}
 
-		public static void UseRuneFromSpellBar(this Player __instance, ItemDrop.ItemData item) {
+		public static void UseRuneItem(this Player __instance, ItemDrop.ItemData item, bool fromInventoryGui) {
 			if (item == null) return;
 			var inv = __instance.GetSpellsBarInventory();
-			__instance.UseItem(inv, item, true);
+			__instance.UseItem(inv, item, fromInventoryGui);
 		}
 
 		public static bool CanHarmWithRunes(this Player __instance, Character other) {

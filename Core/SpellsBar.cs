@@ -79,7 +79,14 @@ namespace RunicPower.Core {
 			}
 		}
 
+		public static bool waitingKeyRelease = false;
+
 		public static void CheckInputs() {
+			if (waitingKeyRelease) {
+				RunicPower.Debug("waitingKeyRelease is now FALSE");
+				waitingKeyRelease = false;
+			}
+
 			var player = Player.m_localPlayer;
 
 			for (int i = 0; i < slotCount; ++i) {
@@ -119,7 +126,7 @@ namespace RunicPower.Core {
 
 		public static void CheckInputHotKey(Player player, int index) {
 			var item = GetSpellHotKeyItem(player, index);
-			if (item != null) player.UseRuneFromSpellBar(item);
+			if (item != null) player.UseRuneItem(item, false);
 		}
 
 		public static void UpdateVisibility() {
@@ -148,13 +155,13 @@ namespace RunicPower.Core {
 		}
 
 		public static ItemDrop.ItemData FindAnother(RuneData runeData, bool checkFull) {
-			var inv = invBarGrid.m_inventory;			
+			var inv = invBarGrid.m_inventory;
 			var items = inv.GetAllItems();
 
 			foreach (var item in items) {
 				var runeSlot = item?.GetRuneData();
 				if (runeSlot == null) continue;
-				if (runeSlot.name != runeData.name) continue;					
+				if (runeSlot.name != runeData.name) continue;
 				var full = item.m_stack >= item.m_shared.m_maxStackSize;
 				if (checkFull) return full ? item : null;
 				return item;
@@ -463,7 +470,7 @@ namespace RunicPower.Core {
 		public static Action<InventoryGrid, ItemDrop.ItemData, Vector2i> OnRightClicked(InventoryGui inventoryGui) {
 			return (InventoryGrid inventoryGrid, ItemDrop.ItemData item, Vector2i pos) => {
 				var player = Player.m_localPlayer;
-				player?.UseRuneFromSpellBar(item);
+				player?.UseRuneItem(item, true);
 			};
 		}
 	}

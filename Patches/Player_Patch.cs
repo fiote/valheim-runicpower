@@ -33,6 +33,10 @@ namespace RunicPower.Patches {
 	[HarmonyPatch(typeof(Player), "UseHotbarItem")]
 	public static class Player_UseHotbarItem_Patch {
 		public static bool Prefix(Player __instance, int index) {
+			if (SpellsBar.waitingKeyRelease) {
+				RunicPower.Debug("Ignoring useHotBarItem. we waiting on key release");
+				return false;
+			}
 			var item = SpellsBar.GetSpellHotKeyItem(__instance, index - 1, true);
 			return (item == null);
 		}

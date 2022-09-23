@@ -27,7 +27,7 @@ namespace RunicPower.Core {
 		public bool implemented;
 
 		public bool ranked = true;
-		public int maxstack = 10;
+		public int maxstack = default;
 		public int rank;
 
 		public string reSet;

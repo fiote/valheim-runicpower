@@ -113,12 +113,18 @@ using UnityEngine.UI;
  * - "Mind Rune" buff tunned up. It now should works alongside all attacks, not only those from runes.
 */
 
-
 /* [2.0.1]
  * Removing forced min level and reanabling burn effect.
  * Trying to make it work better with craft all mod.
  * Fixing "v2" on poisonous shiv data (it's v100).
  */
+
+/*
+ * [2.1.0]
+ * - You can now configure the default stack size for runes.
+ * - Prevent item use/selection when using the same rune-hotkey.
+*/
+
 
 // TODO: make cooldowns appear on the inventory itself.
 // TODO: INTEGRATION? equip wheel considering runes as consumables (which they are)
@@ -126,7 +132,7 @@ using UnityEngine.UI;
 // MAYBE: change how casting works. Instead of consuming runes, use of kind of MANA resource.
 
 namespace RunicPower {
-	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "2.0.1")]
+	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "2.1.0")]
 	[BepInDependency("com.pipakin.SkillInjectorMod")]
 	[BepInDependency("randyknapp.mods.extendeditemdataframework")]
 
@@ -134,6 +140,7 @@ namespace RunicPower {
 		// core stuff
 		private Harmony _harmony;
 		public static bool debug = false;
+
 		public static ConfigFile configFile;
 		public static List<Rune> runes = new List<Rune>();
 		public static List<RuneData> runesData = new List<RuneData>();
@@ -165,7 +172,7 @@ namespace RunicPower {
 		};
 
 		public static Dictionary<MsgKey, string> texts = new Dictionary<MsgKey, string> {
-			{ MsgKey.ONLY_WHEN_RESTING, "You can only craft runes while resting." },
+			{ MsgKey.ONLY_WHEN_RESTING, "You can only craft/manage runes while resting." },
 			{ MsgKey.SAME_RUNE_MULTIPLE, "You already have this rune on your spellsbar." },
 			{ MsgKey.CANT_SWAP_THOSE, "You can't swap a rune for a non-rune item." },
 			{ MsgKey.CANT_PLACE_THAT, "You can't put a non-rune item on your spellsbar." },
@@ -179,9 +186,9 @@ namespace RunicPower {
 		private void Awake() {
 			_this = this;
 			UnsetMostThings();
+			SetupConfig();
 			LoadRunes();
 			LoadClasses();
-			SetupConfig();
 			configFile = Config;
 			SpellsBar.RegisterKeybinds();
 		}
@@ -308,7 +315,7 @@ namespace RunicPower {
 					continue;
 				}
 				if (ObjectDB.instance.GetItemPrefab(data.prefab.name.GetStableHashCode()) != null) {
-					Log("Failed to register item " + data.name + ". Prefab already exists.");
+					// Log("Failed to register item " + data.name + ". Prefab already exists.");
 					continue;
 				}
 				var itemDrop = data.itemDrop;
@@ -391,7 +398,8 @@ namespace RunicPower {
 
 				data.itemDrop.m_itemData.m_shared.m_name = data.name;
 				data.itemDrop.m_itemData.m_shared.m_description = data.description;
-				data.itemDrop.m_itemData.m_shared.m_maxStackSize = data.maxstack != default ? data.maxstack : 10;
+				data.itemDrop.m_itemData.m_shared.m_maxStackSize = data.maxstack != default ? data.maxstack : genericStackSize.Value;
+
 				data.itemDrop.m_itemData.m_shared.m_weight = 0.1f;
 
 				PrefabCreator.AddNewRuneRecipe(data);
@@ -432,6 +440,8 @@ namespace RunicPower {
 		public static ConfigEntry<int> configHotkeysOffsetX;
 		public static ConfigEntry<int> configHotkeysOffsetY;
 		public static ConfigEntry<KeyModifiers> configHotkeysModifier;
+		public static ConfigEntry<int> genericStackSize;
+
 		// INTERFACE
 		public static ConfigEntry<bool> configRanksTabEnabled;
 		public static ConfigEntry<int> configRanksOffsetX;
@@ -454,6 +464,8 @@ namespace RunicPower {
 			configHotkeysOffsetX = Config.Bind("HotkeysBar", "OffsetX", 0, "Adjust the hotkey's bar horizontal position (left/right).");
 			configHotkeysOffsetY = Config.Bind("HotkeysBar", "OffsetY", 0, "Adjust the hotkey's bar vertical position (down/up).");
 			configHotkeysModifier = Config.Bind("HotkeysBar", "Modifier", KeyModifiers.SHIFT, "Key modifier to use the runes.");
+			genericStackSize = Config.Bind("HotkeysBar", "GenericStackSize", 10, "The default stack size for the runes (if not set on the json file).");
+
 			// INTERFACE
 			configRanksTabEnabled = Config.Bind("Interface", "Rank Tabs", true, "Enables the 'Rank Tab's on your crafting panel.");
 			configRanksOffsetX = Config.Bind("Interface", "RanksX", 0, "Adjust the rank's buttons horizontal position (left/right).");
@@ -618,7 +630,9 @@ namespace RunicPower {
 				}
 			}
 
-			if (Player.m_localPlayer?.TakeInput() == true) SpellsBar.CheckInputs();
+			if (Player.m_localPlayer?.TakeInput() == true) {
+				SpellsBar.CheckInputs();
+			}
 
 			tickCooldown += Time.deltaTime;
 

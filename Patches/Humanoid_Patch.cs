@@ -37,6 +37,11 @@ namespace RunicPower {
 
 			if (!__instance.ConsumeItem(inventory, item)) return true;
 
+			if (!fromInventoryGui) {
+				RunicPower.Debug("Rune use by HOTKEY. waitingKeyRelease is now TRUE");
+				SpellsBar.waitingKeyRelease = true;
+			}
+			
 			rune.Cast();
 
 			return false;
