@@ -1,4 +1,4 @@
-﻿using BepInEx;
+using BepInEx;
 using BepInEx.Configuration;
 using Common;
 using HarmonyLib;
@@ -192,7 +192,6 @@ namespace RunicPower {
 			configFile = Config;
 			SpellsBar.RegisterKeybinds();
 		}
-
 
 		public static void UnsetMostThings() {
 			activeCooldowns = new Dictionary<string, int>();

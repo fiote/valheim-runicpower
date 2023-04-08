@@ -13,7 +13,7 @@ namespace RunicPower {
 			Core.Rune.ApplyModifierToHitData(attackPower, ref hit, +1);
 			// applying the target resist buffs, if any
 			var targetResist = __instance.ExtendedCharacter(true).runicResistModifier;
-			Core.Rune.ApplyModifierToHitData(targetResist, ref hit, -1);			
+			Core.Rune.ApplyModifierToHitData(targetResist, ref hit, -1);
 			// if this hit came from a rune
 			if (hit.m_statusEffect == "runicDamage") {
 				// stores and remove the damages that would be parsed into debuffs

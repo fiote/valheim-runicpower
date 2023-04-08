@@ -1,4 +1,4 @@
-﻿using RunicPower.Patches;
+using RunicPower.Patches;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -152,7 +152,7 @@ namespace RunicPower.Core {
 					return cachedTooltip;
 				}
 			}
-			
+
 			StringBuilder text = new StringBuilder(256);
 			UpdateCaster();
 
@@ -267,7 +267,7 @@ namespace RunicPower.Core {
 			if (cd != 0) text.AppendFormat("Cooldown: <color=orange>{0} seconds</color>\n", cd);
 
 			cachedTooltip = text.ToString();
-			cachedItem = item;	
+			cachedItem = item;
 
 			return cachedTooltip;
 		}
@@ -368,7 +368,7 @@ namespace RunicPower.Core {
 			if (!data.effect.damage) return 0;
 			if (data.effect.damage_type != dmgType) return 0;
 			var damage = 0f;
-			
+
 			if (data.effect.damage_mode == DamageMode.Weapon) {
 				var point = GetPointValue(data.effect, true);
 				damage = casterWeaponDmg * (point / 100f);
@@ -398,7 +398,7 @@ namespace RunicPower.Core {
 		private float GetPower(HitData.DamageType dmgType) {
 			var vfixed = GetFixed("power." + dmgType);
 			if (vfixed != 0) return Mathf.RoundToInt(vfixed);
-			
+
 			var flag = data.effect.power.GetByType(dmgType);
 			return GetPointValue(data.effect, flag);
 		}
@@ -468,7 +468,7 @@ namespace RunicPower.Core {
 			var factor = GetSkillLevel()/100f;
 			return min + (max - min) * factor;
 		}
-		
+
 		public float GetAbsoluteValue(RuneEffect effect, bool check) {
 			if (!check) return 0f;
 			var min = (float)effect.v1;
@@ -590,7 +590,7 @@ namespace RunicPower.Core {
 
 			// ===== APPLYING ELEMENTAL EFFECTS =====================
 
-			if (data.effect.burn) {				
+			if (data.effect.burn) {
 				var burning = ObjectDB.instance.m_StatusEffects.Find(x => x.name == "Burning").Clone() as SE_Burning;
 				// no spirit damage, this is a simple fire burn
 				burning.AddSpiritDamage(0);
