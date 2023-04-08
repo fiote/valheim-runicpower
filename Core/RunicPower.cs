@@ -1,8 +1,7 @@
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Configuration;
 using Common;
 using HarmonyLib;
-using Pipakin.SkillInjectorMod;
 using RunicPower.Core;
 using RunicPower.Patches;
 using System;
@@ -133,8 +132,6 @@ using UnityEngine.UI;
 
 namespace RunicPower {
 	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "2.1.0")]
-	[BepInDependency("com.pipakin.SkillInjectorMod")]
-	[BepInDependency("randyknapp.mods.extendeditemdataframework")]
 
 	public class RunicPower : BaseUnityPlugin {
 		// core stuff
