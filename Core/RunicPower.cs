@@ -122,6 +122,11 @@ using UnityEngine.UI;
  * [2.1.0]
  * - You can now configure the default stack size for runes.
  * - Prevent item use/selection when using the same rune-hotkey.
+
+
+/*
+ * [2.2.0]
+ * - Mistlands fix!
 */
 
 
@@ -131,7 +136,7 @@ using UnityEngine.UI;
 // MAYBE: change how casting works. Instead of consuming runes, use of kind of MANA resource.
 
 namespace RunicPower {
-	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "2.1.0")]
+	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "2.2.0")]
 
 	public class RunicPower : BaseUnityPlugin {
 		// core stuff
