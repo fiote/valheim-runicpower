@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using UnityEngine;
 
 namespace RunicPower.Patches {
@@ -20,7 +20,7 @@ namespace RunicPower.Patches {
 
 	[HarmonyPatch(typeof(SEMan), "Internal_AddStatusEffect")]
 	public static class Character_Internal_AddStatusEffect_Patch {
-		static bool Prefix(SEMan __instance, string name, bool resetTime) {
+		static bool Prefix(SEMan __instance, string name, bool resetTime, int itemLevel, float skillLevel) {
 			var parts = name.Split('|');
 			if (parts[0] != "RUNICPOWER") return true;
 
