@@ -1,4 +1,4 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using UnityEngine;
 
 namespace RunicPower.Patches {
@@ -33,9 +33,9 @@ namespace RunicPower.Patches {
 		}
 	}
 
-	[HarmonyPatch(typeof(SEMan), "AddStatusEffect", typeof(StatusEffect), typeof(bool))]
+	[HarmonyPatch(typeof(SEMan), "AddStatusEffect", typeof(StatusEffect), typeof(bool), typeof(int), typeof(float))]
 	public static class SEMan_AddStatusEffect_Patch {
-		static void Postfix(SEMan __instance, StatusEffect statusEffect, bool resetTime, ref StatusEffect __result) {
+		static void Postfix(SEMan __instance, StatusEffect statusEffect, bool resetTime, int itemLevel, float skillLevel,  ref StatusEffect __result) {
 			var rune = SEMan_Prototype.GetTempRune(statusEffect);
 			if (rune == null) return;
 
