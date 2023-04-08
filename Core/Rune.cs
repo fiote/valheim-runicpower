@@ -1,4 +1,4 @@
-using RunicPower.Patches;
+﻿using RunicPower.Patches;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -834,7 +834,7 @@ namespace RunicPower.Core {
 
 			if (cfgMessage == RunicPower.CastingMessage.GLOBAL) Chat.instance.SendText(Talker.Type.Shout, message);
 			if (cfgMessage == RunicPower.CastingMessage.NORMAL) Chat.instance.SendText(Talker.Type.Normal, message);
-			if (cfgMessage == RunicPower.CastingMessage.SELF) Chat.instance.AddInworldText(caster.gameObject, caster.GetPlayerID(), caster.GetHeadPoint(), Talker.Type.Normal, caster.name, message);
+			if (cfgMessage == RunicPower.CastingMessage.SELF) Chat.instance.AddInworldText(caster.gameObject, caster.GetPlayerID(), caster.GetHeadPoint(), Talker.Type.Normal, UserInfo.GetLocalUser(), message);
 
 			// get the effects
 			var custom = data.fxcustom;
@@ -883,7 +883,7 @@ namespace RunicPower.Core {
 				proj.m_gravity = 0f;
 				proj.m_ttl = (float)data.projectile.duration;
 				proj.SetRune(this);
-				proj.Setup(attack.m_character, aimDir * attack.m_projectileVel, attack.m_attackHitNoise, hitData, null);
+				proj.Setup(attack.m_character, aimDir * attack.m_projectileVel, attack.m_attackHitNoise, hitData, null, null);
 			} else {
 				// getting the targets
 				var semans = GetTargetsAroundCharacter(data.effect.target, caster, GetSkilledRange(data.rangeAOE));
