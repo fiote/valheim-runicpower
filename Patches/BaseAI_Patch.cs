@@ -2,7 +2,7 @@
 
 namespace RunicPower {
 
-	[HarmonyPatch(typeof(BaseAI), "CanHearTarget")]
+	[HarmonyPatch(typeof(BaseAI), "CanHearTarget", typeof(Character))]
 	public static class BaseAI_CanHearTarget_Patch {
 		static bool Prefix(BaseAI __instance, Character target, ref bool __result) {
 			var invisible = target.IsInvisibleTo(__instance);
