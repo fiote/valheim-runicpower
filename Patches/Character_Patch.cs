@@ -14,7 +14,7 @@ namespace RunicPower {
 			var targetResist = __instance.ExtendedCharacter(true).runicResistModifier;
 			Core.Rune.ApplyModifierToHitData(targetResist, ref hit, -1);
 			// if this hit came from a rune
-			if (hit.m_statusEffect == "runicDamage") {
+			if (hit.m_statusEffectHash == StringExtensionMethods.GetStableHashCode("runicDamage")) {
 				// stores and remove the damages that would be parsed into debuffs
 				var fire = hit.m_damage.m_fire;
 				var frost = hit.m_damage.m_frost;
