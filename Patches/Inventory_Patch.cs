@@ -14,7 +14,7 @@ namespace RunicPower.Patches {
 			var item = Player.m_localPlayer?.ExtendedPlayer(false)?.craftingRuneItem;
 			if (item == null) return true;
 			// checking if this item already exists in the inventory (with free stack space)
-			ItemDrop.ItemData itemData = inv.FindFreeStackItem(item.m_shared?.m_name, item.m_quality);
+			ItemDrop.ItemData itemData = inv.FindFreeStackItem(item.m_shared?.m_name, item.m_quality, item.m_worldLevel);
 			// if it does
 			if (itemData != null) {
 				// get the free space
@@ -63,7 +63,7 @@ namespace RunicPower.Patches {
 
 			while (qtyStack > 0) {
 				// checking if this item already exists in the inventory (with free stack space)
-				ItemDrop.ItemData itemData = inv.FindFreeStackItem(item.m_shared.m_name, item.m_quality);
+				ItemDrop.ItemData itemData = inv.FindFreeStackItem(item.m_shared.m_name, item.m_quality, item.m_worldLevel);
 				// if it does
 				if (itemData != null) {
 					// get the free space
