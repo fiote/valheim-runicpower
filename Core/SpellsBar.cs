@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -35,9 +36,9 @@ namespace RunicPower.Core {
 		public static RectTransform invBarRect;
 		public static RectTransform hotkeysRect;
 
-		public static Dictionary<string, Text> mapBindingText = new Dictionary<string, Text>();
-		public static Dictionary<string, Text> mapRankText = new Dictionary<string, Text>();
-		public static Dictionary<string, Text> mapCooldownText = new Dictionary<string, Text>();
+		public static Dictionary<string, TMP_Text> mapBindingText = new Dictionary<string, TMP_Text>();
+		public static Dictionary<string, TMP_Text> mapRankText = new Dictionary<string, TMP_Text>();
+		public static Dictionary<string, TMP_Text> mapCooldownText = new Dictionary<string, TMP_Text>();
 
 		public static bool isVisible = false;
 
@@ -62,9 +63,9 @@ namespace RunicPower.Core {
 			hotkeysGrid = null;
 			invBarRect = null;
 			hotkeysRect = null;
-			mapBindingText = new Dictionary<string, Text>();
-			mapRankText = new Dictionary<string, Text>();
-			mapCooldownText = new Dictionary<string, Text>();
+			mapBindingText = new Dictionary<string, TMP_Text>();
+			mapRankText = new Dictionary<string, TMP_Text>();
+			mapCooldownText = new Dictionary<string, TMP_Text>();
 			isVisible = false;
 		}
 
@@ -101,13 +102,13 @@ namespace RunicPower.Core {
 			var mod = shortcut.modifier.ToString();
 			var key = shortcut.key.ToString();
 
-			if (mod == "LeftControl") mod = "Ctrl";
-			if (mod == "LeftShift") mod = "Shift";
-			if (mod == "LeftAlt") mod = "Alt";
+			if (mod == "LeftControl") mod = "C";
+			if (mod == "LeftShift") mod = "S";
+			if (mod == "LeftAlt") mod = "A";
 
 			key = key.Replace("Alpha", "");
 
-			return (mod != null) ? mod + "+" + key : key;
+			return (mod != null) ? mod + key : key;
 		}
 
 		public static bool IsSpellHotkeyPressed(int index, bool? assumeKeyOk = false) {
@@ -202,6 +203,7 @@ namespace RunicPower.Core {
 		}
 
 		public static void SetExtraTexts(InventoryGrid grid, int index, int rank, int cooldown) {
+			RunicPower.Log($"SetExtraTexts({grid.name}, {index}, {rank}, {cooldown})");
 			if (grid == null) return;
 			var key = grid.name + ":" + index;
 
@@ -229,17 +231,17 @@ namespace RunicPower.Core {
 				cooldownText.gameObject.SetActive(true);
 				cooldownText.text = dsvalue;
 				cooldownText.fontSize = fontSize;
+
 				bindingText.gameObject.SetActive(false);
 			} else {
 				cooldownText.gameObject.SetActive(false);
 				bindingText.gameObject.SetActive(true);
 			}
 
-			if (rank > 0) {
-				rankText.text = RunicPower.rank2rank[rank];
-			} else {
-				rankText.text = "";
-			}
+			var gotrank = rank > 0;
+			rankText.gameObject.SetActive(gotrank);
+			rankText.enabled = gotrank;
+			rankText.text = rank.ToString();
 		}
 
 		public static void UpdateGrid(InventoryGrid grid) {
@@ -256,48 +258,53 @@ namespace RunicPower.Core {
 				for (var i = 0; i < slotCount; ++i) {
 					var key = grid.name + ":" + i;
 
-					Text bindingText;
-					Text rankText;
+					TMP_Text bindingText;
+					TMP_Text rankText;
 
 					if (mapBindingText.ContainsKey(key)) {
 						bindingText = mapBindingText[key];
 						rankText = mapRankText[key];
 					} else {
 						// BINDING
-						var bind = grid.m_elements[i].m_go.transform.Find("binding");
-						bindingText = bind.GetComponent<Text>();
+						var mgo = grid.m_elements[i].m_go;
+						
+						var bind = mgo.transform.Find("binding");
+						bind.gameObject.SetActive(true);
+
+						bindingText = bind.GetComponent<TMP_Text>();
 						bindingText.enabled = true;
-						bindingText.horizontalOverflow = HorizontalWrapMode.Overflow;
 						bindingText.fontSize = 15;
 						mapBindingText[key] = bindingText;
+
 						// COOLDOWN
-						var go = Object.Instantiate(bind);
-						go.transform.SetParent(bind.parent.transform, false);
-						var cooldownText = go.GetComponent<Text>();
-						cooldownText.text = "";
+						var amount = mgo.transform.Find("amount");
+						var go = Object.Instantiate(amount);
+						go.gameObject.SetActive(true);
+						go.transform.SetParent(amount.parent.transform, false);
+
+						var cooldownText = go.GetComponent<TMP_Text>();
+						cooldownText.enabled = true;
 						cooldownText.fontSize = 25;
-						cooldownText.alignByGeometry = false;
-						cooldownText.alignment = TextAnchor.MiddleCenter;
+						cooldownText.alignment = TextAlignmentOptions.Center;
 						cooldownText.color = Color.red;
-						go.transform.position += new Vector3(25, -22, 0);
+						go.transform.position += new Vector3(0f, 35f, 0);
 						mapCooldownText[key] = cooldownText;
+
 						// RANK
-						go = Object.Instantiate(bind);
-						go.transform.SetParent(bind.parent.transform, false);
-						rankText = go.GetComponent<Text>();
+						var quality = mgo.transform.Find("quality");
+						quality.gameObject.SetActive(true);
+
+						rankText = quality.GetComponent<TMP_Text>();
+						rankText.enabled = true;
 						rankText.text = "";
-						rankText.fontSize = 15;
-						rankText.alignByGeometry = false;
-						rankText.alignment = TextAnchor.MiddleCenter;
-						rankText.color = Color.yellow;
-						go.transform.position += new Vector3(0, -22, 0);
 						mapRankText[key] = rankText;
 					}
 
 					bindingText.text = GetBindingLabel(i);
 				}
-			} catch (Exception) {
-
+			} catch (Exception e) {
+				Debug.Log("Error updating grid");
+				Debug.Log(e);
 			}
 		}
 
