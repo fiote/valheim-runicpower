@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -323,6 +324,7 @@ namespace RunicPower {
 				itemDrop.SetRuneData(data);
 				ObjectDB.instance.m_items.Add(data.prefab);
 			}
+			ObjectDB.instance.UpdateItemHashes();
 		}
 
 		public static void TryRegisterRecipes() {
@@ -545,7 +547,7 @@ namespace RunicPower {
 				var go = button.gameObject;
 
 				go.name = "craftRank" + rank;
-				go.GetComponentInChildren<Text>().text = rank2rank[rank];
+				go.GetComponentInChildren<TMP_Text>().text = rank2rank[rank];
 
 				go.transform.SetSiblingIndex(gui.m_tabUpgrade.transform.parent.childCount - 2);
 
@@ -591,8 +593,10 @@ namespace RunicPower {
 
 			var active = (Player.m_localPlayer.GetCurrentCraftingStation() == null);
 			for (var rank = 1; rank <= 5; rank++) {
-				var button = rankButtons[rank];
-				button.gameObject.SetActive(active);
+				if (rankButtons.ContainsKey(rank)) {
+					var button = rankButtons[rank];
+					button.gameObject.SetActive(active);
+				}
 			}
 		}
 
