@@ -28,9 +28,5 @@ namespace RunicPower.Patches {
 		public static Rune GetRune(this StatusEffect __instance) {
 			return __instance.ExtendedStatusEffect()?.rune;
 		}
-
-		public static int GetEffectHashCode(this StatusEffect __instance) {
-			return __instance.GetRune().GetEffectHashCode();
-		}
 	}
 }
