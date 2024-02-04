@@ -1,5 +1,6 @@
 ﻿using RunicPower.Core;
 using System;
+using UnityEngine;
 
 namespace RunicPower.Patches {
 
@@ -30,7 +31,7 @@ namespace RunicPower.Patches {
 
 		public static bool CanHarmWithRunes(this Player __instance, Character other) {
 			// if the other is a monster of a boss, it CAN be harmed
-			if (other.IsMonsterFaction() || other.m_faction == Character.Faction.Boss || other.IsBoss()) return true;
+			if (other.IsMonsterFaction(Time.time) || other.m_faction == Character.Faction.Boss || other.IsBoss()) return true;
 			// if the player is not flagged as pvp, it CAN NOT harm others players
 			if (!__instance.IsPVPEnabled()) return false;
 			// if the pvp config is not enabled, it CAN NOT harm others players
