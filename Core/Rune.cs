@@ -68,7 +68,7 @@ namespace RunicPower.Core {
 			return 0;
 		}
 
-		public string GetEffectString() {
+		public int GetEffectHashCode() {
 			var buffs = new List<string>();
 			GetEffectStringPart(ref buffs, "hpRegen", GetHealthRegen());
 			GetEffectStringPart(ref buffs, "stRegen", GetStaminaRegen());
@@ -92,7 +92,7 @@ namespace RunicPower.Core {
 
 
 			var fxstring = string.Join("|", parts);
-			return fxstring;
+			return StringExtensionMethods.GetStableHashCode(fxstring);
 		}
 
 		public void GetEffectStringPart(ref List<string> parts, string key, float value) {
@@ -648,7 +648,7 @@ namespace RunicPower.Core {
 
 			// if there is a duration, it means it'a buff. So let's apply it to targets
 			if (data.effect.duration > 0) {
-				var fxString = GetEffectString();
+				var fxString = GetEffectHashCode();
 				target.m_seman.AddStatusEffect(fxString, true);
 			}
 		}

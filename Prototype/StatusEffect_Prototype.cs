@@ -29,8 +29,8 @@ namespace RunicPower.Patches {
 			return __instance.ExtendedStatusEffect()?.rune;
 		}
 
-		public static string GetEffectString(this StatusEffect __instance) {
-			return __instance.GetRune().GetEffectString();
+		public static int GetEffectHashCode(this StatusEffect __instance) {
+			return __instance.GetRune().GetEffectHashCode();
 		}
 	}
 }
