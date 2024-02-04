@@ -584,7 +584,7 @@ namespace RunicPower.Core {
 				hitDamage.m_damage.m_lightning = GetDamage(HitData.DamageType.Lightning);
 				hitDamage.m_damage.m_poison = GetDamage(HitData.DamageType.Poison);
 				hitDamage.m_damage.m_spirit = GetDamage(HitData.DamageType.Spirit);
-				hitDamage.m_statusEffect = "runicDamage";
+				hitDamage.m_statusEffectHash = StringExtensionMethods.GetStableHashCode("runicDamage");
 				target.Damage(hitDamage);
 			}
 
