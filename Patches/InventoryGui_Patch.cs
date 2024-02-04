@@ -73,7 +73,7 @@ namespace RunicPower.Patches {
 
 			// getting hte spell inventory
 			var inv = SpellsBar.invBarGrid.m_inventory;
-			
+
 			// if there is not an 'empty' slot, do the normal flow
 			if (!inv.HaveEmptySlot()) return true;
 
@@ -167,7 +167,7 @@ namespace RunicPower.Patches {
 
 			if (__instance.m_dragInventory == null) {
 				invDrag = grid?.m_inventory?.m_name;
-				
+
 				itemDrag = item;
 			} else {
 				invDrag = __instance.m_dragInventory?.m_name;
@@ -185,7 +185,7 @@ namespace RunicPower.Patches {
 
 			var spellsbarInvolved = (invDrag == RunicPower.invName || invDrop == RunicPower.invName);
 			var spellsbarOnly = (invDrag == RunicPower.invName && invDrop == RunicPower.invName);
-			
+
 			// if this has nothing to do with the spellsbar, simply return true
 			if (!spellsbarInvolved) return true;
 

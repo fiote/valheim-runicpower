@@ -84,8 +84,8 @@ namespace Common {
 				Debug.LogError("[PrefabCreator] Unable to load skill icon! Make sure you place the " + name + ".png file in the plugins directory!");
 				return null;
 			}
-		}
-
+		} 
+		 
 		private static Texture2D LoadTexture(string filepath) {
 			if (cachedTextures.ContainsKey(filepath)) {
 				return cachedTextures[filepath];

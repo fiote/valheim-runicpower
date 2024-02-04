@@ -255,7 +255,7 @@ namespace RunicPower.Core {
 	[Serializable]
 	public class RuneEffect {
 		public int duration;
-		public string target; 
+		public string target;
 
 		public bool healthRegen;
 		public bool staminaRegen;

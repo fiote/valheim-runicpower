@@ -253,7 +253,7 @@ namespace RunicPower {
 					runesData.Add(data);
 				} else {
 					Log("SimpleRune " + data.recipe.item + " not found.");
-					Log("extra? "+assetBundle.Contains(data.recipe.prefab));
+					Log("extra? " + assetBundle.Contains(data.recipe.prefab));
 				}
 			}
 
@@ -273,7 +273,7 @@ namespace RunicPower {
 							}
 							runesData.Add(data);
 						} else {
-							Log("RankedRune "+data.recipe.item + " not found.");
+							Log("RankedRune " + data.recipe.item + " not found.");
 						}
 					}
 				}

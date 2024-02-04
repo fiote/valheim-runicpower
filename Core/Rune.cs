@@ -229,7 +229,7 @@ namespace RunicPower.Core {
 					duration = 10;
 				}
 				if (fx.poison) text.AppendFormat("<color=orange>Poison</color> the target\n");
-				if (fx.slow) text.AppendFormat("<color=orange>Slows</color> the target by <color=orange>{0}%</color>\n", Mathf.RoundToInt(100 - GetSlowFactor()*100));
+				if (fx.slow) text.AppendFormat("<color=orange>Slows</color> the target by <color=orange>{0}%</color>\n", Mathf.RoundToInt(100 - GetSlowFactor() * 100));
 				if (fx.cripple) text.AppendFormat("<color=orange>Cripples</color> the target\n");
 
 				if (fx.stealthiness) text.AppendFormat("Increase stealthiness by <color=orange>{0:0.0}%</color>\n", GetStealhiness());
@@ -349,7 +349,7 @@ namespace RunicPower.Core {
 		public float GetSlowFactor() {
 			var vmin = 10f;
 			var vmax = 80f;
-			var vslow = vmin + (vmax - vmin) * GetSkillLevel()/100f;
+			var vslow = vmin + (vmax - vmin) * GetSkillLevel() / 100f;
 			return (100f - vslow) / 100f;
 		}
 
@@ -404,7 +404,7 @@ namespace RunicPower.Core {
 		}
 
 		private int GetCooldown() {
-			var factor = GetSkillLevel()/100f;
+			var factor = GetSkillLevel() / 100f;
 			var cooldown = data.cooldown;
 			var value = cooldown * (1 - factor / 2);
 			return Mathf.RoundToInt(value);
@@ -465,7 +465,7 @@ namespace RunicPower.Core {
 
 			var min = (float)effect.v1;
 			var max = (float)effect.v100;
-			var factor = GetSkillLevel()/100f;
+			var factor = GetSkillLevel() / 100f;
 			return min + (max - min) * factor;
 		}
 
@@ -562,12 +562,12 @@ namespace RunicPower.Core {
 
 			// ===== RESTORING HEALTH ========================================
 
-			float healHP = GetRecoverHealth()/100f * target.GetMaxHealth();
+			float healHP = GetRecoverHealth() / 100f * target.GetMaxHealth();
 			if (healHP != 0) target.Heal(healHP, true);
 
 			// ===== RESTORING STAMINA =======================================
 
-			float healST = GetRecoverStamina()/100f * target.GetMaxStamina();
+			float healST = GetRecoverStamina() / 100f * target.GetMaxStamina();
 			if (healST != 0) player?.UseStamina(healST * -1);
 
 			// ===== DEALING DAMAGE =================================
@@ -813,7 +813,7 @@ namespace RunicPower.Core {
 				if (warpfix != "plains") forbidden.AddRange(plains);
 
 				var forbid = false;
-				foreach(var item in caster.GetInventory().m_inventory) forbid = forbid || forbidden.Contains(item.m_dropPrefab.name);
+				foreach (var item in caster.GetInventory().m_inventory) forbid = forbid || forbidden.Contains(item.m_dropPrefab.name);
 
 				if (forbid) {
 					if (showError) RunicPower.ShowMessage(MsgKey.ITEM_PREVENTS_RECALL);

@@ -1,6 +1,5 @@
 ﻿using RunicPower.Core;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace RunicPower {
 	public static class InventoryGrid_Prototype {

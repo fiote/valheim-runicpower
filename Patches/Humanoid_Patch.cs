@@ -22,11 +22,11 @@ namespace RunicPower {
 
 			var player = __instance as Player;
 			var rune = new Rune(data, player);
-						
+
 			if (rune.RequiresWeapon() && !rune.GotWeapon()) {
 				return RunicPower.ShowMessage(MsgKey.WEAPON_REQUIRED, data.name, false);
 			}
-			
+
 			if (rune.RequiresShield() && !rune.GotShield()) {
 				return RunicPower.ShowMessage(MsgKey.SHIELD_REQUIRED, data.name, false);
 			}
@@ -41,7 +41,7 @@ namespace RunicPower {
 				RunicPower.Debug("Rune use by HOTKEY. waitingKeyRelease is now TRUE");
 				SpellsBar.waitingKeyRelease = true;
 			}
-			
+
 			rune.Cast();
 
 			return false;
