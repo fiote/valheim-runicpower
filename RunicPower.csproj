@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6C679B7E-9F39-4DF2-9F8A-717E68FBF0E3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RuneStones</RootNamespace>
+    <AssemblyName>RuneStones</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony20">
+      <HintPath>..\Libs\0Harmony20.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_guiutils_publicized">
+      <HintPath>..\..\..\..\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_guiutils_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_utils_publicized">
+      <HintPath>D:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_utils_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_valheim_publicized">
+      <HintPath>D:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_valheim_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="BepInEx">
+      <HintPath>..\Libs\BepInEx.dll</HintPath>
+    </Reference>
+    <Reference Include="LitJSON, Version=0.10.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>External\LitJSON.dll</HintPath>
+    </Reference>
+    <Reference Include="SkillInjector">
+      <HintPath>..\..\..\..\Steam\steamapps\common\Valheim\BepInEx\plugins\SkillInjectorMod\SkillInjector.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="UnityEngine">
+      <HintPath>D:\_Development\Steam\Valheim\Hearthstone\Hearthstone\Libs\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AnimationModule">
+      <HintPath>..\..\..\..\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\_Development\Steam\Valheim\Hearthstone\Hearthstone\Libs\UnityEngine.AssetBundleModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>D:\_Development\Steam\Valheim\Hearthstone\Hearthstone\Libs\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>D:\_Development\Steam\Valheim\Hearthstone\Hearthstone\Libs\UnityEngine.ImageConversionModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule">
+      <HintPath>..\..\..\..\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>..\..\..\..\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\..\..\..\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.UI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Core\Rune.cs" />
+    <Compile Include="Core\SkillInjector.cs" />
+    <Compile Include="Core\SpellsBar.cs" />
+    <Compile Include="Core\ClassSkill.cs" />
+    <Compile Include="Core\RuneData.cs" />
+    <Compile Include="External\Common\Recipes.cs" />
+    <Compile Include="External\Common\PrefabCreator.cs" />
+    <Compile Include="Patches\Destructible_Patch.cs" />
+    <Compile Include="Patches\FejdStartup_Patch.cs" />
+    <Compile Include="Extended\Character_Extended.cs" />
+    <Compile Include="Prototype\HitData_Prototype.cs" />
+    <Compile Include="Patches\Console_Patch.cs" />
+    <Compile Include="Prototype\InventoryGrid_Prototype.cs" />
+    <Compile Include="Prototype\Character_Prototype.cs" />
+    <Compile Include="Patches\Character_Patch.cs" />
+    <Compile Include="Patches\BaseAI_Patch.cs" />
+    <Compile Include="Patches\Hud_Patch.cs" />
+    <Compile Include="Patches\Inventory_Patch.cs" />
+    <Compile Include="Patches\InventoryGui_Patch.cs" />
+    <Compile Include="Patches\Humanoid_Patch.cs" />
+    <Compile Include="Core\RunicPower.cs" />
+    <Compile Include="Extended\ItemDrop_Extended.cs" />
+    <Compile Include="Patches\Menu_Patch.cs" />
+    <Compile Include="Patches\Utils_Patch.cs" />
+    <Compile Include="Patches\Skill_Prototype.cs" />
+    <Compile Include="Prototype\Skills_Prototype.cs" />
+    <Compile Include="Patches\StatusEffect_Patch.cs" />
+    <Compile Include="Prototype\ItemDrop_Prototype.cs" />
+    <Compile Include="Patches\ItemDrop_Patch.cs" />
+    <Compile Include="Extended\Player_Extended.cs" />
+    <Compile Include="Prototype\Player_Prototype.cs" />
+    <Compile Include="Extended\Projectile_Extended.cs" />
+    <Compile Include="Prototype\Projectile_Prototype.cs" />
+    <Compile Include="Prototype\SEMan_Prototype.cs" />
+    <Compile Include="Patches\SEMan_Patch.cs" />
+    <Compile Include="Patches\Player_Patch.cs" />
+    <Compile Include="Patches\Projectile_Patch.cs" />
+    <Compile Include="Extended\StatusEffect_Extended.cs" />
+    <Compile Include="Prototype\StatusEffect_Prototype.cs" />
+    <Compile Include="Patches\ZNetScene_Patch.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Patches\ObjectDB_Patch.cs" />
+    <Compile Include="Patches\Skills_Patch.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Core\classes.json" />
+    <None Include="Core\runes.json" />
+    <None Include="manifest.json" />
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="External\LitJSON.dll" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)" "E:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)External\*.dll" "E:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)Core\*.json" "E:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(ProjectDir)Images\*Icon.png" "E:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i
+xcopy "$(SolutionDir)ValheimUnity\AssetBundles\runeassets" "E:\Steam\steamapps\common\Valheim\BepInEx\plugins\$(ProjectName)\" /q /y /i</PostBuildEvent>
+  </PropertyGroup>
+</Project>
