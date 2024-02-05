@@ -203,7 +203,7 @@ namespace RunicPower.Core {
 		}
 
 		public static void SetExtraTexts(InventoryGrid grid, int index, int rank, int cooldown) {
-			RunicPower.Log($"SetExtraTexts({grid.name}, {index}, {rank}, {cooldown})");
+			RunicPower.Log($"SetExtraTexts({grid?.name}, {index}, {rank}, {cooldown})");
 			if (grid == null) return;
 			var key = grid.name + ":" + index;
 
