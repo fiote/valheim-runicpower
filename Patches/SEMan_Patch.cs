@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using UnityEngine;
 
 namespace RunicPower.Patches {
 
@@ -19,9 +20,12 @@ namespace RunicPower.Patches {
 
 	[HarmonyPatch(typeof(SEMan), "Internal_AddStatusEffect")]
 	public static class Character_Internal_AddStatusEffect_Patch {
-		static bool Prefix(SEMan __instance, string name, bool resetTime, int itemLevel, float skillLevel) {
-			var parts = name.Split('|');
+		static bool Prefix(SEMan __instance, int nameHash, bool resetTime, int itemLevel, float skillLevel) {
+			var hashValue = __instance.m_nview.GetHashCode(nameHash);
+			var parts = hashValue.Split('|');
+			
 			if (parts[0] != "RUNICPOWER") return true;
+			RunicPower.Log($"got RUNICPOWER effect: {parts[1]} --- {parts[2]} --- {parts[3]}");
 
 			var effectName = parts[1];
 			var effectCaster = Player.GetAllPlayers().Find(p => p.GetZDOID().ToString() == parts[2]);
