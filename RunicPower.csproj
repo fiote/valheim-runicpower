@@ -36,14 +36,21 @@
     <Reference Include="0Harmony20">
       <HintPath>..\Libs\0Harmony20.dll</HintPath>
     </Reference>
-    <Reference Include="assembly_guiutils_publicized">
-      <HintPath>..\..\..\..\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_guiutils_publicized.dll</HintPath>
+    <Reference Include="Assembly-CSharp_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\Assembly-CSharp_publicized.dll</HintPath>
     </Reference>
-    <Reference Include="assembly_utils_publicized">
-      <HintPath>D:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_utils_publicized.dll</HintPath>
+    <Reference Include="assembly_guiutils_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_guiutils_publicized.dll</HintPath>
     </Reference>
-    <Reference Include="assembly_valheim_publicized">
-      <HintPath>D:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_valheim_publicized.dll</HintPath>
+    <Reference Include="assembly_utils_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_utils_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_valheim_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_valheim_publicized.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
       <HintPath>..\Libs\BepInEx.dll</HintPath>
@@ -56,38 +63,61 @@
       <HintPath>..\..\..\..\Steam\steamapps\common\Valheim\BepInEx\plugins\SkillInjectorMod\SkillInjector.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="UnityEngine">
-      <HintPath>D:\_Development\Steam\Valheim\Hearthstone\Hearthstone\Libs\UnityEngine.dll</HintPath>
+    <Reference Include="ui_lib_publicized">
+      <HintPath>E:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\ui_lib_publicized.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.AnimationModule">
-      <HintPath>..\..\..\..\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Unity.TextMeshPro_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\_Development\Steam\Valheim\Hearthstone\Hearthstone\Libs\UnityEngine.AssetBundleModule.dll</HintPath>
+      <HintPath>E:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\Unity.TextMeshPro_publicized.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>D:\_Development\Steam\Valheim\Hearthstone\Hearthstone\Libs\UnityEngine.CoreModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.ImageConversionModule">
-      <HintPath>D:\_Development\Steam\Valheim\Hearthstone\Hearthstone\Libs\UnityEngine.ImageConversionModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.InputLegacyModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="UnityEngine.AnimationModule_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+      <HintPath>E:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\UnityEngine.AnimationModule_publicized.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.ParticleSystemModule">
-      <HintPath>..\..\..\..\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.PhysicsModule">
-      <HintPath>..\..\..\..\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="UnityEngine.AssetBundleModule_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+      <HintPath>E:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\UnityEngine.AssetBundleModule_publicized.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\..\..\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.UI.dll</HintPath>
+    <Reference Include="UnityEngine.CoreModule_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\UnityEngine.CoreModule_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\UnityEngine.ImageConversionModule_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\UnityEngine.IMGUIModule_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\UnityEngine.InputLegacyModule_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputModule_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\UnityEngine.InputModule_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Physics2DModule_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\UnityEngine.Physics2DModule_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\UnityEngine.PhysicsModule_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="UnityEngine.UI_publicized, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\UnityEngine.UI_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VFXModule_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\UnityEngine.VFXModule_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\UnityEngine_publicized.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -96,11 +126,13 @@
     <Compile Include="Core\SpellsBar.cs" />
     <Compile Include="Core\ClassSkill.cs" />
     <Compile Include="Core\RuneData.cs" />
+    <Compile Include="Extended\ZNetView_Extended.cs" />
     <Compile Include="External\Common\Recipes.cs" />
     <Compile Include="External\Common\PrefabCreator.cs" />
     <Compile Include="Patches\Destructible_Patch.cs" />
     <Compile Include="Patches\FejdStartup_Patch.cs" />
     <Compile Include="Extended\Character_Extended.cs" />
+    <Compile Include="Patches\ZNetView_Patch.cs" />
     <Compile Include="Prototype\HitData_Prototype.cs" />
     <Compile Include="Patches\Console_Patch.cs" />
     <Compile Include="Prototype\InventoryGrid_Prototype.cs" />
@@ -116,6 +148,7 @@
     <Compile Include="Patches\Menu_Patch.cs" />
     <Compile Include="Patches\Utils_Patch.cs" />
     <Compile Include="Patches\Skill_Prototype.cs" />
+    <Compile Include="Prototype\ZNetView_Prototype.cs" />
     <Compile Include="Prototype\Skills_Prototype.cs" />
     <Compile Include="Patches\StatusEffect_Patch.cs" />
     <Compile Include="Prototype\ItemDrop_Prototype.cs" />
