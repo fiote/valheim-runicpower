@@ -130,6 +130,11 @@ using UnityEngine.UI;
  * - Mistlands fix!
 */
 
+/*
+ * [2.3.0]
+ * - Mistlands fix!
+*/
+
 
 // TODO: make cooldowns appear on the inventory itself.
 // TODO: INTEGRATION? equip wheel considering runes as consumables (which they are)
@@ -137,7 +142,7 @@ using UnityEngine.UI;
 // MAYBE: change how casting works. Instead of consuming runes, use of kind of MANA resource.
 
 namespace RunicPower {
-	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "2.2.0")]
+	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "2.3.0")]
 
 	public class RunicPower : BaseUnityPlugin {
 		// core stuff
