@@ -388,7 +388,7 @@ namespace RunicPower.Core {
 			}
 
 			grid.m_uiGroup = grid.gameObject.AddComponent<UIGroupHandler>();
-			grid.m_uiGroup.m_groupPriority = 1;
+			// grid.m_uiGroup.m_groupPriority = 1;
 			grid.m_uiGroup.m_active = true;
 			grid.m_uiGroup.m_enableWhenActiveAndGamepad = highlight;
 

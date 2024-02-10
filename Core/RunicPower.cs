@@ -1,4 +1,4 @@
-﻿using BepInEx;
+using BepInEx;
 using BepInEx.Configuration;
 using Common;
 using HarmonyLib;
@@ -135,6 +135,11 @@ using UnityEngine.UI;
  * - Mistlands fix!
 */
 
+/*
+ * [2.3.1]
+ * - Fixing XPortal incompatibility.
+*/
+
 
 // TODO: make cooldowns appear on the inventory itself.
 // TODO: INTEGRATION? equip wheel considering runes as consumables (which they are)
@@ -142,7 +147,7 @@ using UnityEngine.UI;
 // MAYBE: change how casting works. Instead of consuming runes, use of kind of MANA resource.
 
 namespace RunicPower {
-	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "2.3.0")]
+	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "2.3.1")]
 
 	public class RunicPower : BaseUnityPlugin {
 		// core stuff
