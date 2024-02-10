@@ -1,4 +1,4 @@
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Configuration;
 using Common;
 using HarmonyLib;
@@ -140,6 +140,11 @@ using UnityEngine.UI;
  * - Fixing XPortal incompatibility.
 */
 
+/*
+ * [2.4.0]
+ * - Adding 'refill runes' button.
+*/
+
 
 // TODO: make cooldowns appear on the inventory itself.
 // TODO: INTEGRATION? equip wheel considering runes as consumables (which they are)
@@ -147,7 +152,7 @@ using UnityEngine.UI;
 // MAYBE: change how casting works. Instead of consuming runes, use of kind of MANA resource.
 
 namespace RunicPower {
-	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "2.3.1")]
+	[BepInPlugin("fiote.mods.runicpower", "RunicPower", "2.4.0")]
 
 	public class RunicPower : BaseUnityPlugin {
 		// core stuff
@@ -168,6 +173,10 @@ namespace RunicPower {
 		static bool tryAgain;
 		static float tryAgainTime;
 		static float tryAgainDuration;
+
+		//refill
+		public static Button btnRefill;
+		public static GameObject goRefill;
 
 		public static string invName = "spellsBarInventory";
 
@@ -529,6 +538,106 @@ namespace RunicPower {
 			onTabPressed(0, true);
 		}
 
+		public static void CreateRefillButton(InventoryGui gui) {
+			if (gui == null) gui = InventoryGui.instance;
+			if (gui == null) return;
+
+			var craftButton = gui?.m_craftButton?.gameObject;
+			if (craftButton == null) return;
+
+			if (goRefill != null) Destroy(goRefill);
+
+			goRefill = Instantiate(craftButton);
+			goRefill.transform.SetParent(craftButton.transform.parent, false);
+			goRefill.name = "refillButton";
+
+			var rect = goRefill.GetComponent<RectTransform>();
+			rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150f);
+			rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 40f);
+
+			btnRefill = goRefill.GetComponentInChildren<Button>();
+			btnRefill.interactable = true;	
+			btnRefill.onClick.AddListener(OnRefillPressed);
+
+			var txtRefill = goRefill.GetComponentInChildren<TMP_Text>();
+			if (txtRefill != null) {
+				txtRefill.text = "Refill Runes";
+				txtRefill.autoSizeTextContainer = false;
+				txtRefill.fontSizeMax = txtRefill.fontSizeMin = txtRefill.fontSize = 16f;
+			}
+
+			var position = goRefill.transform.position - new Vector3(450f, 100f, 0f);
+			goRefill.transform.position = position;
+
+			goRefill.GetComponent<UITooltip>().m_text = "";
+			UpdateRefillVisibility();
+		}
+
+		public static void UpdateRefillVisibility() {
+			if (goRefill == null) return;
+			goRefill.SetActive(craftRank > 0);
+			btnRefill.interactable = true;
+		}
+
+		public static void OnRefillPressed() {
+			var player = Player.m_localPlayer;
+			var runeInventory = player.GetSpellsBarInventory();
+			var runes = runeInventory.m_inventory;
+
+			runes.ForEach(rune => {
+				Debug("spellsbar rune: " + rune.m_shared.m_name + " " + rune.m_stack+"/"+rune.m_shared.m_maxStackSize);
+			});
+
+			Line();
+
+			if (InventoryGui.instance == null) Debug("InventoryGui.instance is null");
+			if (InventoryGui.instance?.m_availableRecipes == null) Debug("InventoryGui.instance.m_availableRecipes is null");
+
+			var recipes = new List<Recipe>();
+
+			Debug("available recipes: " + recipes?.Count);
+
+			foreach(var keypair in InventoryGui.instance?.m_availableRecipes) {
+				var recipe = keypair.Key;
+				var item = recipe.m_item;
+				var craftable = player.HaveRequirements(recipe, discover: false, 1);
+				Debug("recipe rune: " + item?.m_itemData?.m_shared?.m_name+ " craftable? "+ craftable);
+				recipes.Add(recipe);
+			}
+
+			var craftedSome = true;
+
+			while (craftedSome) {
+				Line();
+				var notfull = runes.FindAll(rune => rune.m_stack < rune.m_shared.m_maxStackSize);
+				notfull.Sort((a, b) => a.m_stack < b.m_stack ? -1 : +1);
+				notfull.ForEach(rune => Debug("notfull rune: " + rune.m_shared.m_name + " " + rune.m_stack + "/" + rune.m_shared.m_maxStackSize));
+
+				craftedSome = false;
+
+				foreach(var rune in notfull) {
+					var recipe = recipes.Find(x => x.m_item.m_itemData.m_shared.m_name == rune.m_shared.m_name);
+
+					if (recipe != null && player.HaveRequirements(recipe, discover: false, 1)) {
+						Debug("crafting " + recipe.m_item.m_itemData.m_shared.m_name+ " x1");
+
+						var craftItem = recipe.m_item;
+						var qualityLevel = 1;
+
+						if (!player.NoCostCheat()) {
+							player.ConsumeResources(recipe.m_resources, qualityLevel);
+						}
+
+						var crafted = runeInventory.AddItem(craftItem.gameObject.name, recipe.m_amount, qualityLevel, InventoryGui.instance.m_craftVariant, player.GetPlayerID(), player.GetPlayerName());
+						if (crafted != null) craftedSome = true;
+						break;
+					}
+				}
+			}
+
+			Bar();
+		}
+
 		public static void DeleteRankTab(InventoryGui gui, int rank) {
 			if (rankButtons.ContainsKey(rank)) {
 				var button = rankButtons[rank];
@@ -545,7 +654,6 @@ namespace RunicPower {
 
 			if (gui?.m_tabUpgrade == null) return;
 			var posbase = gui.m_tabUpgrade.GetComponent<RectTransform>().anchoredPosition;
-
 
 			if (rankButtons.ContainsKey(rank)) {
 				button = rankButtons[rank];
@@ -596,12 +704,15 @@ namespace RunicPower {
 				} catch {
 				};
 			}
+
+			UpdateRefillVisibility();
 		}
 
 		public static void UpdateVisibilityRankTabs() {
 			if (!configRanksTabEnabled.Value) return;
 
 			var active = (Player.m_localPlayer.GetCurrentCraftingStation() == null);
+
 			for (var rank = 1; rank <= 5; rank++) {
 				if (rankButtons.ContainsKey(rank)) {
 					var button = rankButtons[rank];
@@ -612,13 +723,16 @@ namespace RunicPower {
 
 		public static void Recreate() {
 			if (!configCooldownsEnabled.Value) activeCooldowns.Clear();
+			var rankBefore = craftRank;
 			SpellsBar.RegisterKeybinds();
 			CreateRankTabs(null);
+			CreateRefillButton(null);
 			SpellsBar.ClearBindings();
 			SpellsBar.CreateHotkeysBar(null);
 			SpellsBar.CreateInventoryBar(null);
 			SpellsBar.UpdateInventory();
 			SpellsBar.UpdateVisibility();
+			if (rankBefore > 0) onTabPressed(rankBefore, true);
 		}
 
 		public static void AddCooldown(string name, int cooldown) {

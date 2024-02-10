@@ -22,20 +22,13 @@ namespace RunicPower {
 		}
 
 		public static Dictionary<string, ConsoleValue> vars = new Dictionary<string, ConsoleValue>() {
-			{  "x1" , new ConsoleValue("0,5") },
-			{  "y1" , new ConsoleValue("0,5") },
-			{  "x2" , new ConsoleValue("0,5") },
-			{  "y2" , new ConsoleValue("0,5") },
-
-			{  "t" , new ConsoleValue("IV") },
-			{  "s" , new ConsoleValue("15") },
-
-			{  "ax" , new ConsoleValue("0") },
-			{  "ay" , new ConsoleValue("0") },
-			{  "px" , new ConsoleValue("0") },
-			{  "py" , new ConsoleValue("0") },
-			{  "w" , new ConsoleValue("50") },
-			{  "h" , new ConsoleValue("0") },
+			{  "x" , new ConsoleValue("-450") },
+			{  "y" , new ConsoleValue("-100") },
+			
+			{  "w" , new ConsoleValue("150") },
+			{  "h" , new ConsoleValue("40") },
+			
+			{  "f" , new ConsoleValue("16") }
 		};
 
 		static bool Prefix(Console __instance) {

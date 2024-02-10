@@ -19,6 +19,7 @@ namespace RunicPower.Patches {
 		public static void Prefix(InventoryGui __instance, Container container) {
 			if (!__instance.m_animator.GetBool("visible")) {
 				SpellsBar.UpdateVisibility();
+				RunicPower.CreateRefillButton(__instance);
 			}
 			SpellsBar.UpdateInventory();
 		}
